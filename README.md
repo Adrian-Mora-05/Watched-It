@@ -14,9 +14,8 @@
   - [Running with Docker](#running-with-docker)
   - [Running the Mobile App](#running-the-mobile-app)
 - [Project Structure](#project-structure)
+- [Deployment](#deployment)
 - [API Documentation](#api-documentation)
-
-
 
 ---
 
@@ -62,7 +61,6 @@ Create a `.env` file in the `api/` directory based on the example below:
 ```env
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-anon-key
-
 ```
 
 > ⚠️ Never commit your `.env` file. It is already listed in `.gitignore`.
@@ -114,13 +112,13 @@ Then scan the QR code with the **Expo Go** app on your phone, or press:
 
 ```
 watched-it/
-├── shared/               # Shared between backend & mobile
-│  
-├── backend/
+├── shared/               # Shared between api & mobile
+│
+├── api/
 │   ├── src/
 │   │   ├── app/
 │   │   ├── main.ts
-│   │   └── ...           # Feature modules 
+│   │   └── ...           # Feature modules
 │   ├── Dockerfile
 │   └── .env
 │
@@ -138,9 +136,20 @@ watched-it/
 
 ---
 
+## Deployment
+
+The API is deployed on [Render](https://render.com):
+
+🚀 **Production URL:** `https://watched-it-api.onrender.com/api/`
+
+> ⚠️ The free tier spins down after 15 minutes of inactivity. The first request may take 30–60 seconds to respond.
+
+---
+
 ## API Documentation
 
-Base URL: `http://localhost:3000/api`
+Base URL (local): `http://localhost:3000/api`  
+Base URL (production): `https://watched-it-api.onrender.com/api/`
 
 | Method | Endpoint | Description |
 |---|---|---|
