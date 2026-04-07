@@ -1,11 +1,13 @@
 FROM node:20-alpine
-
 WORKDIR /app
 
-COPY package*.json ./
+COPY shared/ ./shared/
 
-RUN npm install
+COPY api/package*.json ./api/
+RUN cd api && npm install
 
-COPY . .
+# Copy api source
+COPY api/ ./api/
 
+WORKDIR /app/api
 CMD ["npm", "run", "start:dev"]
