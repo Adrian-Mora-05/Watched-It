@@ -20,13 +20,13 @@ export default function Input({ label, error, ...props }: InputProps) {
           disabled: false,
           selected: !!error,
         }}
-        className="bg-surface text-white rounded-xl px-4 py-3"
+        className="bg-bone text-white rounded-xl px-4 py-3"
         placeholderTextColor="#888"
         {...props}
       />
       {error && (
         <Text
-          accessibilityRole="alert"       // screen reader announces error immediately
+          accessibilityRole="alert"
           className="text-red-400 text-xs"
         >
           {error}

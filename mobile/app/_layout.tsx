@@ -1,29 +1,34 @@
 import "../global.css"; 
-import { useEffect } from 'react';
-import { useRouter, Stack } from 'expo-router';
+import {  Stack } from 'expo-router';
 import { AMAProvider } from '@react-native-ama/core';
+import { SessionProvider, useSession } from '../hooks/ctx';
+import { SplashScreenController } from '../splash';
 
+export default function Root() {
+  // Set up the auth context and render your layout inside of it.
+  return (
+    <SessionProvider>
+      <SplashScreenController />
+      <RootNavigator />
+    </SessionProvider>
+  );
+}
 
-export default function RootLayout() {
-  const router = useRouter();
-  const isAuthenticated = false; 
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!isAuthenticated) {
-        router.replace('/(auth)/login');
-      }
-    }, 1);
-
-    return () => clearTimeout(timeout);
-  }, [isAuthenticated]);
+// Create a new component that can access the SessionProvider context later.
+function RootNavigator() {
+  const { session } = useSession();
 
   return (
     <AMAProvider>
-      <Stack>
-        <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)/index" options={{ headerShown: false }} />
-      </Stack>
+    <Stack>
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="(auth)/sign-in" />
+      </Stack.Protected>
+    </Stack>
     </AMAProvider>
   );
 }

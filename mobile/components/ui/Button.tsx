@@ -16,7 +16,7 @@ export default function Button({ label, onPress, loading }: ButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={label}         
       accessibilityState={{ busy: loading, disabled: loading }}
-      className="bg-primary rounded-xl py-4 items-center justify-center"
+      className="bg-orange rounded-xl p-4 items-center justify-center"
     >
       {loading
         ? <ActivityIndicator color="white" />
