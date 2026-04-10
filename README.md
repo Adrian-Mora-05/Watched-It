@@ -1,11 +1,9 @@
 # 🎬 Watched It
-
 > A social mobile app for tracking movies & shows, getting personalized recommendations, and chatting with friends about what to watch next.
 
 ---
 
 ## Table of Contents
-
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
@@ -40,6 +38,10 @@ watched-it/
 
 The backend is a NestJS application containerized with Docker. The mobile app is built with Expo and communicates with the backend via REST API. Both ends share a common `shared/` package for TypeScript types and validation schemas, keeping the contract between frontend and backend consistent and type-safe.
 
+> 📖 Each part of the project has its own detailed README:
+> - **Mobile:** [`mobile/README.md`](./mobile/README.md) — setup, accessibility standards, and testing
+> - **API:** [`api/README.md`](./api/README.md) — endpoints, architecture, and environment config
+
 ---
 
 ## Getting Started
@@ -47,7 +49,6 @@ The backend is a NestJS application containerized with Docker. The mobile app is
 ### Prerequisites
 
 Make sure you have the following installed:
-
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [Docker](https://www.docker.com/) & Docker Compose
 - [Expo Go](https://expo.dev/go/) on your phone
@@ -145,14 +146,3 @@ The API is deployed on [Render](https://render.com):
 > ⚠️ The free tier spins down after 15 minutes of inactivity. The first request may take 30–60 seconds to respond.
 
 ---
-
-## API Documentation
-
-Base URL (local): `http://localhost:3000/api`  
-Base URL (production): `https://watched-it-api.onrender.com/api/`
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/auth/signup` | Create user with authentication |
-
-> 📝 Full API documentation coming soon.

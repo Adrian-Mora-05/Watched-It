@@ -1,1 +1,0 @@
-acá vienen validaciones de datos. está afuera para que el front y el back compartan las mismas validaciones.

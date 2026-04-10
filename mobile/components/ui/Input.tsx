@@ -20,7 +20,7 @@ export default function Input({ label, error, ...props }: InputProps) {
           disabled: false,
           selected: !!error,
         }}
-        className="bg-bone text-white rounded-xl px-4 py-3"
+        className="bg-bone text-chocolate rounded-xl px-4 py-3"
         placeholderTextColor="#888"
         {...props}
       />
