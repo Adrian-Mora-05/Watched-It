@@ -1,6 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import SignIn from '../../app/(auth)/sign-in';
 
+jest.mock('expo-router', () => ({
+  router: { replace: jest.fn() },
+}));
+
+jest.mock('../../hooks/ctx', () => ({
+  useSession: () => ({ signIn: jest.fn() }),
+}));
+
 describe('SignIn Screen - Accessibility', () => {
 
   describe('roles and labels', () => {
@@ -34,6 +42,7 @@ describe('SignIn Screen - Accessibility', () => {
 
   describe('error feedback', () => {
     it('announces errors to screen readers', async () => {
+      
       render(<SignIn />);
 
       fireEvent.press(screen.getByRole('button', { name: 'Iniciar sesión' }));

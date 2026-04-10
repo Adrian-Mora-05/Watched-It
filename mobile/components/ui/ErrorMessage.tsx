@@ -1,5 +1,5 @@
 // components/ui/Input.tsx
-import { View, TextInput, Text as RNText } from "react-native";
+import { View, TextInput } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 
 type InputProps = {
@@ -26,14 +26,14 @@ export default function Input({ label, error, ...props }: InputProps) {
         {...props}
       />
       {error ? (
-        <RNText
+        <Text
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
           accessibilityLanguage="es"
-          className="text-red-400 text-xs"
+          className="text-red text-xs"
         >
           {error}
-        </RNText>
+        </Text>
       ) : null}
     </View>
   );

@@ -6,6 +6,7 @@ import { Text, Pressable } from "@react-native-ama/react-native";
 import { Form, TextInput } from "@react-native-ama/forms";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import ErrorMessage from "../../components/ui/ErrorMessage";
 
 export default function SignIn() {
   const { signIn } = useSession();
@@ -17,13 +18,22 @@ export default function SignIn() {
   const passwordRef = useRef<RNTextInput>(null);
 
   const handleLogin = async (): Promise<boolean> => {
+    if (!email) {
+      setError('El correo electrónico es obligatorio');
+      return false;
+    }
+    if (!password) {
+      setError('La contraseña es obligatoria');
+      return false;
+    }
+
     setLoading(true);
-    setError("");
+    setError('');
     try {
-      // await login(email, password);
+      await new Promise<void>((resolve) => setTimeout(resolve, 100));
       return true;
     } catch {
-      setError("Correo o contraseña inválidos.");
+      setError('Correo o contraseña inválidos.');
       return false;
     } finally {
       setLoading(false);
@@ -54,17 +64,15 @@ export default function SignIn() {
               onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email"
               nextFormField={passwordRef as unknown as React.RefObject<RNTextInput>} hasValidation={false} />
 
-            <Input label="Contraseña" placeholder="••••••••" value={password} onChangeText={setPassword} secureTextEntry
-              ref={passwordRef as unknown as React.RefObject<RNTextInput>} hasValidation={true} hasError={!!error} errorComponent=
-              {
-                <View>
-                  {error ? (
-                    <Text accessibilityRole="alert" className="text-red-400 text-xs mt-1">
-                      {error}
-                    </Text>
-                  ) : null}
-                </View>
-              }/>
+            <Input
+              label="Contraseña"
+              placeholder="••••••••"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              ref={passwordRef as unknown as React.RefObject<RNTextInput>}
+              error={error}
+            />
 
             <Pressable 
               className="self-end"
@@ -77,11 +85,17 @@ export default function SignIn() {
               </Text>
             </Pressable>
 
-            <Button label="Iniciar sesión" loading={loading} onPress={() => {
-              signIn();
-              // Navigate after signing in. You may want to tweak this to ensure sign-in is successful before navigating.
-              router.replace('/');
-             }}/>
+            <Button
+              label="Iniciar sesión"
+              loading={loading}
+              onPress={async () => {
+                const success = await handleLogin();
+                if (success) {
+                  signIn();
+                  router.replace('/');
+                }
+              }}
+            />
 
             <View
               className="flex-row items-center mt-16 gap-3"
