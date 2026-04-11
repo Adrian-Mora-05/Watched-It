@@ -1,5 +1,5 @@
-const { View, TextInput } = require('react-native');
+const { View } = require('react-native');
+
 module.exports = {
   Form: View,
-  TextInput,
 };
