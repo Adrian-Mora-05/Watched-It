@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const url = __DEV__
+  ? process.env.EXPO_PUBLIC_LOCAL_API_URL
+  : process.env.EXPO_PUBLIC_PROD_API_URL;
+
 const api = axios.create({
-  baseURL: "https://watched-it-api.onrender.com/api",
+  baseURL: url,
   headers: {
     "Content-Type": "application/json",
   },
@@ -20,7 +24,6 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API Error:", error.response?.data || error.message);
     return Promise.reject(error);
   }
 );

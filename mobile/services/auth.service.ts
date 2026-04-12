@@ -8,5 +8,5 @@ export const signup = async (userData: CreateUser) => {
 
 export const login = async (userData: LoginUser) => {
   const response = await api.post("/auth/signin", userData);
-  return response.data; 
+  return response.data;
 };

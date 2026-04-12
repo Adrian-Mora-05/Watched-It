@@ -3,10 +3,11 @@ import { useSession } from '../../hooks/ctx';
 import { useRef, useState } from "react";
 import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo } from "react-native";
 import { Text, Pressable } from "@react-native-ama/react-native";
-import { Form, TextInput } from "@react-native-ama/forms";
+import { Form } from "@react-native-ama/forms";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import { loginUser } from '@shared/user.schema';
+import ErrorToast from '../../components/ui/ErrorMessage';
 import { z } from 'zod';
 
 type LoginErrors = Partial<Record<keyof z.infer<typeof loginUser>, string>>;
@@ -17,10 +18,11 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<LoginErrors>({});
+  const [toastMessage, setToastMessage] = useState<string | undefined>();
 
   const passwordRef = useRef<RNTextInput>(null);
 
-  const handleLogin = async (): Promise<boolean> => {
+  const validateForm = (): boolean => {
     const result = loginUser.safeParse({ email, password });
 
     if (!result.success) {
@@ -30,27 +32,13 @@ export default function SignIn() {
         password: fieldErrors.password?.[0],
       };
       setErrors(newErrors);
-
-      // Build a descriptive announcement from actual error messages
       const errorMessages = Object.values(newErrors).filter(Boolean).join('. ');
-      AccessibilityInfo.announceForAccessibility(
-        `Errores en el formulario: ${errorMessages}`
-      );
-
+      AccessibilityInfo.announceForAccessibility(`Errores en el formulario: ${errorMessages}`);
       return false;
     }
 
     setErrors({});
-    setLoading(true);
-    try {
-      await new Promise<void>((resolve) => setTimeout(resolve, 100));
-      return true;
-    } catch {
-      setErrors({ password: 'Correo o contraseña inválidos.' });
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    return true;
   };
 
   return (
@@ -59,19 +47,24 @@ export default function SignIn() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-dark"
       >
+        <ErrorToast
+          message={toastMessage}
+          visible={!!toastMessage}
+          onDismiss={() => setToastMessage(undefined)}
+        />
         <View className="flex-1 bg-dark items-center justify-center p-4">
 
-          <View  className="items-center mb-12">
+          <View className="items-center mb-12">
             <Text accessibilityRole="header" accessibilityLanguage="en-US" className="text-white text-4xl font-medium">
               Watched It
             </Text>
-            <Text  className="text-bone text-sm mt-2 opacity-60" accessibilityLanguage="es">
+            <Text className="text-bone text-sm mt-2 opacity-60" accessibilityLanguage="es">
               Iniciar sesión
             </Text>
           </View>
 
           <View className="w-full gap-4" accessibilityLanguage="es">
-            <Form onSubmit={handleLogin}  >
+            <Form onSubmit={() => false}>
 
               <Input
                 label="Correo electrónico"
@@ -118,10 +111,16 @@ export default function SignIn() {
                 label="Iniciar sesión"
                 loading={loading}
                 onPress={async () => {
-                  const success = await handleLogin();
-                  if (success) {
-                    signIn();
+                  if (!validateForm()) return;
+
+                  setLoading(true);
+                  try {
+                    await signIn({ email, password });
                     router.replace('/');
+                  } catch (e) {
+                    setToastMessage("Usuario o contraseña incorrectos.");
+                  } finally {
+                    setLoading(false);
                   }
                 }}
               />
@@ -134,7 +133,7 @@ export default function SignIn() {
                 <Text className="text-bone text-sm opacity-60">
                   ¿No tienes una cuenta?
                 </Text>
-                <Button label="Regístrate" loading={loading} onPress={handleLogin} />
+                <Button label="Regístrate" loading={loading} onPress={() => console.log("hola falta esto")} />
               </View>
 
             </Form>
