@@ -11,9 +11,7 @@
   - [Environment Variables](#environment-variables)
   - [Running with Docker](#running-with-docker)
   - [Running the Mobile App](#running-the-mobile-app)
-- [Project Structure](#project-structure)
 - [Deployment](#deployment)
-- [API Documentation](#api-documentation)
 
 ---
 
@@ -106,34 +104,6 @@ Then scan the QR code with the **Expo Go** app on your phone, or press:
 - `i` to open on an iOS simulator
 
 > Make sure your mobile device and development machine are on the same network.
-
----
-
-## Project Structure
-
-```
-watched-it/
-├── shared/               # Shared between api & mobile
-│
-├── api/
-│   ├── src/
-│   │   ├── app/
-│   │   ├── main.ts
-│   │   └── ...           # Feature modules
-│   ├── Dockerfile
-│   └── .env
-│
-├── mobile/
-│   ├── app/              # Expo Router screens
-│   ├── components/       # Reusable UI components
-│   ├── hooks/            # Custom React hooks
-│   ├── services/         # API service calls
-│   └── app.json
-│
-└── docker-compose.yml
-```
-
-> The `shared/` package is referenced locally by both `api/` and `mobile/` via their `package.json`. Any type or validation change made in `shared/` is instantly reflected across the entire project.
 
 ---
 

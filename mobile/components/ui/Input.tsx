@@ -26,14 +26,14 @@ export default function Input({ label, error, ...props }: InputProps) {
         {...props}
       />
       {error ? (
-        <RNText
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-          accessibilityLanguage="es"
-          className="text-red-400 text-xs"
-        >
-          {error}
-        </RNText>
+            <Text
+        accessibilityRole="alert"
+        accessibilityLiveRegion="assertive"
+        accessibilityLanguage="es"
+        className="text-red text-base font-bold pl-2"
+      >
+        {error}
+      </Text>
       ) : null}
     </View>
   );

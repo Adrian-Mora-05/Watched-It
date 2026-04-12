@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreateUser } from '../../../shared/user.schema';
+import { CreateUser, LoginUser } from '../../../shared/user.schema';
 import {supabase} from '../config/db'
 
 @Injectable()
@@ -21,4 +21,21 @@ export class AuthService {
       user: data.user
     }
   }
+
+  async login(user: LoginUser) { 
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email:user.email,
+      password: user.password
+    })
+
+    if (error) throw new BadRequestException(error.message)
+
+    return {
+      message: 'User logged in successfully',
+      user: data.user,
+      session: data.session
+    }
+  }
+    
 }

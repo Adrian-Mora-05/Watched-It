@@ -1,13 +1,15 @@
 import { use, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
+import { login } from '../services/auth.service';
+import {LoginUser} from "../../shared/user.schema";
 
 const AuthContext = createContext<{
-  signIn: () => void;
+  signIn: (user: LoginUser) => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
 }>({
-  signIn: () => null,
+  signIn: () => Promise.resolve(),
   signOut: () => null,
   session: null,
   isLoading: false,
@@ -29,9 +31,9 @@ export function SessionProvider({ children }: PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          // Perform sign-in logic here
-          setSession('xxx'); //***********acordarme de cambiar esto cuando ya haya endpoint de signin */
+        signIn: async (user: LoginUser) => {
+          const data = await login(user);
+          setSession(data.session.access_token);
         },
         signOut: () => {
           setSession(null);

@@ -14,6 +14,7 @@ export default function Button({ label, onPress, loading }: ButtonProps) {
       onPress={onPress}
       disabled={loading}
       accessibilityRole="button"
+      accessibilityLiveRegion="polite"
       accessibilityLabel={label}         
       accessibilityState={{ busy: loading, disabled: loading }}
       className="bg-orange rounded-xl p-4 items-center justify-center"
