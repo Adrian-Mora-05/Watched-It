@@ -1,11 +1,11 @@
 import "../global.css"; 
-import {  Stack } from 'expo-router';
+import { View } from "react-native";
+import { Stack } from 'expo-router';
 import { AMAProvider } from '@react-native-ama/core';
 import { SessionProvider, useSession } from '../hooks/ctx';
-import { SplashScreenController } from '../splash';
+import { SplashScreenController } from '../hooks/splash';
 
 export default function Root() {
-  // Set up the auth context and render your layout inside of it.
   return (
     <SessionProvider>
       <SplashScreenController />
@@ -14,21 +14,20 @@ export default function Root() {
   );
 }
 
-// Create a new component that can access the SessionProvider context later.
 function RootNavigator() {
   const { session } = useSession();
-
   return (
-    <AMAProvider>
-    <Stack>
-      <Stack.Protected guard={!!session}>
-        <Stack.Screen name="(app)" />
-      </Stack.Protected>
-
-      <Stack.Protected guard={!session}>
-        <Stack.Screen name="(auth)/sign-in" />
-      </Stack.Protected>
-    </Stack>
-    </AMAProvider>
+    <View accessibilityLanguage="es" style={{ flex: 1 }}>
+      <AMAProvider>
+        <Stack>
+          <Stack.Protected guard={!!session}>
+            <Stack.Screen name="(app)" />
+          </Stack.Protected>
+          <Stack.Protected guard={!session}>
+            <Stack.Screen name="(auth)/sign-in" />
+          </Stack.Protected>
+        </Stack>
+      </AMAProvider>
+    </View>
   );
 }

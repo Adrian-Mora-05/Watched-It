@@ -1,5 +1,5 @@
 import { SplashScreen } from 'expo-router';
-import { useSession } from './hooks/ctx';
+import { useSession } from './ctx';
 
 SplashScreen.preventAutoHideAsync();
 

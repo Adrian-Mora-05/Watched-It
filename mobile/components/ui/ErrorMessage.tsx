@@ -1,40 +1,20 @@
-// components/ui/Input.tsx
-import { View, TextInput } from "react-native";
+// components/ui/ErrorMessage.tsx
 import { Text } from "@react-native-ama/react-native";
 
-type InputProps = {
-  label: string;
-  error?: string;
-  [key: string]: any;
+type ErrorMessageProps = {
+  message?: string;
 };
 
-export default function Input({ label, error, ...props }: InputProps) {
+export default function ErrorMessage({ message }: ErrorMessageProps) {
+  if (!message) return null;
   return (
-    <View accessibilityLanguage="es" className="gap-1">
-      <Text className="text-white text-sm">
-        {label}
-      </Text>
-      <TextInput
-        accessibilityLabel={label}
-        accessibilityHint={error || undefined}
-        accessibilityState={{
-          disabled: false,
-          selected: !!error,
-        }}
-        className="bg-bone text-chocolate rounded-xl px-4 py-3"
-        placeholderTextColor="#888"
-        {...props}
-      />
-      {error ? (
-        <Text
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-          accessibilityLanguage="es"
-          className="text-red text-xs"
-        >
-          {error}
-        </Text>
-      ) : null}
-    </View>
+    <Text
+      accessibilityRole="alert"
+      accessibilityLiveRegion="assertive"
+      accessibilityLanguage="es"
+      className="text-red text-base pl-2"
+    >
+      {message}
+    </Text>
   );
 }

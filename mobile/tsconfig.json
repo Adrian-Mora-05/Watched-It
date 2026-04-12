@@ -3,11 +3,11 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@shared/*": ["../shared/*"],
+      "zod": ["./node_modules/zod"]
     },
     "types": ["jest"]
+    
   },
   "include": [
     "**/*.ts",

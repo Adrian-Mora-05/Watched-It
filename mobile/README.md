@@ -42,7 +42,6 @@ mobile/
 │   └── ui/
 ├── hooks/                 # Custom React hooks
 ├── services/              # API service calls
-├── constants/             # App-wide constants
 ├── assets/                # Images, fonts, icons
 ├── __tests__/             # All test files (mirrors app structure)
 └── __mocks__/             # Jest mocks for native packages
@@ -131,56 +130,134 @@ Each screen under `app/` should have a corresponding test file under `__tests__/
 
 ```tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import SignIn from '../../app/(auth)/sign-in';
+import { AccessibilityInfo } from 'react-native';
+import MyScreen from '../../app/(auth)/my-screen'; // 🔧 Update path
 
-describe('SignIn Screen - Accessibility', () => {
+// ─── Mocks ────────────────────────────────────────────────────────────────────
+
+jest.mock('expo-router', () => ({
+  router: { replace: jest.fn() },
+}));
+
+jest.mock('../../hooks/ctx', () => ({
+  useSession: () => ({ signIn: jest.fn() }),
+}));
+
+// Add any other mocks your screen needs below
+// jest.mock('../../hooks/useMyHook', () => ({ ... }));
+
+// ─── Test Suite ───────────────────────────────────────────────────────────────
+
+describe('MyScreen - Accessibility', () => {
+
+  // ── Roles & Labels ──────────────────────────────────────────────────────────
+  // Verify that every interactive element has a correct role and accessible name.
+  // If any of these queries fail, a real accessibility attribute is missing.
 
   describe('roles and labels', () => {
-    it('email field is labelled and accessible', () => {
-      render(<SignIn />);
-      expect(screen.getByLabelText('Email')).toBeTruthy();
+    it('renders the screen heading', () => {
+      render(<MyScreen />);
+      expect(screen.getByRole('header', { name: 'My Screen Title' })).toBeTruthy(); // 🔧
+    });
+
+    it('INPUT_NAME field is labelled and accessible', () => { // 🔧 duplicate per field
+      render(<MyScreen />);
+      expect(screen.getByLabelText('INPUT_LABEL')).toBeTruthy(); // 🔧
     });
 
     it('submit button has an accessible name', () => {
-      render(<SignIn />);
-      expect(screen.getByRole('button', { name: 'Sign In' })).toBeTruthy();
+      render(<MyScreen />);
+      expect(screen.getByRole('button', { name: 'SUBMIT_LABEL' })).toBeTruthy(); // 🔧
     });
   });
+
+  // ── Keyboard & Input ────────────────────────────────────────────────────────
+  // Verify that inputs are configured for the right keyboard type, autocomplete,
+  // and security settings. These props affect usability for all users.
 
   describe('keyboard and input', () => {
     it('email field uses email keyboard', () => {
-      render(<SignIn />);
-      expect(screen.getByLabelText('Email').props.keyboardType).toBe('email-address');
+      render(<MyScreen />);
+      expect(screen.getByLabelText('EMAIL_LABEL').props.keyboardType).toBe('email-address'); // 🔧
     });
 
     it('password field is secure', () => {
-      render(<SignIn />);
-      expect(screen.getByLabelText('Password').props.secureTextEntry).toBe(true);
+      render(<MyScreen />);
+      expect(screen.getByLabelText('PASSWORD_LABEL').props.secureTextEntry).toBe(true); // 🔧
     });
+
+    // 🔧 Add more input prop checks as needed:
+    // autoCapitalize, autoComplete, returnKeyType, etc.
   });
+
+  // ── Error Feedback ──────────────────────────────────────────────────────────
+  // Verify that validation errors are both visible and announced to screen readers.
+  // Errors must carry accessibilityLiveRegion so TalkBack/VoiceOver picks them up.
 
   describe('error feedback', () => {
-    it('announces errors to screen readers', async () => {
-      render(<SignIn />);
+    it('shows and announces a required field error on empty submit', async () => {
+      render(<MyScreen />);
 
-      fireEvent.press(screen.getByRole('button', { name: 'Sign In' }));
+      fireEvent.press(screen.getByRole('button', { name: 'SUBMIT_LABEL' })); // 🔧
 
-      const error = await screen.findByText('Email is required');
-      expect(error.props.accessibilityLiveRegion).toBe('polite');
+      const error = await screen.findByText('ERROR_MESSAGE'); // 🔧 exact error string
+      expect(error.props.accessibilityLiveRegion).toBe('assertive');
+    });
+
+    it('announces all errors to screen readers via AccessibilityInfo', async () => {
+      const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
+
+      render(<MyScreen />);
+      fireEvent.press(screen.getByRole('button', { name: 'SUBMIT_LABEL' })); // 🔧
+
+      await waitFor(() => {
+        expect(announce).toHaveBeenCalledWith(
+          expect.stringContaining('ERROR_KEYWORD') // 🔧 part of expected announcement
+        );
+      });
+    });
+
+    // 🔧 Add one test per distinct error message / field combination if needed
+  });
+
+  // ── Loading State ───────────────────────────────────────────────────────────
+  // Verify that async actions communicate progress to screen readers via
+  // accessibilityState.busy. Without this, users have no feedback during loads.
+
+  describe('loading state', () => {
+    it('button communicates busy state while submitting', async () => {
+      render(<MyScreen />);
+
+      // 🔧 Fill in all required fields to pass validation
+      fireEvent.changeText(screen.getByLabelText('EMAIL_LABEL'), 'test@email.com');
+      fireEvent.changeText(screen.getByLabelText('PASSWORD_LABEL'), 'password123');
+
+      fireEvent.press(screen.getByRole('button', { name: 'SUBMIT_LABEL' })); // 🔧
+
+      await waitFor(() => {
+        const button = screen.getByRole('button', { name: 'SUBMIT_LABEL' }); // 🔧
+        expect(button.props.accessibilityState?.busy).toBe(true);
+      });
     });
   });
 
-  describe('loading state', () => {
-    it('button communicates busy state while signing in', async () => {
-      render(<SignIn />);
+  // ── Navigation & Success ────────────────────────────────────────────────────
+  // Verify that successful actions trigger the correct navigation.
+  // Keep mocks at the top of the file so they can be referenced here.
 
-      fireEvent.changeText(screen.getByLabelText('Email'), 'test@email.com');
-      fireEvent.changeText(screen.getByLabelText('Password'), '123456');
-      fireEvent.press(screen.getByRole('button', { name: 'Sign In' }));
+  describe('navigation', () => {
+    it('redirects after successful submit', async () => {
+      const { router } = require('expo-router');
+
+      render(<MyScreen />);
+
+      // 🔧 Fill in valid data, mock any API calls that need to succeed
+      fireEvent.changeText(screen.getByLabelText('EMAIL_LABEL'), 'test@email.com');
+      fireEvent.changeText(screen.getByLabelText('PASSWORD_LABEL'), 'password123');
+      fireEvent.press(screen.getByRole('button', { name: 'SUBMIT_LABEL' })); // 🔧
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: 'Sign In' });
-        expect(button.props.accessibilityState?.busy).toBe(true);
+        expect(router.replace).toHaveBeenCalledWith('/'); // 🔧 expected route
       });
     });
   });

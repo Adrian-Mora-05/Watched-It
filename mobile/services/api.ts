@@ -1,8 +1,7 @@
 import axios from "axios";
-import { API_URL } from "../constants";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: "https://watched-it-api.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
