@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
-import { useSession } from '../../hooks/ctx';
-import Button from '../../components/ui/Button';
+import { useSession } from '@/hooks/ctx';
+import Button from '@/components/ui/Button';
 
 export default function Index() {
   const { signOut } = useSession();

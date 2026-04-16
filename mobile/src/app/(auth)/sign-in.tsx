@@ -1,13 +1,13 @@
 import { router } from 'expo-router';
-import { useSession } from '../../hooks/ctx';
+import { useSession } from '@/hooks/ctx';
 import { useRef, useState } from "react";
 import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo } from "react-native";
 import { Text, Pressable } from "@react-native-ama/react-native";
 import { Form } from "@react-native-ama/forms";
-import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import { loginUser } from '@shared/user.schema';
-import ErrorToast from '../../components/ui/ErrorMessage';
+import ErrorToast from '@/components/ui/ErrorMessage';
 import { z } from 'zod';
 
 type LoginErrors = Partial<Record<keyof z.infer<typeof loginUser>, string>>;
@@ -124,7 +124,7 @@ export default function SignIn() {
                   }
                 }}
               />
-
+            </Form>
               <View
                 className="flex-row items-center mt-16 gap-3"
                 accessible={true}
@@ -135,8 +135,6 @@ export default function SignIn() {
                 </Text>
                 <Button label="Regístrate" loading={loading} onPress={() => console.log("hola falta esto")} />
               </View>
-
-            </Form>
           </View>
         </View>
       </KeyboardAvoidingView>

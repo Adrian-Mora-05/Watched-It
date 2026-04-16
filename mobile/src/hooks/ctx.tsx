@@ -1,7 +1,7 @@
 import { use, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from './useStorageState';
-import { login } from '../services/auth.service';
-import {LoginUser} from "../../shared/user.schema";
+import { login } from '@/services/auth.service';
+import {LoginUser} from "@shared/user.schema";
 
 const AuthContext = createContext<{
   signIn: (user: LoginUser) => Promise<void>;

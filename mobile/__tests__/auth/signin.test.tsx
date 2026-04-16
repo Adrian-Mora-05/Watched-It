@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
-import SignIn from '../../app/(auth)/sign-in';
+import SignIn from '@/app/(auth)/sign-in';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -8,7 +8,7 @@ jest.mock('expo-router', () => ({
   router: { replace: jest.fn() },
 }));
 
-jest.mock('../../hooks/ctx', () => ({
+jest.mock('@/hooks/ctx', () => ({
   useSession: () => ({ signIn: jest.fn() }),
 }));
 

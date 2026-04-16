@@ -35,16 +35,17 @@ The mobile app for Watched It, built with Expo (React Native). This document cov
 
 ```
 mobile/
-├── app/                   # Expo Router screens
-│   ├── (auth)/
-│   └── (tabs)/
-├── components/            # Reusable UI components
-│   └── ui/
-├── hooks/                 # Custom React hooks
-├── services/              # API service calls
 ├── assets/                # Images, fonts, icons
 ├── __tests__/             # All test files (mirrors app structure)
-└── __mocks__/             # Jest mocks for native packages
+├── __mocks__/             # Jest mocks for native packages
+└── src/                   # Expo Router screens
+    ├── app
+    |   ├── (auth)/
+    |   └──(tabs)/
+    ├── components/            # Reusable UI components
+    |   └── ui/
+    ├── hooks/                 # Custom React hooks
+    └── services/              # API service calls
 ```
 
 ---
@@ -131,7 +132,7 @@ Each screen under `app/` should have a corresponding test file under `__tests__/
 ```tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
-import MyScreen from '../../app/(auth)/my-screen'; // 🔧 Update path
+import MyScreen from '@/app/(auth)/my-screen'; // 🔧 Update path
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

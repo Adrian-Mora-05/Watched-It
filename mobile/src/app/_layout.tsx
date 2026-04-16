@@ -1,9 +1,9 @@
-import "../global.css"; 
+import "@/global.css"; 
 import { View } from "react-native";
 import { Stack } from 'expo-router';
 import { AMAProvider } from '@react-native-ama/core';
-import { SessionProvider, useSession } from '../hooks/ctx';
-import { SplashScreenController } from '../hooks/splash';
+import { SessionProvider, useSession } from '@/hooks/ctx';
+import { SplashScreenController } from '@/hooks/splash';
 
 export default function Root() {
   return (
@@ -21,7 +21,7 @@ function RootNavigator() {
       <AMAProvider>
         <Stack>
           <Stack.Protected guard={!!session}>
-            <Stack.Screen name="(app)" />
+            <Stack.Screen name="(home)" />
           </Stack.Protected>
           <Stack.Protected guard={!session}>
             <Stack.Screen name="(auth)/sign-in" />

@@ -4,12 +4,14 @@
     "strict": true,
     "paths": {
       "@shared/*": ["../shared/*"],
-      "zod": ["./node_modules/zod"]
+      "zod": ["./node_modules/zod"],
+      "@/*": ["./src/*"]
     },
     "types": ["jest"]
     
   },
   "include": [
+    "src/**/*",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",

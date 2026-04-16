@@ -55,12 +55,7 @@ Make sure you have the following installed:
 
 ### Environment Variables
 
-Create a `.env` file in the `api/` directory based on the example below:
-
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-anon-key
-```
+Create a `.env` file in the `api/` and `mobile/` directories based on the .env.example inside each folder.
 
 > ⚠️ Never commit your `.env` file. It is already listed in `.gitignore`.
 
