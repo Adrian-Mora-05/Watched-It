@@ -103,7 +103,7 @@ export default function SignIn() {
                 accessibilityLanguage="es"
                 onPress={() => router.push("/restorePassword") }
               >
-                <Text className="text-bone text-petite p-10 pt-0 pr-2">
+                <Text className="text-bone text-petite p-11 pt-0 pr-2">
                   ¿Olvidaste tu contraseña?
                 </Text>
               </Pressable>
