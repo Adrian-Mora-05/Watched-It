@@ -123,7 +123,7 @@ export default function SignUp() {
                 Agregar foto de perfil
               </Text>
 
-              <View className="relative ">
+              <View className="relative w-44 ">
                 <ImageButton
                   size={150}
                   
