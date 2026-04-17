@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useSession } from '@/hooks/ctx';
 import { useRef, useState } from "react";
-import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo } from "react-native";
+import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo, Alert } from "react-native";
 import { Text, Pressable } from "@react-native-ama/react-native";
 import { Form } from "@react-native-ama/forms";
 import Button from "@/components/ui/Button";
@@ -42,7 +42,8 @@ export default function SignIn() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View className="bg-dark flex-1">
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1 bg-dark"
@@ -52,18 +53,17 @@ export default function SignIn() {
           visible={!!toastMessage}
           onDismiss={() => setToastMessage(undefined)}
         />
+        <View className="content-start items-center h-1/3 bg-dark justify-around mt-10">
+          <Text accessibilityRole="header" accessibilityLanguage="en-US" className="text-bone text-6xl font-medium pt-20">
+            Watched It
+          </Text>
+          <Text className="text-white text-4xl mt-5 font-bold " accessibilityLanguage="es">
+            Iniciar sesión
+          </Text>
+        </View>
         <View className="flex-1 bg-dark items-center justify-center p-4">
 
-          <View className="items-center mb-12">
-            <Text accessibilityRole="header" accessibilityLanguage="en-US" className="text-white text-4xl font-medium">
-              Watched It
-            </Text>
-            <Text className="text-bone text-sm mt-2 opacity-60" accessibilityLanguage="es">
-              Iniciar sesión
-            </Text>
-          </View>
-
-          <View className="w-full gap-4" accessibilityLanguage="es">
+          <View className="w-full h-full gap-4 pt-5" accessibilityLanguage="es">
             <Form onSubmit={() => false}>
 
               <Input
@@ -101,8 +101,9 @@ export default function SignIn() {
                 accessibilityRole="button"
                 accessibilityLabel="¿Olvidaste tu contraseña?"
                 accessibilityLanguage="es"
+                onPress={() => router.push("/restorePassword") }
               >
-                <Text className="text-bone text-xs opacity-60 p-10 pt-0 pr-2">
+                <Text className="text-bone text-sm p-10 pt-0 pr-2">
                   ¿Olvidaste tu contraseña?
                 </Text>
               </Pressable>
@@ -130,14 +131,15 @@ export default function SignIn() {
                 accessible={true}
                 accessibilityLabel="¿No tienes una cuenta? Regístrate"
               >
-                <Text className="text-bone text-sm opacity-60">
+                <Text className="text-white text-medium">
                   ¿No tienes una cuenta?
                 </Text>
-                <Button label="Regístrate" loading={loading} onPress={() => console.log("hola falta esto")} />
+                <Button label="Regístrate" loading={loading} onPress={() => router.push("/sign-up") } />
               </View>
           </View>
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
+    </View>
   );
 }
