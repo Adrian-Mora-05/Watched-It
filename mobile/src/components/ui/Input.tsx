@@ -11,7 +11,7 @@ type InputProps = {
 export default function Input({ label, error, ...props }: InputProps) {
   return (
     <View accessibilityLanguage="es" className="gap-1">
-      <Text className="text-white text-sm">
+      <Text className="text-white text-normal">
         {label}
       </Text>
       <TextInput
@@ -30,7 +30,7 @@ export default function Input({ label, error, ...props }: InputProps) {
         accessibilityRole="alert"
         accessibilityLiveRegion="assertive"
         accessibilityLanguage="es"
-        className="text-red text-base font-bold pl-2"
+        className="text-red text-normal font-bold pl-2"
       >
         {error}
       </Text>

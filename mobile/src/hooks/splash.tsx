@@ -1,4 +1,5 @@
-import { SplashScreen } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { useSession } from './ctx';
 
 SplashScreen.preventAutoHideAsync();
@@ -6,9 +7,11 @@ SplashScreen.preventAutoHideAsync();
 export function SplashScreenController() {
   const { isLoading } = useSession();
 
-  if (!isLoading) {
-    SplashScreen.hide();
-  }
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync().catch(() => {});  
+    }
+  }, [isLoading]);
 
   return null;
 }

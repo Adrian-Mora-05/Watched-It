@@ -18,7 +18,8 @@ export class AuthService {
 
     return {
       message: 'User created successfully',
-      user: data.user
+      user: data.user,
+      session: data.session
     }
   }
 
@@ -37,5 +38,4 @@ export class AuthService {
       session: data.session
     }
   }
-    
 }

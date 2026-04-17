@@ -1,7 +1,7 @@
-// components/ui/ErrorToast.tsx
 import { useEffect, useRef } from "react";
-import { Animated, View } from "react-native";
-import { Text, Pressable, } from "@react-native-ama/react-native";
+import { Animated, View, Modal } from "react-native";
+import { Text, Pressable } from "@react-native-ama/react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ErrorToastProps = {
   message?: string;
@@ -12,6 +12,7 @@ type ErrorToastProps = {
 export default function ErrorToast({ message, visible, onDismiss }: ErrorToastProps) {
   const slideAnim = useRef(new Animated.Value(-100)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (visible) {
@@ -47,57 +48,70 @@ export default function ErrorToast({ message, visible, onDismiss }: ErrorToastPr
   if (!message) return null;
 
   return (
-    <Animated.View
-      style={{
-        transform: [{ translateY: slideAnim }],
-        opacity: opacityAnim,
-        position: "absolute",
-        top: 16,
-        left: 16,
-        right: 16,
-        zIndex: 999,
-      }}
+    <Modal
+      transparent
+      visible={visible}
+      animationType="none"
+      statusBarTranslucent
+      onRequestClose={onDismiss}
     >
-      <View
-        accessibilityRole="alert"
-        accessibilityLiveRegion="assertive"
-        className="flex-row items-center justify-between bg-red-50 border border-red rounded-xl px-4 py-3 shadow-md"
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Cerrar notificación"
+        onPress={onDismiss}
+        style={{ flex: 1 }}
       >
-        {/* Icon + Message */}
-        <View className="flex-row items-center gap-2 flex-1 pr-2">
-          <Text
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-            className="text-red text-base"
-          >
-            ⚠️
-          </Text>
-          <Text
-            accessibilityLanguage="es"
-            className="text-red text-base flex-1"
-          >
-            {message}
-          </Text>
-        </View>
-
-        {/* Dismiss Button */}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cerrar notificación de error"
-          accessibilityHint="Cierra este mensaje de error"
-          onPress={onDismiss}
-          hitSlop={{ top: 15, bottom:  15, left:  15, right: 15}}
-          className="p-5"
+        <Animated.View
+          style={{
+            transform: [{ translateY: slideAnim }],
+            opacity: opacityAnim,
+            position: "absolute",
+            top: insets.top + 12, // ← sits just below notch/camera bar
+            left: 16,
+            right: 16,
+            zIndex: 999,
+          }}
         >
-          <Text
-            accessibilityElementsHidden
-            importantForAccessibility="no-hide-descendants"
-            className="text-red text-lg font-bold"
+          <View
+            accessibilityRole="alert"
+            accessibilityLiveRegion="assertive"
+            className="flex-row items-center justify-between bg-red border border-red rounded-xl px-4 py-3 shadow-md"
           >
-            ✕
-          </Text>
-        </Pressable>
-      </View>
-    </Animated.View>
+            <View className="flex-row items-center gap-2 flex-1 pr-2">
+              <Text
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                className="text-white text-normal"
+              >
+                ⚠️
+              </Text>
+              <Text
+                accessibilityLanguage="es"
+                className="text-white text-normal flex-1"
+              >
+                {message}
+              </Text>
+            </View>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Cerrar notificación de error"
+              accessibilityHint="Cierra este mensaje de error"
+              onPress={onDismiss}
+              hitSlop={{ top: 18, bottom: 18, left: 15, right: 15 }}
+              className="p-5"
+            >
+              <Text
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+                className="text-white text-normal font-bold"
+              >
+                ✕
+              </Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </Pressable>
+    </Modal>
   );
 }

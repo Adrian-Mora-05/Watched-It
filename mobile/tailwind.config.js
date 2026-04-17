@@ -18,6 +18,12 @@ module.exports = {
         green:"#037E11",
         red: "#A70000"
       },
+      fontSize: {
+        'petite': '12px',
+        'normal': '14px',
+        'large': '35px',
+        'huge':'55px'
+      },
     },
   },
   plugins: [],
