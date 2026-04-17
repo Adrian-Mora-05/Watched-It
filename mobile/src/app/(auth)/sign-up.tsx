@@ -1,19 +1,129 @@
-import { View } from "react-native";
-import { Text } from "@react-native-ama/react-native";
-import { router } from "expo-router";
+import { router } from 'expo-router';
+import { useSession } from '@/hooks/ctx';
+import { useRef, useState } from "react";
+import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo, Alert } from "react-native";
+import { Text, Pressable } from "@react-native-ama/react-native";
+import { Form } from "@react-native-ama/forms";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import { loginUser } from '@shared/user.schema';
+import ErrorToast from '@/components/ui/ErrorMessage';
+import { z } from 'zod';
 import ReturnButton from "@/components/ui/ReturnButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function SignUpScreen() {
-  const insets = useSafeAreaInsets();
+type LoginErrors = Partial<Record<keyof z.infer<typeof loginUser>, string>>;
+
+
+function signUp({ email, password }: { email: string; password: string }) {
+  return "hola" }
+
+export default function SignUp() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [toastMessage, setToastMessage] = useState<string | undefined>();
+
+  const passwordRef = useRef<RNTextInput>(null);
+
+  const validateForm = (): boolean => {
+    const result = loginUser.safeParse({ email, password });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      const newErrors = {
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      };
+      setErrors(newErrors);
+      const errorMessages = Object.values(newErrors).filter(Boolean).join('. ');
+      AccessibilityInfo.announceForAccessibility(`Errores en el formulario: ${errorMessages}`);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
 
   return (
-    <View className="flex-1 bg-dark p-2" style={{ paddingTop: insets.top }} >
-      <View className="py-2">
-        <ReturnButton label="Volver" onPress={() => router.back()} />
-      </View>
+      <View className="bg-dark flex-1">
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 bg-dark"
+      >
+        <ErrorToast
+          message={toastMessage}
+          visible={!!toastMessage}
+          onDismiss={() => setToastMessage(undefined)} />
 
-      <Text className="bg-white">aqui se registra si</Text>
+        <View className="content-start items-center h-1/3 bg-dark justify-around mt-10">
+          <ReturnButton label="Volver" onPress={() => router.back()} />
+          <Text className="text-white text-4xl font-bold " accessibilityLanguage="es" accessibilityRole="header">
+            Registrarse
+          </Text>
+        </View>
+
+        <View className="flex-1 bg-dark items-center justify-center p-4">
+          <View className="w-full h-full gap-4 pt-5" accessibilityLanguage="es">
+            <Form onSubmit={() => false}>
+
+              <Input
+                label="Correo electrónico"
+                placeholder="ejemplo@correo.com"
+                value={email}
+                onChangeText={(text: string) => {
+                  setEmail(text);
+                  setErrors({});
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                nextFormField={passwordRef as unknown as React.RefObject<RNTextInput>}
+                hasValidation={false}
+                error={errors.email}
+              />
+
+              <Input
+                label="Contraseña"
+                placeholder="••••••••"
+                value={password}
+                onChangeText={(text: string) => {
+                  setPassword(text);
+                  setErrors({});
+                }}
+                secureTextEntry
+                accessibilityLanguage="es"
+                ref={passwordRef as unknown as React.RefObject<RNTextInput>}
+                error={errors.password}
+              />
+
+
+              <Button
+                label="Registrarse"
+                loading={loading}
+                onPress={async () => {
+                  if (!validateForm()) return;
+
+                  setLoading(true);
+                  try {
+                    await signUp({ email, password });
+                    router.replace('/');
+                  } catch (e) {
+                    setToastMessage("Error al registrar el usuario.");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              />
+
+            </Form>
+
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
     </View>
   );
 }

@@ -54,10 +54,10 @@ export default function SignIn() {
           onDismiss={() => setToastMessage(undefined)}
         />
         <View className="content-start items-center h-1/3 bg-dark justify-around mt-10">
-          <Text accessibilityRole="header" accessibilityLanguage="en-US" className="text-bone text-6xl font-medium pt-20">
+          <Text  accessibilityLanguage="en-US" className="text-bone text-huge pt-20">
             Watched It
           </Text>
-          <Text className="text-white text-4xl mt-5 font-bold " accessibilityLanguage="es">
+          <Text accessibilityRole="header" className="text-white text-large mt-5 font-bold " accessibilityLanguage="es">
             Iniciar sesión
           </Text>
         </View>
@@ -103,7 +103,7 @@ export default function SignIn() {
                 accessibilityLanguage="es"
                 onPress={() => router.push("/restorePassword") }
               >
-                <Text className="text-bone text-sm p-10 pt-0 pr-2">
+                <Text className="text-bone text-petite p-10 pt-0 pr-2">
                   ¿Olvidaste tu contraseña?
                 </Text>
               </Pressable>
@@ -131,7 +131,7 @@ export default function SignIn() {
                 accessible={true}
                 accessibilityLabel="¿No tienes una cuenta? Regístrate"
               >
-                <Text className="text-white text-medium">
+                <Text className="text-white text-normal">
                   ¿No tienes una cuenta?
                 </Text>
                 <Button label="Regístrate" loading={loading} onPress={() => router.push("/sign-up") } />

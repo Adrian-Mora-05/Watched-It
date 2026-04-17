@@ -17,7 +17,7 @@ export default function ReturnButton({ label, onPress }: ButtonProps) {
       className="rounded-xl p-4 items-center flex-row gap-2"
     >
       <Ionicons name="arrow-back" size={24} color="white" />
-      <Text className="text-lg text-white">
+      <Text className="text-normal text-white">
         Volver
       </Text>
     </Pressable>

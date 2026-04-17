@@ -81,13 +81,13 @@ export default function ErrorToast({ message, visible, onDismiss }: ErrorToastPr
               <Text
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className="text-white text-base"
+                className="text-white text-normal"
               >
                 ⚠️
               </Text>
               <Text
                 accessibilityLanguage="es"
-                className="text-white text-lg flex-1"
+                className="text-white text-normal flex-1"
               >
                 {message}
               </Text>
@@ -104,7 +104,7 @@ export default function ErrorToast({ message, visible, onDismiss }: ErrorToastPr
               <Text
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
-                className="text-white text-lg font-bold"
+                className="text-white text-normal font-bold"
               >
                 ✕
               </Text>

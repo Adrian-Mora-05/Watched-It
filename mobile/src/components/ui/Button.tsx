@@ -21,7 +21,7 @@ export default function Button({ label, onPress, loading }: ButtonProps) {
     >
       {loading
         ? <ActivityIndicator color="white" />
-        : <Text accessibilityLanguage="es" className="text-white font-semibold">
+        : <Text accessibilityLanguage="es" className="text-white font-semibold text-normal">
             {label}
           </Text>
       }
