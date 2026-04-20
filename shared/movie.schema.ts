@@ -1,18 +1,21 @@
 import { z } from 'zod'
 
-export const readMovie = z.object({
-    titulo: z.string()
-            .default(''), //gets all movies by default
-    skip: z.number()
-            .default(0), //gets the first movies by default
-    limit: z.number()
-            .default(9), //gets 10 movies by default
-    anio: z.number()
-            .optional(),
-    genero: z.string()
-            .optional(),
-    restriccionEdad: z.boolean()
-                    .optional(),
+//general schema for pagination (by param)
+export const readMovieParam = z.object({ 
+    skip: z.coerce.number().default(0).optional(),             
+    limit: z.coerce.number().default(9).optional(),
+    title: z.string().default('').optional(),
+    year: z.coerce.number().optional(),
+    genre: z.string().optional(),
+    ageRestriction: z.coerce.boolean().optional(),
 })
 
-export type ReadMovie = z.infer<typeof readMovie> //generates a type from the schema
+//schema for reading each movie with general info
+export const readEachMovie = z.object({
+        id: z.number(),
+        title: z.string(),
+        image_link: z.string()
+})
+
+export type ReadMovieParam = z.infer<typeof readMovieParam> //generates a type from the schema
+export type ReadEachMovie = z.infer<typeof readEachMovie> //generates a type from the schema

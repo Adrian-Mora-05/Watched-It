@@ -10,7 +10,7 @@ export default function Index() {
   const { signOut } = useSession();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} className='bg-dark'>
+    <View className='flex-1 bg-dark'>
       <Text className='text-white'>Welcome to the app !</Text>
 
       {/* Esto es solo para q sepan donde esta el token de sesion y el userID*/}

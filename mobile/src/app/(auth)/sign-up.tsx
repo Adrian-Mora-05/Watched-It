@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useRef, useState } from "react";
-import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo, Alert, Modal } from "react-native";
+import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo,  Modal } from "react-native";
 import { Text, TouchableOpacity } from "@react-native-ama/react-native";
 import { Form } from "@react-native-ama/forms";
 import Button from "@/components/ui/Button";
@@ -64,20 +64,21 @@ export default function SignUp() {
           message={toastMessage}
           visible={!!toastMessage}
           onDismiss={() => setToastMessage(undefined)} />
-
-        <View className="content-start items-center h-1/4 bg-dark justify-around mt-10">
+        <View className="w-full">
           <ReturnButton label="Volver" onPress={() => router.back()} />
+        </View>
+        <View className="content-start items-center m-16 mt-8 bg-dark justify-around">
           <Text className="text-white text-large font-bold " accessibilityLanguage="es" accessibilityRole="header">
             Registrarse
           </Text>
         </View>
 
-        <View className="flex-1 bg-dark items-center justify-center p-4">
-          <View className="w-full h-full gap-5 pt-5" accessibilityLanguage="es">
+        <View className="flex-1 bg-dark items-center justify-center pl-4 pr-4">
+          <View className="w-full h-full gap-7 " accessibilityLanguage="es">
             <Form onSubmit={() => false}>
               <Input
                 label="Nombre"
-                placeholder="nombre_usuario123"
+                placeholder="usuario123"
                 value={name}
                 onChangeText={(text: string) => {
                   setName(text);
@@ -119,20 +120,20 @@ export default function SignUp() {
                 ref={passwordRef as unknown as React.RefObject<RNTextInput>}
                 error={errors.password}
               />
-              <Text className="text-normal text-white" accessibilityLanguage="es">
-                Agregar foto de perfil
-              </Text>
-
               <View className="relative w-44 ">
+                  <Text className="text-normal text-white pb-4 w-56" accessibilityLanguage="es">
+                  Agregar foto de perfil
+                  </Text>
                 <ImageButton
+                  borderColor='grey'
+                  borderWidth={1}
                   size={150}
-                  
                   source={
                     photoUri
                       ? { uri: photoUri }
                       : require('../../../assets/images/camera-icon.png')
                   }
-                  rounded="full"
+                  rounded="md"
                   onPress={() => setShowCamera(true)}
                   accessibilityLabel="Foto de perfil"
                   accessibilityHint="Agrega una foto de perfil"
@@ -165,7 +166,7 @@ export default function SignUp() {
                 loading={loading}
                 onPress={async () => {
                   if (!validateForm()) return;
-                  router.push({ pathname: "/chooseFavs", params: { email: email, password: password, name: name, photoUri: photoUri } })
+                  router.push({ pathname: "/chooseMovieFavs", params: { email: email, password: password, name: name, photoUri: photoUri } })
                 }}
               />
             </Form>

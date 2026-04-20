@@ -100,7 +100,7 @@ export function CameraModule({ onClose, onPhoto }: CameraModuleProps) {
             style={styles.iconButton}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Close camera"
+            accessibilityLabel="Cerrar camara"
           >
             <Text style={styles.iconText} accessible={false}>✕</Text>
           </TouchableOpacity>
@@ -115,8 +115,8 @@ export function CameraModule({ onClose, onPhoto }: CameraModuleProps) {
             style={styles.shutter}
             accessible={true}
             accessibilityRole="button"
-            accessibilityLabel="Take photo"
-            accessibilityHint="Captures a photo using the camera"
+            accessibilityLabel="Tomar foto"
+            accessibilityHint="Captura una foto con la cámara"
           >
             {isTaking
               ? <ActivityIndicator color="#000" />
@@ -154,13 +154,14 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    padding: 40,
+    paddingTop: 40,
+    paddingRight: 20,
   },
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 80,
+    marginBottom: 80,
     position: 'relative',
   },
   iconButton: {
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
   },
   flipButton: {
     position: 'absolute',
-    right: 32,
+    right: 50,
   },
   permissionContainer: {
     flex: 1,
