@@ -1,23 +1,24 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { Pressable, Text } from "@react-native-ama/react-native";
 
 type ButtonProps = {
   label: string;
   onPress: () => void;
   loading?: boolean;
+  disabled?: boolean;
 };
 
-export default function Button({ label, onPress, loading }: ButtonProps) {
+export default function Button({ label, onPress, loading, disabled }: ButtonProps) {
   return (
     <Pressable
       accessibilityLanguage="es"
       onPress={onPress}
-      disabled={loading}
+      disabled={loading || disabled}
       accessibilityRole="button"
       accessibilityLiveRegion="polite"
       accessibilityLabel={label}         
-      accessibilityState={{ busy: loading, disabled: loading }}
-      className="bg-orange rounded-xl p-5 items-center justify-center"
+      accessibilityState={{ busy: loading, disabled: loading || disabled }}
+      className={`rounded-xl p-5 items-center justify-center ${disabled ? ' bg-yellow-950' : 'bg-orange'}`}
     >
       {loading
         ? <ActivityIndicator color="white" />

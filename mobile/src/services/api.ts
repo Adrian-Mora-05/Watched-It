@@ -10,7 +10,7 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+ 
 // Attach token to every request automatically
 api.interceptors.request.use((config) => {
   const token = ""; // replace with your token from storage later

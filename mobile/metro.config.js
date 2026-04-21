@@ -8,7 +8,7 @@ const sharedRoot = path.resolve(monorepoRoot, 'shared');
 
 const config = getDefaultConfig(projectRoot);
 
-config.watchFolders = [monorepoRoot];
+config.watchFolders = [sharedRoot];
 
 config.resolver.extraNodeModules = {
   '@shared': sharedRoot,

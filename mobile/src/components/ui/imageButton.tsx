@@ -1,22 +1,32 @@
-import { Image, View, StyleSheet, ImageSourcePropType } from 'react-native';
+import { Image } from 'expo-image';
+import { View, StyleSheet, ImageSourcePropType } from 'react-native';
 import { Pressable } from "@react-native-ama/react-native";
 
 type Props = {
-  // Use ImageSourcePropType to support both {uri: ''} and require()
   source: ImageSourcePropType; 
   onPress: () => void;
   size?: number;
+  width?: number;
+  height?: number;
   rounded?: 'full' | 'md';
   icon?: React.ReactNode;
   accessibilityLabel: string;
   accessibilityHint?: string;
+  accessibilityState?: { selected?: boolean; disabled?: boolean; checked?: boolean | 'mixed'; busy?: boolean; expanded?: boolean };
+  borderColor?: string;
+  borderWidth?: number;
 };
 
 export default function ImageButton({
   source, onPress, size = 100,
-  rounded = 'full', icon, accessibilityLabel, accessibilityHint
+  width, height,
+  rounded = 'full', icon, accessibilityLabel, accessibilityHint,
+  accessibilityState,
+  borderColor, borderWidth = 3
 }: Props) {
-  const radius = rounded === 'full' ? size / 2 : 12;
+  const w = width ?? size;
+  const h = height ?? size;
+  const radius = rounded === 'full' ? Math.min(w, h) / 2 : 12;
 
   return (
     <Pressable
@@ -24,11 +34,22 @@ export default function ImageButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityRole="button"
+      accessibilityState={accessibilityState}
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
     >
       <Image
-        source={source} // Pass the source directly
-        style={{ width: size, height: size, borderRadius: radius }}
+        source={source}
+        style={{
+          width: w,
+          height: h,
+          borderRadius: radius,
+          borderWidth: borderColor ? borderWidth : 0,
+          borderColor: borderColor ?? 'transparent',
+        }}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        placeholder={{ blurhash: 'L36tt6%M00Rj00of~qxuayj[ofof' }}
+        transition={200}
         accessible={false}
       />
       {icon && (

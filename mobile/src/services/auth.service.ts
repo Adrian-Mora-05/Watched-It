@@ -1,30 +1,19 @@
 import api from "./api";
 import { CreateUser, LoginUser } from "@shared/user.schema";
+import { uploadProfilePicture, addFavorites } from "./user.service";
 
-export const signup = async (userData: CreateUser, photoUri?: string) => {
+export const signup = async (userData: CreateUser, photoUri?: string, favMovies?: number[], favShows?: number[] ) => {
   const response = await api.post("/auth/signup", userData);
   const { session } = response.data;
 
   if (photoUri) {
     await uploadProfilePicture(photoUri, session.access_token);
   }
-};
+  if (favMovies && favShows) {
+    await addFavorites(favMovies, favShows, session.access_token);
+  }
+  return response.data;
 
-export const uploadProfilePicture = async (photoUri: string, token: string) => {
-  const formData = new FormData();
-
-  formData.append('file', {
-    uri: photoUri,
-    name: 'profile-picture.png',
-    type: 'image/png',
-  } as any);
-
-  await api.patch('/user/profile-picture', formData, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
-    },
-  });
 };
 
 export const login = async (userData: LoginUser) => {
