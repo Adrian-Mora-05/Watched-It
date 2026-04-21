@@ -144,7 +144,7 @@ export default function SignUp() {
                     onPress={() => setPhotoUri(null)}
                     accessibilityRole="button"
                     accessibilityLabel="Eliminar foto de perfil"
-                    className="absolute -top-4 left-36 w-14 h-14 rounded-full items-center justify-center"
+                    className="absolute top-5 left-36 w-14 h-14 rounded-full items-center justify-center"
                   >
                     <View className="bg-red rounded-full">
                       <Feather name="x-circle" size={35} color="white" />

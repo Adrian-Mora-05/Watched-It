@@ -23,7 +23,7 @@ export default function SearchFilter({ label, placeholder, onSearch }: Props) {
   };
 
   return (
-    <View className="px-4 py-2">
+    <View className="px-3 py-2">
       <Text
         accessibilityRole="header"
         className="text-white text-normal mb-2"
