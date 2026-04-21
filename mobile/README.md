@@ -9,12 +9,13 @@ The mobile app for Watched It, built with Expo (React Native). This document cov
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
+- [Styling](#styling)
+  - [Tailwind Theme](#tailwind-theme)
+  - [Reusable Components](#reusable-components)
 - [Accessibility](#accessibility)
   - [Component Library](#component-library)
-  - [Testing Philosophy](#testing-philosophy)
   - [Running Tests](#running-tests)
   - [Writing Accessibility Tests](#writing-accessibility-tests)
-  - [Test Checklist](#test-checklist)
 - [Mocks & Test Setup](#mocks--test-setup)
 
 ---
@@ -41,7 +42,7 @@ mobile/
 └── src/                   # Expo Router screens
     ├── app
     |   ├── (auth)/
-    |   └──(tabs)/
+    |   └──(home)/             #Authenticated routes
     ├── components/            # Reusable UI components
     |   └── ui/
     ├── hooks/                 # Custom React hooks
@@ -67,6 +68,76 @@ Then scan the QR code with **Expo Go**, or press:
 
 ---
 
+## Styling
+
+### Tailwind Theme
+
+We use **NativeWind** to apply Tailwind utility classes in React Native. The theme is defined in `mobile/tailwind.config.js` and extended with custom design tokens for the app.
+
+**Always use theme tokens — never raw values.** This keeps the UI consistent and makes future rebrands a one-file change.
+
+#### Colors
+
+| Token | Hex | Typical use |
+|---|---|---|
+| `dark` | `#231709` | Page/screen backgrounds |
+| `chocolate` | `#5D3E14` | Secondary backgrounds, cards |
+| `orange` | `#AA500F` | Primary actions, highlights |
+| `bone` | `#D9D9D9` | Borders, dividers, subtle backgrounds |
+| `white` | `#FFFFFF` | Primary text, icons on dark surfaces |
+| `green` | `#037E11` | Success states |
+| `red` | `#A70000` | Error and destructive states |
+
+Use them in components via NativeWind class names:
+
+```tsx
+<View className="bg-dark" />
+<Text className="text-white">Now Watching</Text>
+<Text className="text-red">Something went wrong</Text>
+<Pressable className="bg-orange" />
+```
+
+#### Font Sizes
+
+| Token | Size | Typical use |
+|---|---|---|
+| `text-petite` | 12px | Captions, helper text |
+| `text-normal` | 14px | Body copy, labels |
+| `text-medium` | 17px | Subheadings, emphasized body |
+| `text-large` | 35px | Screen headings |
+| `text-huge` | 55px | Hero/display text |
+
+Use them in components via NativeWind class names:
+```tsx
+<Text className="text-huge text-white">Watched It</Text>        // hero
+<Text className="text-large text-white">My List</Text>          // screen heading
+<Text className="text-normal text-bone">Added 3 days ago</Text> // body
+<Text className="text-petite text-bone">Tap to expand</Text>    // caption
+```
+---
+
+### Reusable Components
+ 
+Shared UI components live in `src/components/ui/`. Before building something inline in a screen, check here first.
+ 
+Any element that appears in more than one screen, or that carries accessibility requirements beyond a plain `<Text>` or `<View>`, should come from `ui/`. Components already in the library:
+ 
+| Component | Notes |
+|---|---|
+| `<Button />` | Full-width action button. Handles `accessibilityRole`, busy and disabled states |
+| `<ImageButton />` | Pressable image for avatars and posters. Supports border, rounded variants, and an optional overlay icon |
+| `<ReturnButton />` | Back-navigation button with a left arrow. Respects safe area insets |
+ 
+Import components directly from their file:
+ 
+```tsx
+import Button from '@/components/ui/Button';
+import ImageButton from '@/components/ui/ImageButton';
+import ReturnButton from '@/components/ui/ReturnButton';
+```
+ 
+---
+
 ## Accessibility
 
 Accessibility is treated as a first-class concern in this app, not an afterthought. Every screen and reusable component is expected to be usable with a screen reader and keyboard navigation.
@@ -81,21 +152,6 @@ We use **[React Native AMA](https://nearform.com/open-source/react-native-ama/)*
 - Contrast and visibility checks
 
 AMA components are used throughout the app but are **mocked in tests** — see [Mocks & Test Setup](#mocks--test-setup).
-
----
-
-### Testing Philosophy
-
-We test accessibility using **React Native Testing Library (RNTL)**. The core principle is:
-
-> If you can only query elements by role and label, the component is accessible.
-
-This means:
-- We **never** use `getByTestId` as a primary query
-- We **always** prefer `getByRole` and `getByLabelText`
-- If a query fails, it means a real accessibility attribute is missing from the component
-
-We do **not** use AMA's logger or provider in tests. AMA runs its checks at runtime on device. Our tests focus on verifying that the correct accessibility props exist in the rendered output.
 
 ---
 
@@ -266,33 +322,6 @@ describe('MyScreen - Accessibility', () => {
 });
 ```
 
-#### Query priority
-
-Always query elements in this order — use the first one that works:
-
-| Priority | Query | Use for |
-|---|---|---|
-| 1 | `getByRole` | Buttons, links, headers |
-| 2 | `getByLabelText` | Form inputs |
-| 3 | `getByText` | Visible static text |
-| 4 | `getByTestId` | Last resort only |
-
----
-
-### Test Checklist
-
-Use this checklist when writing tests for any new screen or component:
-
-- [ ] All form fields are queryable via `getByLabelText`
-- [ ] All buttons are queryable via `getByRole('button', { name: '...' })`
-- [ ] Email inputs have `keyboardType="email-address"`
-- [ ] Password inputs have `secureTextEntry={true}`
-- [ ] Error messages have `accessibilityLiveRegion="polite"`
-- [ ] Loading/busy states set `accessibilityState={{ busy: true }}` on the button
-- [ ] Disabled buttons include an `accessibilityHint` explaining why
-- [ ] Decorative images have `accessibilityElementsHidden={true}`
-
----
 
 ## Mocks & Test Setup
 
@@ -306,8 +335,3 @@ Stubs out the Worklets native module required by Reanimated v4.
 
 ### `__mocks__/@react-native-ama/`
 AMA components are swapped for their plain React Native equivalents (`Pressable`, `Text`, `TextInput`, `View`). This means AMA's runtime accessibility checks do **not** run in tests — which is intentional. We verify accessibility props directly instead.
-
-### `jest.config.js`
-Points Jest to the correct mocks via `moduleNameMapper` and uses `jest-expo` as the preset for Expo compatibility.
-
-> If you add a new native package and tests start failing with a native module error, you will need to add a new mock file for it under `__mocks__/` and register it in `jest.config.js`.
