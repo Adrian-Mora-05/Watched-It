@@ -12,6 +12,7 @@ type Props = {
   icon?: React.ReactNode;
   accessibilityLabel: string;
   accessibilityHint?: string;
+  accessibilityState?: { selected?: boolean; disabled?: boolean; checked?: boolean | 'mixed'; busy?: boolean; expanded?: boolean };
   borderColor?: string;
   borderWidth?: number;
 };
@@ -20,6 +21,7 @@ export default function ImageButton({
   source, onPress, size = 100,
   width, height,
   rounded = 'full', icon, accessibilityLabel, accessibilityHint,
+  accessibilityState,
   borderColor, borderWidth = 3
 }: Props) {
   const w = width ?? size;
@@ -32,6 +34,7 @@ export default function ImageButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityRole="button"
+      accessibilityState={accessibilityState}
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
     >
       <Image

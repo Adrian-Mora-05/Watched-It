@@ -12,7 +12,7 @@ export const signup = async (userData: CreateUser, photoUri?: string, favMovies?
   if (favMovies && favShows) {
     await addFavorites(favMovies, favShows, session.access_token);
   }
-  console.log("favs en auth.service:", favMovies, favShows);
+  return response.data;
 
 };
 

@@ -235,7 +235,7 @@ describe('SignUp Screen - Accessibility', () => {
       await waitFor(() => {
         expect(router.push).toHaveBeenCalledWith(
           expect.objectContaining({
-            pathname: '/chooseFavs',
+            pathname: '/chooseMovieFavs',
             params: expect.objectContaining({
               email: 'test@email.com',
               name: 'usuario123',
