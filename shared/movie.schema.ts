@@ -8,6 +8,7 @@ export const readMovieParam = z.object({
     year: z.coerce.number().optional(),
     genre: z.string().optional(),
     ageRestriction: z.coerce.boolean().optional(),
+    length: z.coerce.number().optional(),
 })
 
 //schema for reading each movie with general info

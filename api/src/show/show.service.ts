@@ -1,22 +1,21 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
-import { readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
+import { readShowParam, ReadShowParam } from "../../../shared/show.schema";
 
 @Injectable()
-export class MovieService {
-    async getAllMovies(param: ReadMovieParam) {
-        const parsedParam = readMovieParam.parse(param);
+export class ShowService {
+    async getAllShows(param: ReadShowParam) {
+        const parsedParam = readShowParam.parse(param);
 
         let query = supabase
-            .from('pelicula')
+            .from('serie')
             .select('id:id, title:titulo, image_link:enlace_imagen') 
 
         if (parsedParam.skip !== undefined && parsedParam.limit !== undefined) query = query.range(parsedParam.skip, parsedParam.skip + parsedParam.limit - 1)    
         if (parsedParam.title)                          query = query.ilike('titulo', `%${parsedParam.title}%`)
-        if (parsedParam.year !== undefined)             query = query.eq('anio', parsedParam.year)
+        if (parsedParam.year !== undefined)             query = query.eq('anio_inicio', parsedParam.year)
         if (parsedParam.genre !== undefined)            query = query.eq('genero', parsedParam.genre)
         if (parsedParam.ageRestriction !== undefined)   query = query.is('restriccion_edad', parsedParam.ageRestriction)
-        if (parsedParam.length !== undefined)           query = query.eq('duracion', parsedParam.length)
 
         const { data: pelicula, error } = await query
         if (error) throw new BadRequestException(error.message)
