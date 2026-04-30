@@ -131,7 +131,8 @@ Base URL: `http://localhost:3000/api`
 |---|---|---|---|
 | `POST` | `/auth/signin` | No | Sign in with email and password |
 | `POST` | `/auth/signup` | No | Register a new account |
-
+| `POST` | `/auth/forgot-password` | No | Send an email to the user to change the password |
+| `POST` | `/auth/reset-password` | Yes | Change the password |
 
 ### User
 
@@ -139,7 +140,6 @@ Base URL: `http://localhost:3000/api`
 |---|---|---|---|
 | `PATCH` | `/user/profile-picture` | Yes | Update the authenticated user's profile picture |
 | `POST` | `/user/favorites` | Yes | Add a movie or show to favorites |
-
 
 ### Movie
 
