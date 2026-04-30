@@ -158,7 +158,7 @@ export default function ChooseFavsScreen() {
           <Button
             label={
               selected.length < 3
-                ? `Continuar, selecciona ${3 - selected.length} película${3 - selected.length > 1 ? 's' : ''} más`
+                ? `Selecciona ${3 - selected.length} película${3 - selected.length > 1 ? 's' : ''} más`
                 : "Continuar"
             }
             loading={loading}

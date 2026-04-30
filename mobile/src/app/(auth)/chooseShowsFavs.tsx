@@ -164,7 +164,7 @@ export default function ChooseShowsFavsScreen() {
           <Button
             label={
               selected.length < 3
-                ? `Registrarse, selecciona ${3 - selected.length} serie${3 - selected.length > 1 ? 's' : ''} más`
+                ? `Selecciona ${3 - selected.length} serie${3 - selected.length > 1 ? 's' : ''} más`
                 : "Registrarse"
             }
             loading={loading}

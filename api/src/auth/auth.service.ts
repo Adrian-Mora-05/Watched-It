@@ -94,4 +94,39 @@ export class AuthService {
     if (error) throw new BadRequestException(error.message);
     return { message: 'Contraseña actualizada' };
   }
+
+  // Add to your auth.service.ts
+
+  async handleResetRedirect(token: string): Promise<{ accessToken: string; refreshToken: string }> {
+    const { hashedToken, email } = this.decodeResetToken(token);
+
+    const { data: session, error } = await supabaseAdmin.auth.verifyOtp({
+      email,
+      token: hashedToken,
+      type: 'recovery',
+    });
+
+    if (error || !session.session) {
+      throw new BadRequestException('El enlace de restablecimiento es inválido o ha expirado');
+    }
+
+    return {
+      accessToken: session.session.access_token,
+      refreshToken: session.session.refresh_token,
+    };
+  }
+
+  // Wherever you currently build the token in forgotPassword, extract this:
+  buildResetToken(hashedToken: string, email: string): string {
+    // adjust to however you're currently combining these two values
+    return Buffer.from(JSON.stringify({ hashedToken, email })).toString('base64url');
+  }
+
+  decodeResetToken(token: string): { hashedToken: string; email: string } {
+    try {
+      return JSON.parse(Buffer.from(token, 'base64url').toString('utf-8'));
+    } catch {
+      throw new BadRequestException('Token inválido');
+    }
+  }
 }

@@ -101,7 +101,7 @@ export default function SignIn() {
                 accessibilityRole="button"
                 accessibilityLabel="¿Olvidaste tu contraseña?"
                 accessibilityLanguage="es"
-                onPress={() => router.push("/restorePassword") }
+                onPress={() => router.push("/forgot-password") }
               >
                 <Text className="text-bone text-petite p-11 pt-0 pr-2">
                   ¿Olvidaste tu contraseña?
