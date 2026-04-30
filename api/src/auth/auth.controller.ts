@@ -4,7 +4,6 @@ import { createZodDto } from 'nestjs-zod';
 import { createUser, loginUser } from '../../../shared/user.schema';
 import { ForgotPasswordSchema, ResetPasswordSchema } from '../../../shared/password.schema';
 import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
-import type { Response } from 'express';
 
 class CreateUserDto extends createZodDto(createUser) {}
 class LoginUserDto extends createZodDto(loginUser) {}
@@ -31,27 +30,8 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  @UseGuards(AuthGuard('jwt'))
-  async resetPassword(@Req() req, @Body() dto: ResetPasswordDto) {
-    const userToken = req.headers.authorization.replace('Bearer ', '');
-    return this.authService.resetPassword(userToken, dto.refreshToken, dto.newPassword);
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
-  @Get('reset-password')
-  async resetPasswordRedirect(
-    @Query('token') token: string,
-    @Res() res: Response,
-  ) {
-    const appScheme = process.env.APP_SCHEME ?? 'watchedit';
-
-    try {
-      const { accessToken, refreshToken } = await this.authService.handleResetRedirect(token);
-
-      return res.redirect(
-        `${appScheme}://reset-password?access_token=${accessToken}&refresh_token=${refreshToken}`,
-      );
-    } catch {
-      return res.redirect(`${appScheme}://reset-password?error=invalid_token`);
-    }
-  }
 }

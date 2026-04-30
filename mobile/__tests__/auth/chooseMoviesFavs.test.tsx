@@ -96,7 +96,7 @@ describe('ChooseMovieFavsScreen - Accessibility', () => {
     it('renders continue button as disabled initially', async () => {
       render(<ChooseFavsScreen />);
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: /Continuar/ });
+        const button = screen.getByRole('button', { name: /Selecciona 3 películas más/ });
         expect(button.props.accessibilityState?.disabled).toBe(true);
       });
     });
@@ -181,7 +181,7 @@ describe('ChooseMovieFavsScreen - Accessibility', () => {
       fireEvent.press(screen.getByLabelText('Película 1, no seleccionada'));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Continuar, selecciona 2 películas más' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Selecciona 2 películas más' })).toBeTruthy();
       });
     });
 

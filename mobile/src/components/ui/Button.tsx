@@ -6,9 +6,10 @@ type ButtonProps = {
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
+  bgColor?: string;
 };
 
-export default function Button({ label, onPress, loading, disabled }: ButtonProps) {
+export default function Button({ label, onPress, loading, disabled, bgColor = '#AA500F' }: ButtonProps) {
   return (
     <Pressable
       accessibilityLanguage="es"
@@ -16,9 +17,10 @@ export default function Button({ label, onPress, loading, disabled }: ButtonProp
       disabled={loading || disabled}
       accessibilityRole="button"
       accessibilityLiveRegion="polite"
-      accessibilityLabel={label}         
+      accessibilityLabel={label}
       accessibilityState={{ busy: loading, disabled: loading || disabled }}
-      className={`rounded-xl p-5 items-center justify-center ${disabled ? ' bg-yellow-950' : 'bg-orange'}`}
+      className="rounded-xl p-5 items-center justify-center"
+      style={{ backgroundColor: disabled ? '#431407' : bgColor }}
     >
       {loading
         ? <ActivityIndicator color="white" />

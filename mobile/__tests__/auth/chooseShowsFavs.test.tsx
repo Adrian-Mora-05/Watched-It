@@ -105,7 +105,7 @@ describe('ChooseShowsFavsScreen - Accessibility', () => {
     it('renders register button as disabled initially', async () => {
       render(<ChooseShowsFavsScreen />);
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: /Registrarse/ });
+        const button = screen.getByRole('button', { name: /Selecciona 3 series más/ });
         expect(button.props.accessibilityState?.disabled).toBe(true);
       });
     });
@@ -190,7 +190,7 @@ describe('ChooseShowsFavsScreen - Accessibility', () => {
       fireEvent.press(screen.getByLabelText('Serie 1, no seleccionada'));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Registrarse, selecciona 2 series más' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Selecciona 2 series más' })).toBeTruthy();
       });
     });
 

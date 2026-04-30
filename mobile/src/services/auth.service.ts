@@ -1,6 +1,6 @@
 import api from "./api";
 import { CreateUser, LoginUser } from "@shared/user.schema";
-import { ForgotPassword } from "@shared/password.schema";
+import { ForgotPassword,ResetPassword } from "@shared/password.schema";
 import { uploadProfilePicture, addFavorites } from "./user.service";
 
 export const signup = async (userData: CreateUser, photoUri?: string, favMovies?: number[], favShows?: number[] ) => {
@@ -27,19 +27,11 @@ export const sendEmail = async (username:ForgotPassword ) => {
   return response.data;
 };
 
-export async function resetPassword({
-  accessToken,
-  refreshToken,
-  newPassword,
-}: {
-  accessToken: string;
-  refreshToken: string;
-  newPassword: string;
-}) {
-  const { data } = await api.post(
-    '/auth/reset-password',
-    { refreshToken, newPassword },
-    { headers: { Authorization: `Bearer ${accessToken}` } },
-  );
-  return data;
-}
+export const resetPassword = async ({ token, newPassword, confirmPassword }: ResetPassword) => {
+  const response = await api.post('/auth/reset-password', {
+    token,
+    newPassword,
+    confirmPassword,
+  });
+  return response.data;
+};

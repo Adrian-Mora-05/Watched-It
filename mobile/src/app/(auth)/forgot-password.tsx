@@ -21,13 +21,11 @@ export default function ForgotPasswordScreen() {
 
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
-      const newErrors = {
-        username: fieldErrors.username?.[0],
-      };
+      const newErrors = { username: fieldErrors.username?.[0] };
       setErrors(newErrors);
       const errorMessages = Object.values(newErrors).filter(Boolean).join(". ");
       AccessibilityInfo.announceForAccessibility(
-        `Errores en el formulario: ${errorMessages}`
+        `Formulario con errores. ${errorMessages}. Por favor corrige los campos indicados.`
       );
       return false;
     }
@@ -41,16 +39,18 @@ export default function ForgotPasswordScreen() {
     if (!validateForm()) return;
 
     setScreenState("loading");
+    AccessibilityInfo.announceForAccessibility(
+      "Enviando correo de restablecimiento, por favor espera."
+    );
 
     sendEmail(ForgotPasswordSchema.parse({ username }))
       .then(() => {
         setScreenState("success");
         AccessibilityInfo.announceForAccessibility(
-          "Correo de restablecimiento enviado exitosamente. Revisa tu bandeja de entrada."
+          "Correo de restablecimiento enviado. Revisa tu bandeja de entrada y también tu carpeta de spam."
         );
       })
       .catch((error) => {
-        console.error("Error sending reset email:", error);
         const message = "No pudimos enviar el correo. Intenta de nuevo más tarde.";
         setApiError(message);
         setScreenState("error");
@@ -65,23 +65,24 @@ export default function ForgotPasswordScreen() {
           label="Volver a inicio de sesión"
           onPress={() => router.back()}
         />
-        <View className="content-start items-center bg-dark justify-around mt-10 m-5 gap-10">
+        <View
+          className="bg-dark flex-1 items-center justify-center mx-5 gap-10 pb-40"
+          accessible={true}
+          accessibilityLabel={`Revisa tu correo. Si existe una cuenta asociada al usuario ${username}, recibirás un correo con instrucciones para restablecer tu contraseña. Recuerda revisar también tu carpeta de spam.`}
+        >
           <Text
             className="text-white text-large font-bold"
             accessibilityRole="header"
           >
             Revisa tu correo
           </Text>
-          <Text className="text-white text-medium">
+          <Text className="text-white text-medium ">
             Si existe una cuenta asociada al usuario{" "}
             <Text className="font-bold">{username}</Text>, recibirás un correo
             con instrucciones para restablecer tu contraseña. Recuerda revisar
             también tu carpeta de spam o correo no deseado.
           </Text>
-          <Button
-            label="Volver a inicio de sesión"
-            onPress={() => router.back()}
-          />
+
         </View>
       </View>
     );
@@ -106,15 +107,19 @@ export default function ForgotPasswordScreen() {
             >
               Cambia tu contraseña
             </Text>
-            <Text className="text-white text-medium text-left mx-5 mt-32 pt-14 mb-8">
-              Ingresa tu nombre de usuario
+            <Text
+              className="text-white text-medium text-left mx-5 mt-32 pt-14 mb-8"
+              accessibilityRole="text"
+            >
+              Ingresa tu nombre de usuario para recibir un correo con instrucciones para restablecer tu contraseña.
             </Text>
 
             {screenState === "error" && apiError ? (
               <Text
-                className="text-red-400 text-sm text-center"
+                className="text-red-400 text-petite text-center"
                 accessibilityRole="alert"
                 accessibilityLiveRegion="assertive"
+                accessibilityLabel={`Error: ${apiError}`}
               >
                 {apiError}
               </Text>
@@ -138,6 +143,10 @@ export default function ForgotPasswordScreen() {
                 autoCapitalize="none"
                 hasValidation={false}
                 error={errors.username}
+                returnKeyType="send"
+                onSubmitEditing={handleSubmit}
+                accessibilityLabel="Nombre de usuario"
+                accessibilityHint="Ingresa el nombre de usuario asociado a tu cuenta"
               />
               <View className="mx-16">
                 <Button
@@ -148,6 +157,7 @@ export default function ForgotPasswordScreen() {
                   }
                   onPress={handleSubmit}
                   disabled={screenState === "loading"}
+                  loading={screenState === "loading"}
                 />
               </View>
             </View>

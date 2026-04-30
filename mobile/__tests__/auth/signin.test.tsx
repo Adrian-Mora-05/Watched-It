@@ -232,7 +232,7 @@ describe('navigation', () => {
     const { router } = require('expo-router');
     const { getByRole } = renderSignIn();
     fireEvent.press(getByRole('button', { name: '¿Olvidaste tu contraseña?' }));
-    expect(router.push).toHaveBeenCalledWith('/restorePassword');
+    expect(router.push).toHaveBeenCalledWith('/forgot-password');
   });
 });
-
+  

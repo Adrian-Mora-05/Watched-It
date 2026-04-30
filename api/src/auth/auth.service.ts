@@ -1,12 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateUser, LoginUser } from '../../../shared/user.schema';
 import { ForgotPassword, ResetPassword } from '../../../shared/password.schema';
-import {createUserClient, supabase, supabaseAdmin} from '../config/db'
+import {supabase, supabaseAdmin} from '../config/db'
 import { sgMail, resetUrlBase } from '../config/mail';
 
 @Injectable()
 export class AuthService {
 
+  //*** Sign up a new user ***//
   async signUp(user: CreateUser) {
     const { data, error } = await supabase.auth.signUp({
       email: user.email,
@@ -25,6 +26,7 @@ export class AuthService {
     }
   }
 
+  //*** Log in a user ***//
   async login(user: LoginUser) { 
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -41,6 +43,7 @@ export class AuthService {
     }
   }
 
+  //*** Send reset password email ***//
   async forgotPassword(body: ForgotPassword) {
     
     const email = await this.getEmail(body.username)
@@ -52,7 +55,7 @@ export class AuthService {
 
     if (error) throw new BadRequestException(error.message);
 
-    const token = data.properties.hashed_token; //build my own token with the hashed token and the user's email
+    const token = data.properties.hashed_token; 
 
     await sgMail.send({
         to: email,
@@ -66,67 +69,36 @@ export class AuthService {
     return { message: 'Email sent' };
   }
 
+  //*** Get user email by username ***//
   async getEmail(username: string) {
+    let { data: usuario, error } = await supabase
+      .from('usuario')
+      .select('correo, nombre')
+      .ilike('nombre', username);
 
-  let { data: usuario, error } = await supabase
-    .from('usuario')
-    .select('correo, nombre')
-    .ilike('nombre', username);
-
-    if (error) throw new BadRequestException(error.message);
-
-    return usuario![0].correo as string
+      if (error) throw new BadRequestException(error.message);
+      return usuario![0].correo as string
   }
 
-  async resetPassword(userToken: string, refreshToken: string, newPassword: string) {
-    const supabaseUser = createUserClient(userToken);
+  //*** Reset user password ***//
+  async resetPassword(token: ResetPassword['token'], newPassword: ResetPassword['newPassword']) {
 
-    const { error: sessionError } = await supabaseUser.auth.setSession({
-      access_token: userToken,
-      refresh_token: refreshToken,
+    const { data, error: verifyError } = await supabaseAdmin.auth.verifyOtp({
+      token_hash: token,
+      type: 'recovery',
     });
-    if (sessionError) throw new BadRequestException(sessionError.message);
+    if (verifyError) throw new BadRequestException(verifyError.message);
+    if (!data || !data.user) throw new BadRequestException('Invalid token');
 
-    const { error } = await supabaseUser.auth.updateUser({
-      password: newPassword,
-    });
-
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(
+      data.user.id,
+      { password: newPassword },
+      
+    );
     if (error) throw new BadRequestException(error.message);
+
     return { message: 'Contraseña actualizada' };
   }
 
-  // Add to your auth.service.ts
 
-  async handleResetRedirect(token: string): Promise<{ accessToken: string; refreshToken: string }> {
-    const { hashedToken, email } = this.decodeResetToken(token);
-
-    const { data: session, error } = await supabaseAdmin.auth.verifyOtp({
-      email,
-      token: hashedToken,
-      type: 'recovery',
-    });
-
-    if (error || !session.session) {
-      throw new BadRequestException('El enlace de restablecimiento es inválido o ha expirado');
-    }
-
-    return {
-      accessToken: session.session.access_token,
-      refreshToken: session.session.refresh_token,
-    };
-  }
-
-  // Wherever you currently build the token in forgotPassword, extract this:
-  buildResetToken(hashedToken: string, email: string): string {
-    // adjust to however you're currently combining these two values
-    return Buffer.from(JSON.stringify({ hashedToken, email })).toString('base64url');
-  }
-
-  decodeResetToken(token: string): { hashedToken: string; email: string } {
-    try {
-      return JSON.parse(Buffer.from(token, 'base64url').toString('utf-8'));
-    } catch {
-      throw new BadRequestException('Token inválido');
-    }
-  }
 }
