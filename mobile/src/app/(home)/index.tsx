@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from "@react-native-ama/react-native";
 import { useSession } from '@/hooks/ctx';
 import Button from '@/components/ui/Button';
 import { jwtDecode } from 'jwt-decode';
