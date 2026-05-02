@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { Multer } from 'multer';
 import { supabase } from '../config/db';
+import { LogCatalogContent } from '../../../shared/catalog.schema';
 
 @Injectable()
 export class UserService {
@@ -49,6 +50,23 @@ export class UserService {
 
     if (error) {
       throw new BadRequestException(`Adding favorites failed: ${error.message}`);
+    } else return data;
+
+  }
+
+  async logContent(userId: string, logCatalogContent: LogCatalogContent) {
+
+    let { data, error } = await supabase
+      .rpc('log_content', {
+        content: logCatalogContent.content,
+        id_content: logCatalogContent.id_content,
+        id_user: userId,
+        rating: logCatalogContent.rating,
+        type_content: logCatalogContent.type_content
+      })
+
+    if (error) {
+      throw new BadRequestException(`Logging content failed: ${error.message}`);
     } else return data;
 
   }

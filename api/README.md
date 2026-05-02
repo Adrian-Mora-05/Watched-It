@@ -140,6 +140,7 @@ Base URL: `http://localhost:3000/api`
 |---|---|---|---|
 | `PATCH` | `/user/profile-picture` | Yes | Update the authenticated user's profile picture |
 | `POST` | `/user/favorites` | Yes | Add a movie or show to favorites |
+| `POST` | `/user/rating` | Yes | Add a rating and a review (optional) of a movie or show |
 
 ### Movie
 
@@ -153,3 +154,9 @@ Base URL: `http://localhost:3000/api`
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | `GET` | `/show/` | No | Get a list of shows |
+
+### Catalog
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/catalog/` | No | Get a list of shows and movies mixed |
