@@ -1,5 +1,5 @@
-import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, ActivityIndicator, FlatList } from 'react-native';
-import { Text } from "@react-native-ama/react-native";
+import { View, Keyboard, TouchableWithoutFeedback, Text,KeyboardAvoidingView, Platform, ActivityIndicator, FlatList } from 'react-native';
+
 import Input from '@/components/ui/Input';
 import { useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,13 +48,15 @@ export default function index() {
   );
 
   const handleSelect = (item: ReadEachCatalogContent) => {
-    router.push({ pathname: '/logContent', 
-                  params: { 
-                      id: item.id, 
-                      title: item.title, 
-                      type: item.type_content, 
-                      link: encodeURIComponent(item.image_link) 
-                } });
+    router.push({ 
+      pathname: '/logContent', 
+      params: { 
+        id_content: String(item.id), 
+        title: item.title, 
+        type: item.type_catalog,
+        link: encodeURIComponent(item.image_link) 
+      } 
+    });
   };
 
   return (

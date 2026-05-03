@@ -22,6 +22,7 @@ module.exports = {
         'petite': '12px',
         'normal': '14px',
         'medium': '17px',
+        'intermediate': '25px',
         'large': '35px',
         'huge':'55px'
       },

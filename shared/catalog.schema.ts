@@ -12,7 +12,7 @@ export const readEachCatalogContent = z.object({
         id: z.number(),
         title: z.string(),
         image_link: z.string(),
-        type_content: z.string(),
+        type_catalog: z.string(),
 
 })
 
@@ -20,7 +20,7 @@ export const logCatalogContent = z.object({
     content: z.string().max(500, 'El contenido no puede exceder los 500 caracteres'),
     id_content: z.number(),
     rating: z.number(),
-    type_content: z.enum(['Movie', 'Show']),
+    type_content: z.string(),
 })
 
 export type ReadCatalogParam = z.infer<typeof readCatalogParam> //generates a type from the schema

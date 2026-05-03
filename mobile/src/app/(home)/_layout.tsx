@@ -8,9 +8,8 @@ export default function AppLayout() {
   return (
 
       <Tabs screenOptions={{tabBarActiveTintColor:"white",tabBarInactiveTintColor:"#231709",tabBarStyle:{backgroundColor:"#5D3E14"}}}>
-                <Tabs.Screen name="(logger)" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Registrar", title: "Registrar contenido", tabBarIcon: ({color,size} ) => <AntDesign name="plus-circle" size={size} color={color} /> }} />
         <Tabs.Screen name="index" options={{ headerShown: false, tabBarShowLabel: false, title: "Menú principal", tabBarIcon: ({color,size}, ) => <Entypo name="home" size={size} color={color}/> }} />
-
+        <Tabs.Screen name="(logger)" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Registrar", title: "Registrar contenido", tabBarIcon: ({color,size} ) => <AntDesign name="plus-circle" size={size} color={color} /> }} />
       </Tabs>
 
   );
