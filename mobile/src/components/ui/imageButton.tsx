@@ -2,8 +2,8 @@ import { Image } from 'expo-image';
 import { View, StyleSheet, ImageSourcePropType } from 'react-native';
 import { Pressable } from "@react-native-ama/react-native";
 
-type Props = {
-  source: ImageSourcePropType; 
+type __Props__ = {
+  source: ImageSourcePropType;
   onPress: () => void;
   size?: number;
   width?: number;
@@ -12,6 +12,7 @@ type Props = {
   icon?: React.ReactNode;
   accessibilityLabel: string;
   accessibilityHint?: string;
+  accessibilityLanguage?: string;
   accessibilityState?: { selected?: boolean; disabled?: boolean; checked?: boolean | 'mixed'; busy?: boolean; expanded?: boolean };
   borderColor?: string;
   borderWidth?: number;
@@ -21,19 +22,20 @@ export default function ImageButton({
   source, onPress, size = 100,
   width, height,
   rounded = 'full', icon, accessibilityLabel, accessibilityHint,
+  accessibilityLanguage = 'es',
   accessibilityState,
   borderColor, borderWidth = 3
-}: Props) {
+}: __Props__) {
   const w = width ?? size;
   const h = height ?? size;
   const radius = rounded === 'full' ? Math.min(w, h) / 2 : 12;
-
   return (
     <Pressable
       onPress={onPress}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityRole="button"
+      accessibilityLanguage={accessibilityLanguage}
       accessibilityState={accessibilityState}
       style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
     >
