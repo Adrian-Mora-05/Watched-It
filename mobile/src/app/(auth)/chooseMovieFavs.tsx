@@ -66,7 +66,7 @@ export default function ChooseFavsScreen() {
         visible={!!toastMessage}
         onDismiss={() => setToastMessage(undefined)}
       />
-
+      
       <ReturnButton label="Volver" onPress={() => router.back()} />
 
       {/* Título */}
