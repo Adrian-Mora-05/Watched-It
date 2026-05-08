@@ -6,9 +6,11 @@ import { UserModule } from 'src/user/user.module';
 import { MovieModule } from 'src/movie/movie.module';
 import { ShowModule } from 'src/show/show.module';
 import { CatalogModule } from 'src/catalog/catalog.module';
+import { FriendModule } from 'src/friend/friend.module';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
-  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule],
+  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule],
   controllers: [AppController],
   providers: [AppService],
 })

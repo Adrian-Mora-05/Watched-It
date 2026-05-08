@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script> 
+<script>
+  const token = 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MjE4Mzc3LCJpYXQiOjE3NzgyMTQ3NzcsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyMTQ3Nzd9XSwic2Vzc2lvbl9pZCI6IjQ1MWMyODhjLTI4YjQtNDVhNi05NzVlLTNjNzkyZWEwOTRjZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.H2GSEsiYox_L-LPbl3be-LA_SGO7TsFn6nqr5Rk12tDKSjBBKFy55133MSLcuq0vzmw6tt8Sm6jJfcKTXFuBNg';
+  const socket = io('http://localhost:3000', {
+    transports: ['websocket'],
+    auth: { token }
+  });
+
+  let joined = false;
+
+  socket.on('connect', () => {
+    console.log('connected:', socket.id);
+    if (!joined) {
+      joined = true;
+      socket.emit('join_chat', 11);
+    }
+  });
+
+  socket.on('new_message', (msg) => {
+    console.log('new message:', msg);
+  });
+</script>
+</body>
+</html>
