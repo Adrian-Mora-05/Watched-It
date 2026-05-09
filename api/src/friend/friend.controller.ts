@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Patch, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -16,21 +16,18 @@ export class FriendController {
   @Get('/request/')
   async getAllFriendsRequests(@Req() req) {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    const { userId } = req.body;
-    return this.friendService.getAllFriendsRequests(token, userId);
+    return this.friendService.getAllFriendsRequests(token);
   }
 
-  @Patch('/request/')
-  async acceptFriendRequest(@Req() req) {
+  @Patch('/request/:requestId')
+  async acceptFriendRequest(@Req() req, @Param('requestId') requestId: number) {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    const { requestId } = req.body;
     return this.friendService.acceptFriendRequest(token, requestId);
   }
 
-  @Delete('/request/')
-  async denyFriendRequest(@Req() req) {
+  @Delete('/request/:requestId')
+  async denyFriendRequest(@Req() req, @Param('requestId') requestId: number) {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    const { requestId } = req.body;
     return this.friendService.denyFriendRequest(token, requestId);
   }
 }

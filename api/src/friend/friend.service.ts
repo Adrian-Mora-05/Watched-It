@@ -36,9 +36,10 @@ export class FriendService {
             }));
     }
 
-    async getAllFriendsRequests(token: string, userId: string) {
+    async getAllFriendsRequests(token: string) {
         const supabase = createUserClient(token);
-
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user?.id as string
         let { data, error } = await supabase
         .from('friends_view')
         .select("id, sender_name,sender_profile_pic")
