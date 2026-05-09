@@ -2,7 +2,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useSession } from './ctx';
 
-SplashScreen.preventAutoHideAsync();
+try{
+  SplashScreen.preventAutoHideAsync();
+}catch(e){
+  console.error('necio splash');
+}
 
 export function SplashScreenController() {
   const { isLoading } = useSession();

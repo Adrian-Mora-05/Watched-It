@@ -12,6 +12,7 @@ import ImageButton from "@/components/ui/imageButton";
 import { getShows, baseUrl } from "@/services/show.service";
 import { ReadEachShow } from "@shared/show.schema";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useLayout } from "@/hooks/useLayout";
 
 export default function ChooseShowsFavsScreen() {
   const { favs, email, password, name, photoUri } = useLocalSearchParams<{
@@ -21,6 +22,7 @@ export default function ChooseShowsFavsScreen() {
     photoUri?: string;
     favs?: string;
   }>();
+  const { movieCardWidth, movieCardHeight } = useLayout();
   const favsMovies = favs ? JSON.parse(favs) : [];
   const { signIn } = useSession();
   const [loading, setLoading] = useState(false);
@@ -129,8 +131,8 @@ export default function ChooseShowsFavsScreen() {
             return (
               <View className="flex-1 p-2 items-center">
                 <ImageButton
-                  width={125}
-                  height={185}
+                  width={movieCardWidth}
+                  height={movieCardHeight}
                   onPress={() => toggleShow(item.id)}
                   rounded="md"
                   source={{ uri: baseUrl + item.image_link }}

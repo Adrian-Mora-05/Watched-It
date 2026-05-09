@@ -1,4 +1,4 @@
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, useWindowDimensions } from "react-native";
 import { Pressable, Text } from "@react-native-ama/react-native";
 
 type ButtonProps = {
@@ -7,9 +7,14 @@ type ButtonProps = {
   loading?: boolean;
   disabled?: boolean;
   bgColor?: string;
+  textColor?: string;
+  width?: number;
+  height?: number;
 };
 
-export default function Button({ label, onPress, loading, disabled, bgColor = '#AA500F' }: ButtonProps) {
+export default function Button({ label, onPress, loading, disabled, bgColor = '#AA500F', textColor = 'white', width, height }: ButtonProps) {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
   return (
     <Pressable
       accessibilityLanguage="es"
@@ -19,12 +24,19 @@ export default function Button({ label, onPress, loading, disabled, bgColor = '#
       accessibilityLiveRegion="polite"
       accessibilityLabel={label}
       accessibilityState={{ busy: loading, disabled: loading || disabled }}
-      className="rounded-xl p-5 items-center justify-center"
-      style={{ backgroundColor: disabled ? '#431407' : bgColor }}
+      className="rounded-xl items-center justify-center"
+      style={{
+        backgroundColor: disabled ? '#431407' : bgColor,
+        width,
+        height,
+        // only apply padding if no fixed width/height is given
+        paddingHorizontal: width ? undefined : screenWidth * 0.04,
+        paddingVertical: height ? undefined : screenHeight * 0.020,
+      }}
     >
       {loading
         ? <ActivityIndicator color="white" />
-        : <Text accessibilityLanguage="es" className="text-white font-semibold text-normal">
+        : <Text accessibilityLanguage="es" className="font-semibold text-normal" style={{ color: textColor }}>
             {label}
           </Text>
       }

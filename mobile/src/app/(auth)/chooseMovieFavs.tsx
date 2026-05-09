@@ -10,6 +10,7 @@ import { getMovies, baseUrl } from "@/services/movie.service";
 import { ReadEachMovie } from "@shared/movie.schema";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import SearchFilter from "@/components/ui/SearchFilter";
+import { useLayout } from "@/hooks/useLayout";
 
 export default function ChooseFavsScreen() {
   const { email, password, name, photoUri } = useLocalSearchParams<{
@@ -26,6 +27,7 @@ export default function ChooseFavsScreen() {
   const skipRef = useRef(0);
   const LIMIT = 12;
   const [selected, setSelected] = useState<number[]>([]);
+  const { movieCardWidth, movieCardHeight } = useLayout();
 
   const toggleMovie = (id: number) => {
     setSelected(prev => {
@@ -123,8 +125,8 @@ export default function ChooseFavsScreen() {
             return (
               <View className="flex-1 p-1 items-center">
                 <ImageButton
-                  width={125}
-                  height={185}
+                  width={movieCardWidth}
+                  height={movieCardHeight}
                   onPress={() => toggleMovie(item.id)}
                   rounded="md"
                   source={{ uri: baseUrl + item.image_link }}

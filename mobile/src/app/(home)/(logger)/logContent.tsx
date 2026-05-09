@@ -12,6 +12,7 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { logContent } from "@/services/user.service";
 import { AccessibilityInfo, findNodeHandle } from "react-native";
+import { useLayout } from "@/hooks/useLayout";
 
 export default function LogContent() {
     const { id_content, title, type, link } = useLocalSearchParams<{
@@ -20,6 +21,7 @@ export default function LogContent() {
         type: string;
         link: string;
     }>();
+    const { headerHeight, screenWidth, headerPaddingBottom } = useLayout();
     const { session } = useSession();
     const uri = `${baseUrl}${decodeURIComponent(link)}`;
     const [toastMessage, setToastMessage] = useState<string | undefined>();
@@ -80,15 +82,17 @@ export default function LogContent() {
                     />
 
                     {/* Header */}
-                    <View className="bg-chocolate h-36 justify-end pb-4">
-                        <View className="flex-row items-center px-2">
-                            <ReturnButton label="Volver" showLabel={false} onPress={() => router.back()} />
-                            <Text
-                                accessibilityRole="header"
-                                className="text-white text-large font-bold absolute left-0 right-0 text-center pt-14"
-                            >
-                                Nueva entrada
-                            </Text>
+                    <View className=" items-center justify-end bg-chocolate" 
+                          style={{ height: headerHeight, width: screenWidth }}>
+                        <View className="flex-row w-full " style={{ paddingBottom: headerPaddingBottom }}>
+                            <View className="flex-row items-center  w-1/6">
+                                <ReturnButton label="Volver" showLabel={false} onPress={() => router.back()} />
+                            </View>
+                            <View className="justify-end w-4/6" >
+                                <Text accessibilityRole="header" className="text-white text-large font-bold text-center " >
+                                    Nueva entrada
+                                </Text>
+                            </View>
                         </View>
                     </View>
 
