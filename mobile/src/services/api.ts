@@ -4,8 +4,10 @@ const url = __DEV__
   ? process.env.EXPO_PUBLIC_LOCAL_API_URL
   : process.env.EXPO_PUBLIC_PROD_API_URL;
 
+const urlComplete = url?.endsWith('/api') ? url : `${url}/api`;
+
 const api = axios.create({
-  baseURL: url,
+  baseURL: urlComplete,
   headers: {
     "Content-Type": "application/json",
   },

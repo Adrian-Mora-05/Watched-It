@@ -22,7 +22,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() chatId: string
   ) {
-    console.log(' Client joining chat:', chatId);
-    client.join(String(chatId)); 
+    console.log('join_chat received, chatId:', chatId); 
+    client.join(String(chatId));
+    console.log('rooms:', client.rooms);
+  }
+    emitNewMessage(chatId: string, message: any) {
+    this.server.to(String(chatId)).emit('new_message', message);
   }
 }

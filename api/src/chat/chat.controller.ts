@@ -11,10 +11,10 @@ class sendMessageDto extends createZodDto(sendMessageSchema) {}
 export class ChatController {
     constructor(private readonly chatService: ChatService) {}
 
-    @Post('/message') 
-    async sendMessage(@Req() req, @Body() body: sendMessageDto) {
+    @Post(':id/message')
+    async sendMessage(@Req() req, @Param('id') id: string, @Body() body: sendMessageDto) {
         const token = req.headers.authorization?.replace('Bearer ', '');
-        return this.chatService.sendMessage(token, body);
+        return this.chatService.sendMessage(token, id, body);
     }
 
     @Get('/:id')

@@ -2,7 +2,6 @@ import {z} from 'zod';
 
 export const sendMessageSchema = z.object({
     user_id: z.string(), // id from the user that sent the message
-    chat_id: z.number(), // id from the chat where the message was sent
     text: z.string()
             .min(1, 'El mensaje no puede estar vacío')
 });

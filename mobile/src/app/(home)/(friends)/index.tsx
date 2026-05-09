@@ -144,7 +144,7 @@ export default function index() {
                         const avatarUrl = item.friend_profile_pic ? getAvatarUrl(item.friend_profile_pic) : null;
                         return (
                                 <Pressable
-                                    onPress={() => router.push({ pathname: '/(home)/(friends)/[id]', params: { id: item.chat_id } })}
+                                    onPress={() => router.push({ pathname: '/(home)/(chat)/[id]', params: { id: item.chat_id, name: item.friend_name , profilePic: item.friend_profile_pic } })}
                                     accessibilityRole="button"
                                     accessibilityLabel={`Chat con ${item.friend_name}`}
                                     className="flex-row items-center"
