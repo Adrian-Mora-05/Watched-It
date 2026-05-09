@@ -9,9 +9,11 @@ import ErrorToast from '@/components/ui/ErrorMessage';
 import ImageButton from '@/components/ui/imageButton';
 import { useRouter } from 'expo-router';
 import { AccessibilityInfo } from 'react-native';
+import { useLayout } from '@/hooks/useLayout';
 
 export default function index() {
   const router = useRouter();
+  const { headerHeight, screenWidth, headerPaddingBottom, movieCardWidth, movieCardHeight } = useLayout();
   const [filter, setFilter] = useState('');
   const [catalog, setCatalog] = useState<ReadEachCatalogContent[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,12 +85,14 @@ export default function index() {
           />
 
           {/* Header */}
-          <View className="bg-chocolate h-36 items-center justify-end">
+          <View className="bg-chocolate items-center justify-end" 
+                style={{ height: headerHeight, width: screenWidth }}>
             <Text
               accessibilityRole="header"
               accessibilityLanguage="es"
               autofocus
-              className="text-white text-large font-bold pb-7"
+              className="text-white text-large font-bold"
+              style={{ paddingBottom: headerPaddingBottom }}
             >
               Nueva entrada
             </Text>
@@ -179,8 +183,8 @@ export default function index() {
               renderItem={({ item }) => (
                 <View className="flex-1 p-1 items-center">
                   <ImageButton
-                    width={125}
-                    height={185}
+                    width={movieCardWidth}
+                    height={movieCardHeight}
                     onPress={() => handleSelect(item)}
                     rounded="md"
                     source={{ uri: baseUrl + item.image_link }}

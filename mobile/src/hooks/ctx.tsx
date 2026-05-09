@@ -1,8 +1,9 @@
-import { use, createContext, type PropsWithChildren } from 'react';
+import { use, createContext, type PropsWithChildren, useEffect } from 'react';
 import { useStorageState } from './useStorageState';
 import { login } from '@/services/auth.service';
-import {LoginUser} from "@shared/user.schema";
+import { LoginUser } from "@shared/user.schema";
 import { router } from 'expo-router';
+import { refreshSession } from '@/services/auth.service';
 
 const AuthContext = createContext<{
   signIn: (user: LoginUser) => Promise<void>;
@@ -16,28 +17,64 @@ const AuthContext = createContext<{
   isLoading: false,
 });
 
-// Use this hook to access the user info.
+const slimSession = (session: any) => ({
+  access_token: session.access_token,
+  refresh_token: session.refresh_token,
+  expires_at: session.expires_at,
+});
+
 export function useSession() {
   const value = use(AuthContext);
   if (!value) {
     throw new Error('useSession must be wrapped in a <SessionProvider />');
   }
-
   return value;
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState('session');
+  const [[isLoading, sessionJson], setSessionJson] = useStorageState('session');
+
+  // On app open, check if token is expired and refresh it via NestJS
+  useEffect(() => {
+    if (!sessionJson) return;
+    try {
+      const parsed = JSON.parse(sessionJson);
+      const isExpired = parsed.expires_at * 1000 < Date.now();
+
+      if (isExpired) {
+        refreshSession(parsed.refresh_token)
+          .then(data => {
+            if (data.session) {
+              setSessionJson(JSON.stringify(slimSession(data.session)));
+            } else {
+              setSessionJson(null);
+              router.replace('/(auth)/sign-in');
+            }
+          })
+          .catch(() => {
+            setSessionJson(null);
+            router.replace('/(auth)/sign-in');
+          });
+      }
+    } catch {
+      setSessionJson(null);
+      router.replace('/(auth)/sign-in');
+    }
+  }, []); // runs once on app open
+
+  const session = sessionJson
+    ? (() => { try { return JSON.parse(sessionJson)?.access_token; } catch { return null; } })()
+    : null;
 
   return (
     <AuthContext.Provider
       value={{
         signIn: async (user: LoginUser) => {
           const data = await login(user);
-          setSession(data.session.access_token);
+          setSessionJson(JSON.stringify(slimSession(data.session)));
         },
         signOut: () => {
-          setSession(null);
+          setSessionJson(null);
           router.replace('/(auth)/sign-in');
         },
         session,

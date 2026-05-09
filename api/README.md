@@ -12,6 +12,7 @@ The backend for Watched It, built with NestJS. This document covers the project 
 - [Architecture](#architecture)
   - [Auth Flow](#auth-flow)
   - [Guards](#guards)
+  - [Web Socket](#web-socket)
 - [API Endpoints](#api-endpoints)
 ---
 
@@ -25,7 +26,8 @@ The backend for Watched It, built with NestJS. This document covers the project 
 | Database       | Supabase (Postgres)                                     |
 | Runtime        | Node.js                                                 |
 | Containerization | Docker                                                |
-
+| Storage         | Supabase Storage                                        |
+| Email           | SendGrid                                              |
 ---
 
 ## Project Structure
@@ -113,6 +115,38 @@ Protected routes use a NestJS guard that calls Supabase to verify the incoming J
 
 Routes under `/api/auth` (sign in, sign up) are public and bypass the guard.
 
+### Web Socket
+
+Base URL: `ws://localhost:3000`
+
+Connect using the Socket.IO client library. The JWT token must be passed in the `auth` object on connection:
+
+```javascript
+const socket = io('http://localhost:3000', {
+  transports: ['websocket'],
+  auth: { token: 'your-jwt-token' }
+});
+```
+
+#### Events
+
+| Event | Direction | Description |
+|---|---|---|
+| `join_chat` | Client → Server | Join a chat room to receive real time messages. Send the chat ID as the message body. |
+| `new_message` | Server → Client | Emitted to all clients in the room when a new message is sent. |
+
+#### Example
+
+```javascript
+// join a chat room
+socket.emit('join_chat', 11);
+
+// listen for new messages
+socket.on('new_message', (message) => {
+  console.log(message);
+});
+```
+
 ---
 
 ## API Endpoints
@@ -132,7 +166,7 @@ Base URL: `http://localhost:3000/api`
 | `POST` | `/auth/signin` | No | Sign in with email and password |
 | `POST` | `/auth/signup` | No | Register a new account |
 | `POST` | `/auth/forgot-password` | No | Send an email to the user to change the password |
-| `POST` | `/auth/reset-password` | Yes | Change the password |
+| `POST` | `/auth/reset-password` | No | Change the password |
 
 ### User
 
@@ -141,6 +175,23 @@ Base URL: `http://localhost:3000/api`
 | `PATCH` | `/user/profile-picture` | Yes | Update the authenticated user's profile picture |
 | `POST` | `/user/favorites` | Yes | Add a movie or show to favorites |
 | `POST` | `/user/rating` | Yes | Add a rating and a review (optional) of a movie or show |
+
+### Friend
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/` | Yes | Get all friends |
+| `GET` | `/request/` | Yes | Get friend requests from other users |
+| `PATCH` | `/request/` | Yes | Accept friend requests |
+| `DELETE` | `/request/` | Yes | Deny friend requests |
+
+### Chat
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/:id` | Yes | Get all messages from chat|
+| `POST` | `/chat/message/` | Yes | Send messages |
+
 
 ### Movie
 
