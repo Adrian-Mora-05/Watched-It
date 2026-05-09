@@ -35,3 +35,8 @@ export const resetPassword = async ({ token, newPassword, confirmPassword }: Res
   });
   return response.data;
 };
+
+export const refreshSession = async (refreshToken: string) => {
+  const { data } = await api.post('/auth/refresh', { refresh_token: refreshToken });
+  return data;
+};

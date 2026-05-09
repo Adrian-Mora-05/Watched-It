@@ -100,5 +100,15 @@ export class AuthService {
     return { message: 'Contraseña actualizada' };
   }
 
-
+  //*** Send refresh token ***//
+  async refresh(refreshToken: string) {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+    if (error) throw new BadRequestException(error.message);
+    return {
+      message: 'Session refreshed',
+      session: data.session,
+    };
+  }
 }
