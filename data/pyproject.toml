@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Data loader"
 requires-python = ">=3.12"
 dependencies = [
+    "deep-translator>=1.11.4",
+    "pandas>=3.0.2",
     "selenium>=4.43.0",
     "webdriver-manager>=4.0.2",
 ]
