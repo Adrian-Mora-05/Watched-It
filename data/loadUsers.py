@@ -28,6 +28,8 @@ def loadIntoDB(records):
         print("Database already has 100+ users, skipping load.")
         return
     
+    uuids = []
+
     for user in records:
         try:
             supabase.auth.admin.create_user({
@@ -38,5 +40,12 @@ def loadIntoDB(records):
                     "nombre": user["nombre"]
                 }
             })
+
+            user_id = response.user.id
+            uuids.append(user_id)
+            print(f"Created user {user['correo']} with id {user_id}")
+
         except Exception as e:
-            print(f"Error inserting user {user['correo']}: {e}")
+            print(f"Error creating user {user['correo']}: {e}")
+
+    return uuids
