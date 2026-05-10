@@ -5,7 +5,10 @@ description = "Data loader"
 requires-python = ">=3.12"
 dependencies = [
     "deep-translator>=1.11.4",
+    "faker>=40.15.0",
     "pandas>=3.0.2",
+    "python-dotenv>=1.2.2",
     "selenium>=4.43.0",
+    "supabase>=2.30.0",
     "webdriver-manager>=4.0.2",
 ]

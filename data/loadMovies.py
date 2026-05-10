@@ -86,8 +86,12 @@ def createMovieDataset():
         if movie is not None:
             all_movies.append(movie)
 
+        break
+
     final_df = pd.DataFrame(all_movies)
 
     final_df.to_csv("data/movies.csv", index=False, encoding="utf-8-sig") #use utf-8-sig encoding to avoid issues with special characters
 
     driver.quit()
+
+    return final_df
