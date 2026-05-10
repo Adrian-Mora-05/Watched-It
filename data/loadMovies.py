@@ -40,7 +40,7 @@ def getPopularity(page_props):
 def getReviews(page_props): #ToDo
     return
 
-def processMovies(href):
+def processMovies(href, driver):
     try:
         driver.get(href)
         wait = WebDriverWait(driver, 10) #wait for the page to load
@@ -60,33 +60,34 @@ def processMovies(href):
                     'image_url': getImageLink(page_props_main), 
                     'synopsis': getSynopsis(page_props_fold), 
                     'popularity': getPopularity(page_props_fold)}
+        return movie_dict
     except Exception as e:
         print(f"Error processing {href}: {e}")
 
-    return movie_dict
 
 
-# --------------------------- MAIN CODE --------------------------- #
-all_movies = [] #list to store all movie data before creating the dataframe
+def createMovieDataset():
+    all_movies = [] #list to store all movie data before creating the dataframe
 
-driver = webdriver.Chrome()
-driver.get("https://www.imdb.com/chart/top/?ref_=hm_nv_menu") #go to the top 250 movies page
+    driver = webdriver.Chrome()
+    driver.get("https://www.imdb.com/chart/top/?ref_=hm_nv_menu") #go to the top 250 movies page
 
-# Wait for __NEXT_DATA__ to exist and not be null
-wait = WebDriverWait(driver, 10)
+    # Wait for __NEXT_DATA__ to exist and not be null
+    wait = WebDriverWait(driver, 10)
 
-wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "a.ipc-title-link-wrapper")))
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "a.ipc-title-link-wrapper")))
 
-elementos = driver.find_elements(By.CSS_SELECTOR, "a.ipc-title-link-wrapper")
-hrefs = [el.get_attribute("href") for el in elementos]
+    elementos = driver.find_elements(By.CSS_SELECTOR, "a.ipc-title-link-wrapper")
+    hrefs = [el.get_attribute("href") for el in elementos]
 
-for i, href in enumerate(hrefs, 1):
-    movie = processMovies(href)
-    if movie is not None:
-        all_movies.append(movie)
+    for i, href in enumerate(hrefs, 1):
+        print(f"Processing movie {i}/{len(hrefs)}: {href}")
+        movie = processMovies(href, driver)
+        if movie is not None:
+            all_movies.append(movie)
 
-final_df = pd.DataFrame(all_movies)
+    final_df = pd.DataFrame(all_movies)
 
-final_df.to_csv("data/movies.csv", index=False, encoding="utf-8-sig") #use utf-8-sig encoding to avoid issues with special characters
+    final_df.to_csv("data/movies.csv", index=False, encoding="utf-8-sig") #use utf-8-sig encoding to avoid issues with special characters
 
-driver.quit()
+    driver.quit()
