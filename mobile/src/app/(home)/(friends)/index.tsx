@@ -1,13 +1,14 @@
 import ErrorToast from '@/components/ui/ErrorMessage'
 import { useLayout } from '@/hooks/useLayout';
 import { Pressable, Text } from '@react-native-ama/react-native'
-import { useState, useEffect } from 'react';
-import { View, Image, useWindowDimensions, FlatList, ScrollView } from 'react-native'
+import { useState, useEffect, useCallback, memo } from 'react';
+import { View, Image, useWindowDimensions, FlatList, ScrollView, AccessibilityInfo } from 'react-native'
 import { getFriendRequests, acceptFriendRequest, denyFriendRequest, getFriend } from '@/services/friend.service'
 import Button from '@/components/ui/Button';
 import { useSession } from '@/hooks/ctx';
 import { getAvatarUrl } from '@/services/friend.service';
 import { router } from 'expo-router';
+import OkayToast from '@/components/ui/OkayMessage';
 
 type FriendRequest = {
     id: number;
@@ -23,8 +24,141 @@ type Friend = {
     chat_id: number;
 };
 
+// ── Memoized request row ──────────────────────────────────────────────────────
+const RequestRow = memo(({
+    item,
+    avatarSize,
+    gap,
+    widthButton,
+    onAccept,
+    onDeny,
+}: {
+    item: FriendRequest;
+    avatarSize: number;
+    gap: number;
+    widthButton: number;
+    onAccept: (id: number) => void;
+    onDeny: (id: number) => void;
+}) => {
+    const avatarUrl = item.sender_profile_pic ? getAvatarUrl(item.sender_profile_pic) : null;
+
+    return (
+        <View
+            accessible={true}
+            accessibilityRole="none"
+            accessibilityLabel={`Solicitud de amistad de ${item.sender_name}`}
+            className="flex-row items-center"
+            style={{ gap }}
+        >
+            <Image
+                source={avatarUrl
+                    ? { uri: avatarUrl }
+                    : require('../../../../assets/images/default-profile-pic.png')
+                }
+                style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
+                accessibilityLabel={`Foto de perfil de ${item.sender_name}`}
+                accessibilityRole="image"
+            />
+            <Text
+                className="text-white text-medium flex-1"
+                accessibilityLanguage="es"
+            >
+                {item.sender_name}
+            </Text>
+            <Button
+                label="Confirmar"
+                bgColor='#D9D9D9'
+                textColor='#231709'
+                width={widthButton}
+                onPress={() => onAccept(item.id)}
+
+                accessibilityHint={`Acepta esta solicitud de amistad de ${item.sender_name}`}
+                accessibilityLanguage="es"
+            />
+            <Button
+                label="Eliminar"
+                bgColor='#D9D9D9'
+                textColor='#231709'
+                width={widthButton}
+                onPress={() => onDeny(item.id)}
+                accessibilityHint={`Rechaza y elimina esta solicitud de amistad de ${item.sender_name}`}
+                accessibilityLanguage="es"
+            />
+        </View>
+    );
+});
+
+// ── Memoized friend row ───────────────────────────────────────────────────────
+const FriendRow = memo(({
+    item,
+    avatarSize,
+    gap,
+}: {
+    item: Friend;
+    avatarSize: number;
+    gap: number;
+}) => {
+    const avatarUrl = item.friend_profile_pic ? getAvatarUrl(item.friend_profile_pic) : null;
+
+    return (
+        <Pressable
+            onPress={() => router.push({
+                pathname: '/(home)/(chat)/[id]',
+                params: { id: item.chat_id, name: item.friend_name, profilePic: item.friend_profile_pic }
+            })}
+            accessibilityRole="button"
+            accessibilityLabel={`Abrir chat con ${item.friend_name}`}
+            accessibilityHint="Abre la conversación con este amigo"
+            accessibilityLanguage="es"
+            className="flex-row items-center"
+            style={{ gap, minHeight: 44 }}
+        >
+            <Image
+                source={avatarUrl
+                    ? { uri: avatarUrl }
+                    : require('../../../../assets/images/default-profile-pic.png')
+                }
+                style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
+                accessibilityLabel={`Foto de perfil de ${item.friend_name}`}
+                accessibilityRole="image"
+            />
+            <Text
+                className="text-white text-medium flex-1"
+                accessibilityLanguage="es"
+            >
+                {item.friend_name}
+            </Text>
+        </Pressable>
+    );
+});
+
+// ── Empty state components ────────────────────────────────────────────────────
+const EmptyRequests = memo(() => (
+    <Text
+        className="text-bone text-medium"
+        accessibilityLanguage="es"
+        accessibilityLiveRegion="polite"
+        accessibilityRole="text"
+    >
+        No tienes solicitudes de amistad pendientes
+    </Text>
+));
+
+const EmptyFriends = memo(() => (
+    <Text
+        className="text-bone text-medium"
+        accessibilityLanguage="es"
+        accessibilityLiveRegion="polite"
+        accessibilityRole="text"
+    >
+        No tienes amigos agregados
+    </Text>
+));
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 export default function index() {
-    const [toastMessage, setToastMessage] = useState<string | undefined>();
+    const [errorToastMessage, setErrorToastMessage] = useState<string | undefined>();
+    const [okayToastMessage, setOkayToastMessage] = useState<string | undefined>();
     const { session } = useSession();
     const [requests, setRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
@@ -39,45 +173,96 @@ export default function index() {
     useEffect(() => {
         getFriendRequests(session!).then((data) => {
             setRequests(data);
+            // Announce count to screen readers on load
+            AccessibilityInfo.announceForAccessibility(
+                data.length > 0
+                    ? `Tienes ${data.length} solicitud${data.length !== 1 ? 'es' : ''} de amistad pendiente${data.length !== 1 ? 's' : ''}`
+                    : 'No tienes solicitudes de amistad pendientes'
+            );
         }).catch((e) => {
-            setToastMessage('Error al cargar las solicitudes' + e.message);
+            setErrorToastMessage('Error al cargar las solicitudes: ' + e.message);
         });
 
         getFriend(session!).then((data) => {
             setFriends(data);
         }).catch((e) => {
-            setToastMessage('Error al cargar las conversaciones' + e.message);
+            setErrorToastMessage('Error al cargar las conversaciones: ' + e.message);
         });
     }, []);
 
-    const handleAccept = (requestId: number) => {
+    const handleAccept = useCallback((requestId: number) => {
+        const request = requests.find(r => r.id === requestId);
         acceptFriendRequest(session!, requestId).then(() => {
             setRequests(prev => prev.filter(r => r.id !== requestId));
-            setToastMessage('Solicitud aceptada');
+            const msg = `Solicitud de ${request?.sender_name ?? 'amigo'} aceptada`;
+            setOkayToastMessage(msg);
+            AccessibilityInfo.announceForAccessibility(msg);
         }).catch((e) => {
-            setToastMessage('Error al aceptar la solicitud' + e.message);
+            setErrorToastMessage('Error al aceptar la solicitud: ' + e.message);
         });
-    };
 
-    const handleDeny = (requestId: number) => {
+        getFriend(session!).then((data) => {
+            setFriends(data);
+        }).catch((e) => {
+            setErrorToastMessage('Error al cargar las conversaciones: ' + e.message);
+        });
+    }, [requests, session]);
+
+    const handleDeny = useCallback((requestId: number) => {
+        const request = requests.find(r => r.id === requestId);
         denyFriendRequest(session!, requestId).then(() => {
             setRequests(prev => prev.filter(r => r.id !== requestId));
-            setToastMessage('Solicitud eliminada');
+            const msg = `Solicitud de ${request?.sender_name ?? 'amigo'} eliminada`;
+            setOkayToastMessage(msg);
+            AccessibilityInfo.announceForAccessibility(msg);
         }).catch((e) => {
-            setToastMessage('Error al eliminar la solicitud' + e.message);
+            setErrorToastMessage('Error al eliminar la solicitud: ' + e.message);
         });
-    };
+    }, [requests, session]);
+
+    const renderRequest = useCallback(({ item }: { item: FriendRequest }) => (
+        <RequestRow
+            item={item}
+            avatarSize={avatarSize}
+            gap={gap}
+            widthButton={widthButton}
+            onAccept={handleAccept}
+            onDeny={handleDeny}
+        />
+    ), [avatarSize, gap, widthButton, handleAccept, handleDeny]);
+
+    const renderFriend = useCallback(({ item }: { item: Friend }) => (
+        <FriendRow
+            item={item}
+            avatarSize={avatarSize}
+            gap={gap}
+        />
+    ), [avatarSize, gap]);
+
+    const requestKeyExtractor = useCallback((item: FriendRequest) => item.id.toString(), []);
+    const friendKeyExtractor = useCallback((item: Friend) => item.id.toString(), []);
 
     return (
-        <ScrollView className="flex-1 bg-dark">
+        <ScrollView
+            className="flex-1 bg-dark"
+            accessibilityLanguage="es"
+        >
             <ErrorToast
-                message={toastMessage}
-                visible={!!toastMessage}
-                onDismiss={() => setToastMessage(undefined)}
+                message={errorToastMessage}
+                visible={!!errorToastMessage}
+                onDismiss={() => setErrorToastMessage(undefined)}
             />
+            <OkayToast
+                message={okayToastMessage}
+                visible={!!okayToastMessage}
+                onDismiss={() => setOkayToastMessage(undefined)}
+            />
+
             {/* Header */}
-            <View className="bg-chocolate items-center justify-end"
-                style={{ height: headerHeight, width: screenWidth }}>
+            <View
+                className="bg-chocolate items-center justify-end"
+                style={{ height: headerHeight, width: screenWidth }}
+            >
                 <Text
                     accessibilityRole="header"
                     accessibilityLanguage="es"
@@ -90,78 +275,68 @@ export default function index() {
             </View>
 
             <View style={{ paddingHorizontal, paddingVertical, gap }}>
-                <Text className="text-white text-intermediate font-bold">Solicitudes</Text>
+
+                {/* Solicitudes section */}
+                <Text
+                    className="text-white text-intermediate font-bold"
+                    accessibilityRole="header"
+                    accessibilityLanguage="es"
+                >
+                    Solicitudes
+                    {requests.length > 0 ? ` (${requests.length})` : ''}
+                </Text>
 
                 <FlatList
                     data={requests}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={requestKeyExtractor}
+                    renderItem={renderRequest}
                     scrollEnabled={false}
+                    accessibilityLabel={`Lista de solicitudes de amistad, ${requests.length} pendiente${requests.length !== 1 ? 's' : ''}`}
+                    accessibilityLanguage="es"
+                    ListEmptyComponent={EmptyRequests}
                     ItemSeparatorComponent={() => (
-                        <View style={{ height: 0.5, marginVertical: gap / 2 }} />
+                        <View
+                            style={{ height: 0.5, marginVertical: gap / 2 }}
+                            accessible={false}
+                            importantForAccessibility="no"
+                        />
                     )}
-                    renderItem={({ item }) => {
-                        const avatarUrl = item.sender_profile_pic ? getAvatarUrl(item.sender_profile_pic) : null;
-                        return (
-                            <View className="flex-row items-center" style={{ gap }}>
-                                <Image
-                                    source={avatarUrl
-                                        ? { uri: avatarUrl }
-                                        : require('../../../../assets/images/default-profile-pic.png')
-                                    }
-                                    style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
-                                />
-                                <Text className="text-white text-medium flex-1">{item.sender_name}</Text>
-                                <Button
-                                    label="Confirmar"
-                                    bgColor='#D9D9D9'
-                                    textColor='#231709'
-                                    width={widthButton}
-                                    onPress={() => handleAccept(item.id)}
-                                />
-                                <Button
-                                    label="Eliminar"
-                                    bgColor='#D9D9D9'
-                                    textColor='#231709'
-                                    width={widthButton}
-                                    onPress={() => handleDeny(item.id)}
-                                />
-                            </View>
-                        );
-                    }}
                 />
 
-                <View style={{ height: 1, backgroundColor: '#5D3E14' }} />
-                <Text className="text-white text-intermediate font-bold">Conversaciones</Text>
+                {/* Divider */}
+                <View
+                    style={{ height: 1, backgroundColor: '#5D3E14' }}
+                    accessible={false}
+                    importantForAccessibility="no"
+                />
+
+                {/* Conversaciones section */}
+                <Text
+                    className="text-white text-intermediate font-bold"
+                    accessibilityRole="header"
+                    accessibilityLanguage="es"
+                >
+                    Conversaciones
+                    {friends.length > 0 ? ` (${friends.length})` : ''}
+                </Text>
 
                 <FlatList
                     data={friends}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={friendKeyExtractor}
+                    renderItem={renderFriend}
                     scrollEnabled={false}
+                    accessibilityLabel={`Lista de conversaciones, ${friends.length} amigo${friends.length !== 1 ? 's' : ''}`}
+                    accessibilityLanguage="es"
+                    ListEmptyComponent={EmptyFriends}
                     ItemSeparatorComponent={() => (
-                        <View style={{ height: 0.5, backgroundColor: '#5D3E14', marginVertical: gap / 2 }} />
+                        <View
+                            style={{ height: 0.5, backgroundColor: '#5D3E14', marginVertical: gap / 2 }}
+                            accessible={false}
+                            importantForAccessibility="no"
+                        />
                     )}
-                    renderItem={({ item }) => {
-                        const avatarUrl = item.friend_profile_pic ? getAvatarUrl(item.friend_profile_pic) : null;
-                        return (
-                                <Pressable
-                                    onPress={() => router.push({ pathname: '/(home)/(chat)/[id]', params: { id: item.chat_id, name: item.friend_name , profilePic: item.friend_profile_pic } })}
-                                    accessibilityRole="button"
-                                    accessibilityLabel={`Chat con ${item.friend_name}`}
-                                    className="flex-row items-center"
-                                    style={{ gap }}
-                                >
-                                <Image
-                                    source={avatarUrl
-                                        ? { uri: avatarUrl }
-                                        : require('../../../../assets/images/default-profile-pic.png')
-                                    }
-                                    style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
-                                />
-                                <Text className="text-white text-medium flex-1">{item.friend_name}</Text>
-                            </Pressable>
-                        );
-                    }}
                 />
+
             </View>
         </ScrollView>
     );

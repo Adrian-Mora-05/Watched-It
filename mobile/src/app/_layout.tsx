@@ -41,6 +41,7 @@ function RootNavigator() {
             >
               <Stack.Protected guard={!!session}>
                 <Stack.Screen name="(home)" />
+                <Stack.Screen name="(chat)/[id]" />
               </Stack.Protected>
               <Stack.Protected guard={!session}>
                 <Stack.Screen name="(auth)/sign-in" />
