@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, useWindowDimensions, View, TouchableWithoutFeedback, AccessibilityInfo } from 'react-native';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, useWindowDimensions, View, TouchableWithoutFeedback, AccessibilityInfo } from 'react-native';
 import { Pressable, Text } from '@react-native-ama/react-native';
 import { useSession } from '@/hooks/ctx';
 import { useLayout } from '@/hooks/useLayout';
@@ -100,7 +100,7 @@ export default function Chat() {
                 session!
             );
             setMessageText('');
-            // ✅ Confirm send to screen readers
+  
             AccessibilityInfo.announceForAccessibility('Mensaje enviado');
         } catch (e: any) {
             setToastMessage('Error al enviar mensaje: ' + e.message);
@@ -153,7 +153,7 @@ export default function Chat() {
                         <Image
                             source={avatarUrl
                                 ? { uri: avatarUrl }
-                                : require('../../../../assets/images/default-profile-pic.png')
+                                : require('../../../../../assets/images/default-profile-pic.png')
                             }
                             style={{
                                 width: avatarSize,

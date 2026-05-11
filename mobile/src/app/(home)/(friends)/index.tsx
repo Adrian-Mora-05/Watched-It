@@ -103,7 +103,7 @@ const FriendRow = memo(({
     return (
         <Pressable
             onPress={() => router.push({
-                pathname: '/(chat)/[id]',
+                pathname: '/[id]',
                 params: { id: item.chat_id, name: item.friend_name, profilePic: item.friend_profile_pic }
             })}
             accessibilityRole="button"

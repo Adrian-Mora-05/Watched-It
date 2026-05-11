@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
-import Chat from '@/app/(home)/(chat)/[id]';
+import Chat from '@/app/(home)/(friends)/(chat)/[id]';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

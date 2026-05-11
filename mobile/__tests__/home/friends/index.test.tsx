@@ -306,7 +306,7 @@ describe('FriendsScreen - Accessibility', () => {
       });
 
       expect(router.push).toHaveBeenCalledWith({
-        pathname: '/(chat)/[id]',
+        pathname: '/[id]',
         params: {
           id: 99,
           name: 'Pedro',
