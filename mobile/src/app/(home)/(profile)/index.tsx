@@ -24,8 +24,6 @@ export default function ProfileScreen() {
       </View>
     );
   }
-
-  console.log("User profile in ProfileScreen:", user);
   
   const tabs = [
     { key: "userProfile", label: "Mi perfil" },
