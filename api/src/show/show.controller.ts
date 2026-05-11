@@ -17,7 +17,6 @@ export class ShowController {
  @Get('favorites')
   async getFavorites(@Headers('authorization') auth: string) {
   const token = auth?.replace('Bearer ', '');
-  console.log("Received token:", token);
   if (!token) throw new BadRequestException('No token');
 
   return this.showService.getFavoriteShowsByUser(token);
