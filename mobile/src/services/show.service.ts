@@ -11,7 +11,6 @@ export const getShows = async (param: ReadShowParam) => {
 };
 
 export const getFavoriteShowsByUser = async (token: string) => {
-  console.log("Fetching favorite shows with token:", token);
   const response = await api.get('/show/favorites', {
     headers: {
       Authorization: `Bearer ${token}`,
