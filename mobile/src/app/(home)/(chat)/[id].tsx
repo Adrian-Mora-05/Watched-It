@@ -11,7 +11,6 @@ import MessageBubble from '@/components/ui/MessageBubble';
 import Input from '@/components/ui/Input';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { sendMessage, getMessages, connectSocket, disconnectSocket } from '@/services/chat.service';
-import { jwtDecode } from 'jwt-decode';
 import { Message } from '@shared/message.schema';
 
 export default function Chat() {
@@ -112,167 +111,159 @@ export default function Chat() {
     }, [userId, messageText, isSending, parsedId, session]);
 
     return (
-        <View className="flex-1 bg-dark">
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    className="flex-1 bg-chocolate"
+    <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 bg-chocolate"
+    >
+        <View className="bg-dark flex-1">
+            <ErrorToast
+                message={toastMessage}
+                visible={!!toastMessage}
+                onDismiss={() => setToastMessage(undefined)}
+            />
+
+            {/* Header */}
+            <View
+                className="items-center justify-end bg-chocolate"
+                style={{ height: headerHeight, width: screenWidth }}
+                accessibilityLanguage="es"
+            >
+                <View
+                    className="flex-row w-full items-center"
+                    style={{ paddingBottom: headerPaddingBottom }}
                 >
-                    <View className="bg-dark flex-1">
-                        <ErrorToast
-                            message={toastMessage}
-                            visible={!!toastMessage}
-                            onDismiss={() => setToastMessage(undefined)}
+                    <View className="w-1/6 items-center">
+                        <ReturnButton
+                            label="Volver"
+                            showLabel={false}
+                            onPress={() => router.back()}
                         />
-
-                        {/* Header */}
-                        <View
-                            className="items-center justify-end bg-chocolate"
-                            style={{ height: headerHeight, width: screenWidth }}
-                            accessibilityLanguage="es"
-                        >
-                            <View
-                                className="flex-row w-full items-center"
-                                style={{ paddingBottom: headerPaddingBottom }}
-                            >
-                                {/* Back button */}
-                                <View className="w-1/6 items-center">
-                                    <ReturnButton
-                                        label="Volver"
-                                        showLabel={false}
-                                        onPress={() => router.back()}
-                                    />
-                                </View>
-
-                                {/* Title — truly centered */}
-                                <View className="flex-1 items-center">
-                                    <Text
-                                        accessibilityRole="header"
-                                        accessibilityLabel={`Chat con ${parsedName}`}
-                                        accessibilityLanguage="es"
-                                        className="text-white text-large font-bold text-center"
-                                    >
-                                        {parsedName}
-                                    </Text>
-                                </View>
-
-                                {/* Avatar — right side balances header */}
-                                <View className="w-1/6 items-center">
-                                    <Image
-                                        source={avatarUrl
-                                            ? { uri: avatarUrl }
-                                            : require('../../../../assets/images/default-profile-pic.png')
-                                        }
-                                        style={{
-                                            width: avatarSize,
-                                            height: avatarSize,
-                                            borderRadius: avatarSize / 2,
-                                        }}
-                                        accessibilityLabel={`Foto de perfil de ${parsedName}`}
-                                        accessibilityRole="image"
-                                    />
-                                </View>
-                            </View>
-                        </View>
-
-                        {/* Messages list */}
-                        <ScrollView
-                            ref={scrollViewRef}
-                            style={{ flex: 1 }}
-                            contentContainerStyle={{ paddingVertical: gap }}
-                            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
-                            accessibilityLabel={`Conversación con ${parsedName}`}
-                            accessibilityLanguage="es"
-                            accessible={false}
-                        >
-                            {messages.length === 0 ? (
-                                <Text
-                                    className="text-bone text-medium text-center"
-                                    accessibilityLanguage="es"
-                                    accessibilityLiveRegion="polite"
-                                    style={{ marginTop: paddingVertical * 2 }}
-                                >
-                                    No hay mensajes aún. ¡Empieza la conversación!
-                                </Text>
-                            ) : (
-                                messages.map((msg) => (
-                                    <MessageBubble
-                                        key={msg.id}
-                                        message={msg.texto}
-                                        timestamp={new Date(msg.fecha_creacion).toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                        isOwn={msg.isOwn}
-                                        senderName={msg.isOwn ? 'Tú' : parsedName}
-                                    />
-                                ))
-                            )}
-                        </ScrollView>
-
-                        {/* Input bar */}
-                        <View
-                            className="bg-chocolate"
-                            style={{ paddingVertical: paddingVertical / 1.5 }}
-                            accessibilityLanguage="es"
-                        >
-                            <View
-                                className="flex-row items-center bg-chocolate"
-                                style={{ gap, paddingHorizontal }}
-                            >
-                                <View className="flex-1" style={{ paddingVertical }}>
-                                    <Input
-                                        label="Escribe un mensaje"
-                                        hideLabel={true}
-                                        value={messageText}
-                                        onChangeText={(text: string) => setMessageText(text)}
-                                        onSubmitEditing={handleSend}
-                                        placeholder="Escribe un mensaje..."
-                                        accessibilityLabel="Campo de mensaje"
-                                        accessibilityHint="Escribe aquí tu mensaje y presiona enviar"
-                                        accessibilityLanguage="es"
-                                        returnKeyType="send"
-                                        blurOnSubmit={false}
-                                    />
-                                </View>
-
-                                <Pressable
-                                    onPress={handleSend}
-                                    disabled={isSending || !messageText.trim()}
-                                    accessibilityRole="button"
-                                    accessibilityLabel="Enviar mensaje"
-                                    accessibilityHint={
-                                        !messageText.trim()
-                                            ? "Escribe un mensaje antes de enviar"
-                                            : "Envía tu mensaje"
-                                    }
-                                    accessibilityLanguage="es"
-                                    accessibilityState={{
-                                        disabled: isSending || !messageText.trim(),
-                                        busy: isSending,
-                                    }}
-                                    style={{
-                                        minWidth: 44,
-                                        minHeight: 44,
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        opacity: !messageText.trim() ? 0.4 : 1,
-                                    }}
-                                >
-                                    <AntDesign
-                                        name="send"
-                                        size={24}
-                                        color="white"
-                                        accessibilityElementsHidden
-                                        importantForAccessibility="no"
-                                    />
-                                </Pressable>
-                            </View>
-                        </View>
-
                     </View>
-                </KeyboardAvoidingView>
-            </TouchableWithoutFeedback>
+                    <View className="flex-1 items-center">
+                        <Text
+                            accessibilityRole="header"
+                            accessibilityLabel={`Chat con ${parsedName}`}
+                            accessibilityLanguage="es"
+                            className="text-white text-large font-bold text-center"
+                        >
+                            {parsedName}
+                        </Text>
+                    </View>
+                    <View className="w-1/6 items-center">
+                        <Image
+                            source={avatarUrl
+                                ? { uri: avatarUrl }
+                                : require('../../../../assets/images/default-profile-pic.png')
+                            }
+                            style={{
+                                width: avatarSize,
+                                height: avatarSize,
+                                borderRadius: avatarSize / 2,
+                            }}
+                            accessibilityLabel={`Foto de perfil de ${parsedName}`}
+                            accessibilityRole="image"
+                        />
+                    </View>
+                </View>
+            </View>
+
+            {/* Messages list — NO TouchableWithoutFeedback here */}
+            <ScrollView
+                ref={scrollViewRef}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingVertical: gap }}
+                onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
+                accessibilityLabel={`Conversación con ${parsedName}`}
+                accessibilityLanguage="es"
+                accessible={false}
+                // ✅ Dismiss keyboard when scrolling instead
+                keyboardDismissMode="on-drag"
+            >
+                {messages.length === 0 ? (
+                    <Text
+                        className="text-bone text-medium text-center"
+                        accessibilityLanguage="es"
+                        accessibilityLiveRegion="polite"
+                        style={{ marginTop: paddingVertical * 2 }}
+                    >
+                        No hay mensajes aún. ¡Empieza la conversación!
+                    </Text>
+                ) : (
+                    messages.map((msg) => (
+                        <MessageBubble
+                            key={msg.id}
+                            message={msg.texto}
+                            timestamp={new Date(msg.fecha_creacion).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
+                            isOwn={msg.isOwn}
+                            senderName={msg.isOwn ? 'Tú' : parsedName}
+                        />
+                    ))
+                )}
+            </ScrollView>
+
+            {/* Input bar */}
+            <View
+                className="bg-chocolate"
+                style={{ paddingVertical: paddingVertical / 1.5 }}
+                accessibilityLanguage="es"
+            >
+                <View
+                    className="flex-row items-center bg-chocolate"
+                    style={{ gap, paddingHorizontal }}
+                >
+                    <View className="flex-1" style={{ paddingVertical }}>
+                        <Input
+                            label="Escribe un mensaje"
+                            hideLabel={true}
+                            value={messageText}
+                            onChangeText={(text: string) => setMessageText(text)}
+                            onSubmitEditing={handleSend}
+                            placeholder="Escribe un mensaje..."
+                            accessibilityLabel="Campo de mensaje"
+                            accessibilityHint="Escribe aquí tu mensaje y presiona enviar"
+                            accessibilityLanguage="es"
+                            returnKeyType="send"
+                            blurOnSubmit={false}
+                        />
+                    </View>
+
+                    <Pressable
+                        onPress={handleSend}
+                        disabled={isSending || !messageText.trim()}
+                        accessibilityRole="button"
+                        accessibilityLabel="Enviar mensaje"
+                        accessibilityHint={
+                            !messageText.trim()
+                                ? "Escribe un mensaje antes de enviar"
+                                : "Envía tu mensaje"
+                        }
+                        accessibilityLanguage="es"
+                        accessibilityState={{
+                            disabled: isSending || !messageText.trim(),
+                            busy: isSending,
+                        }}
+                        style={{
+                            minWidth: 44,
+                            minHeight: 44,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            opacity: !messageText.trim() ? 0.4 : 1,
+                        }}
+                    >
+                        <AntDesign
+                            name="send"
+                            size={24}
+                            color="white"
+                            accessibilityElementsHidden
+                            importantForAccessibility="no"
+                        />
+                    </Pressable>
+                </View>
+            </View>
+
         </View>
-    );
-}
+    </KeyboardAvoidingView>
+); }

@@ -39,7 +39,7 @@ export default function LogContent() {
     const starSize = Math.floor((screenWidth * 0.55) / 6);
 
     // Review input height: ~20% of screen height
-    const reviewHeight = screenHeight * 0.20;
+    const reviewHeight = screenHeight * 0.15;
 
     const { session } = useSession();
     const uri = `${baseUrl}${decodeURIComponent(link)}`;

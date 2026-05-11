@@ -2,6 +2,28 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react-nativ
 import ChooseFavsScreen from '@/app/(auth)/chooseMovieFavs';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({ children }: any) => children,
+  SafeAreaConsumer: ({ children }: any) =>
+    children({
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    }),
+  useSafeAreaInsets: () => ({
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  }),
+  useSafeAreaFrame: () => ({
+    x: 0,
+    y: 0,
+    width: 390,
+    height: 844,
+  }),
+}));
 
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn() },
