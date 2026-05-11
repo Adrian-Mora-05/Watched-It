@@ -29,8 +29,6 @@ export class ShowService {
             throw new BadRequestException('No autorizado');
         }
 
-        console.log("TOKEN:", token);
-
         const { data, error } = await supabase
             .from('series_favoritas_x_usuario')
             .select(`
