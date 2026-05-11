@@ -152,10 +152,8 @@ export class UserService {
   }
 
   async getUserProfile(userId: string) {
-    console.log('[getUserProfile] start, userId:', userId);
 
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId);
-    console.log('[getUserProfile] authData:', authData?.user?.id, '| authError:', authError);
     if (authError) throw new BadRequestException(`Error fetching user: ${authError.message}`);
 
     const user = authData.user;
@@ -165,7 +163,6 @@ export class UserService {
       .select('enlace_foto_perfil')
       .eq('id', userId)
       .single();
-    console.log('[getUserProfile] dbData:', dbData, '| dbError:', dbError);
 
     if (dbError && dbError.code !== 'PGRST116') throw new BadRequestException(`Error fetching profile: ${dbError.message}`);
 
