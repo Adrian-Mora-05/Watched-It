@@ -34,33 +34,35 @@ export function useSession() {
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, sessionJson], setSessionJson] = useStorageState('session');
 
-  // On app open, check if token is expired and refresh it via NestJS
-  useEffect(() => {
-    if (!sessionJson) return;
-    try {
-      const parsed = JSON.parse(sessionJson);
-      const isExpired = parsed.expires_at * 1000 < Date.now();
+// On app open, check if token is expired and refresh it via NestJS
+useEffect(() => {
+  if (isLoading) return;
+  if (!sessionJson) return;
 
-      if (isExpired) {
-        refreshSession(parsed.refresh_token)
-          .then(data => {
-            if (data.session) {
-              setSessionJson(JSON.stringify(slimSession(data.session)));
-            } else {
-              setSessionJson(null);
-              router.replace('/(auth)/sign-in');
-            }
-          })
-          .catch(() => {
+  try {
+    const parsed = JSON.parse(sessionJson);
+    const isExpired = parsed.expires_at * 1000 < Date.now();
+
+    if (isExpired) {
+      refreshSession(parsed.refresh_token)
+        .then(data => {
+          if (data.session) {
+            setSessionJson(JSON.stringify(slimSession(data.session)));
+          } else {
             setSessionJson(null);
             router.replace('/(auth)/sign-in');
-          });
-      }
-    } catch {
-      setSessionJson(null);
-      router.replace('/(auth)/sign-in');
+          }
+        })
+        .catch(() => {
+          setSessionJson(null);
+          router.replace('/(auth)/sign-in');
+        });
     }
-  }, []); // runs once on app open
+  } catch {
+    setSessionJson(null);
+    router.replace('/(auth)/sign-in');
+  }
+}, [sessionJson, isLoading]);
 
   const session = sessionJson
     ? (() => { try { return JSON.parse(sessionJson)?.access_token; } catch { return null; } })()

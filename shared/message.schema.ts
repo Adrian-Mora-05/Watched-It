@@ -12,5 +12,14 @@ export const getChatMessagesSchema = z.object({
     limit: z.number().default(15) // number of messages to return for pagination
 });
 
+export const messageSchema = z.object({
+    id: z.number(),
+    texto: z.string(),
+    fecha_creacion: z.string(),
+    user_id: z.string(),
+    isOwn: z.boolean()
+});
+
 export type SendMessageSchema = z.infer<typeof sendMessageSchema> //generates a type from the schema
 export type GetChatMessagesSchema = z.infer<typeof getChatMessagesSchema> //generates a type from the schema
+export type Message = z.infer<typeof messageSchema> //generates a type from the schema
