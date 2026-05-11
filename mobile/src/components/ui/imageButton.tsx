@@ -49,7 +49,7 @@ export default function ImageButton({
           borderColor: borderColor ?? 'transparent',
         }}
         contentFit="cover"
-        cachePolicy="memory-disk"
+        cachePolicy="disk"
         placeholder={{ blurhash: 'L36tt6%M00Rj00of~qxuayj[ofof' }}
         transition={200}
         accessible={false}
