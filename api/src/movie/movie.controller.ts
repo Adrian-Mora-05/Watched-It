@@ -16,9 +16,7 @@ export class MovieController {
 
  @Get('favorites')
   async getFavorites(@Headers('authorization') auth: string) {
-  console.log("HEADER:", auth);
   const token = auth?.replace('Bearer ', '');
-  console.log("Received token:", token);
   if (!token) throw new BadRequestException('No token');
 
   return this.movieService.getFavoriteMoviesByUser(token);
