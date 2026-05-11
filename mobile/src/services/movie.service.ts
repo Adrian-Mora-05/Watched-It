@@ -11,7 +11,6 @@ export const getMovies = async (param: ReadMovieParam) => {
 };
 
 export const getFavoriteMoviesByUser = async (token: string) => {
-  console.log("Fetching favorite movies with token:", token);
   const response = await api.get('/movie/favorites', {
     headers: {
       Authorization: `Bearer ${token}`,
