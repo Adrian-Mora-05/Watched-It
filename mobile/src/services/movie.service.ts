@@ -16,6 +16,5 @@ export const getFavoriteMoviesByUser = async (token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("FAVORITE MOVIES RESPONSE:", response.data);
   return response.data;
 };
