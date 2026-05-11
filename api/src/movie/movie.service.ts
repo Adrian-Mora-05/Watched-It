@@ -30,8 +30,6 @@ async getFavoriteMoviesByUser(token: string) {
     throw new BadRequestException('No autorizado');
   }
 
-  console.log("TOKEN:", token);
-
   const { data, error } = await supabase
     .from('peliculas_favoritas_x_usuario')
     .select(`
