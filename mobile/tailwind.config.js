@@ -15,6 +15,7 @@ module.exports = {
         orange: "#AA500F",
         bone: "#D9D9D9",
         white: "#FFFFFF",
+        flour: "#C4C4C4",
         green:"#037E11",
         red: "#A70000"
       },

@@ -9,3 +9,14 @@ export const getShows = async (param: ReadShowParam) => {
   });
   return response.data;
 };
+
+export const getFavoriteShowsByUser = async (token: string) => {
+  console.log("Fetching favorite shows with token:", token);
+  const response = await api.get('/show/favorites', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log("FAVORITE SHOWS RESPONSE:", response.data);
+  return response.data;
+};

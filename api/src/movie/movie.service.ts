@@ -22,4 +22,29 @@ export class MovieService {
         if (error) throw new BadRequestException(error.message)
         return { data: pelicula }
     }
+    
+async getFavoriteMoviesByUser(token: string) {
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+  if (!user || authError) {
+    throw new BadRequestException('No autorizado');
+  }
+
+  console.log("TOKEN:", token);
+
+  const { data, error } = await supabase
+    .from('peliculas_favoritas_x_usuario')
+    .select(`
+      pelicula:id_pelicula (
+        id:id,
+        title:titulo,
+        image_link:enlace_imagen
+      )
+    `)
+    .eq('id_usuario', user.id);
+        
+  if (error) throw new BadRequestException(error.message);
+  return data.map(p => p.pelicula);
+  
+}
 }

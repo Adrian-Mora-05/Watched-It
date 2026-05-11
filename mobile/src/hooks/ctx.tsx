@@ -1,20 +1,35 @@
-import { use, createContext, type PropsWithChildren, useEffect } from 'react';
+import {
+  use,
+  createContext,
+  type PropsWithChildren,
+  useEffect,
+  useState,
+  useRef,
+  useCallback
+} from 'react';
+
 import { useStorageState } from './useStorageState';
-import { login } from '@/services/auth.service';
+import { login, refreshSession } from '@/services/auth.service';
+import { getMe, UserProfile } from '@/services/user.service';
 import { LoginUser } from "@shared/user.schema";
 import { router } from 'expo-router';
-import { refreshSession } from '@/services/auth.service';
 
 const AuthContext = createContext<{
   signIn: (user: LoginUser) => Promise<void>;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
+  user: UserProfile | null;
+  isLoadingUser: boolean;
+  refreshUser: () => Promise<void>;
 }>({
   signIn: () => Promise.resolve(),
   signOut: () => null,
   session: null,
   isLoading: false,
+  user: null,
+  isLoadingUser: false,
+  refreshUser: () => Promise.resolve(),
 });
 
 const slimSession = (session: any) => ({
@@ -33,40 +48,89 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, sessionJson], setSessionJson] = useStorageState('session');
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
 
-// On app open, check if token is expired and refresh it via NestJS
-useEffect(() => {
-  if (isLoading) return;
-  if (!sessionJson) return;
-
-  try {
-    const parsed = JSON.parse(sessionJson);
-    const isExpired = parsed.expires_at * 1000 < Date.now();
-
-    if (isExpired) {
-      refreshSession(parsed.refresh_token)
-        .then(data => {
-          if (data.session) {
-            setSessionJson(JSON.stringify(slimSession(data.session)));
-          } else {
-            setSessionJson(null);
-            router.replace('/(auth)/sign-in');
-          }
-        })
-        .catch(() => {
-          setSessionJson(null);
-          router.replace('/(auth)/sign-in');
-        });
-    }
-  } catch {
-    setSessionJson(null);
-    router.replace('/(auth)/sign-in');
-  }
-}, [sessionJson, isLoading]);
+  const restoredRef = useRef(false);
 
   const session = sessionJson
-    ? (() => { try { return JSON.parse(sessionJson)?.access_token; } catch { return null; } })()
+    ? (() => {
+        try {
+          return JSON.parse(sessionJson)?.access_token;
+        } catch {
+          return null;
+        }
+      })()
     : null;
+
+  const fetchUser = useCallback(async (token: string) => {
+    try {
+      setIsLoadingUser(true);
+      const profile = await getMe(token);
+      setUser(profile);
+    } catch {
+      setUser(null);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    if (!sessionJson) return;
+
+    try {
+      const parsed = JSON.parse(sessionJson);
+      await fetchUser(parsed.access_token);
+    } catch {
+      // silencioso para no romper app
+    }
+  }, [sessionJson, fetchUser]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!sessionJson) return;
+
+    try {
+      const parsed = JSON.parse(sessionJson);
+      const isExpired = parsed.expires_at * 1000 < Date.now();
+
+      const restore = async () => {
+        if (restoredRef.current) {
+          fetchUser(parsed.access_token);
+          return;
+        }
+
+        restoredRef.current = true;
+
+        if (isExpired) {
+          try {
+            const data = await refreshSession(parsed.refresh_token);
+
+            if (data.session) {
+              setSessionJson(JSON.stringify(slimSession(data.session)));
+              fetchUser(data.session.access_token);
+            } else {
+              setSessionJson(null);
+              setUser(null);
+              router.replace('/(auth)/sign-in');
+            }
+          } catch {
+            setSessionJson(null);
+            setUser(null);
+            router.replace('/(auth)/sign-in');
+          }
+        } else {
+          fetchUser(parsed.access_token);
+        }
+      };
+
+      restore();
+    } catch {
+      setSessionJson(null);
+      setUser(null);
+      router.replace('/(auth)/sign-in');
+    }
+  }, [sessionJson, isLoading, fetchUser]);
 
   return (
     <AuthContext.Provider
@@ -75,13 +139,20 @@ useEffect(() => {
           const data = await login(user);
           setSessionJson(JSON.stringify(slimSession(data.session)));
         },
+
         signOut: () => {
           setSessionJson(null);
+          setUser(null);
           router.replace('/(auth)/sign-in');
         },
+
         session,
         isLoading,
-      }}>
+        user,
+        isLoadingUser,
+        refreshUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

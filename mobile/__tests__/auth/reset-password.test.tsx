@@ -4,13 +4,20 @@ import ResetPasswordScreen from '@/app/(auth)/reset-password';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-jest.mock('expo-router', () => ({
-  useLocalSearchParams: jest.fn(),
-}));
+jest.mock('expo-router', () => {
+  const actual = jest.requireActual('expo-router');
 
-jest.mock('expo-router/build/global-state/routing', () => ({
-  replace: jest.fn(),
-}));
+  return {
+    ...actual,
+    useLocalSearchParams: jest.fn(),
+    router: {
+      replace: jest.fn(),
+      dismissAll: jest.fn(),
+      back: jest.fn(),
+      push: jest.fn(),
+    },
+  };
+});
 
 jest.mock('@/services/auth.service', () => ({
   resetPassword: jest.fn(),
@@ -19,7 +26,7 @@ jest.mock('@/services/auth.service', () => ({
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const { useLocalSearchParams } = require('expo-router');
-const { replace } = require('expo-router/build/global-state/routing');
+const { router } = require('expo-router');
 const { resetPassword } = require('@/services/auth.service');
 
 const withToken = () => useLocalSearchParams.mockReturnValue({ token: 'valid-token-abc123' });
@@ -36,7 +43,12 @@ describe('ResetPasswordScreen - Accessibility', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     withToken();
+  });
+
+    afterEach(() => {
+    jest.useRealTimers(); 
   });
 
   // ── Invalid Link ─────────────────────────────────────────────────────────────
@@ -258,14 +270,16 @@ describe('ResetPasswordScreen - Accessibility', () => {
       });
 
       fireEvent.press(screen.getByRole('button', { name: 'Ir a inicio de sesión' }));
-      expect(replace).toHaveBeenCalledWith('/sign-in');
+      jest.runAllTimers(); 
+      expect(router.replace).toHaveBeenCalledWith('/sign-in');
     });
 
     it('redirects to sign-in from invalid link screen', () => {
       withoutToken();
       render(<ResetPasswordScreen />);
       fireEvent.press(screen.getByRole('button', { name: 'Volver a inicio de sesión' }));
-      expect(replace).toHaveBeenCalledWith('/sign-in');
+      jest.runAllTimers(); 
+      expect(router.replace).toHaveBeenCalledWith('/sign-in');
     });
   });
 

@@ -38,7 +38,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "backgroundColor":"#231709"
+            "backgroundColor": "#231709"
           }
         }
       ],
@@ -50,7 +50,8 @@
           "recordAudioPermission": "Allow $(PRODUCT_NAME) to access your microphone"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

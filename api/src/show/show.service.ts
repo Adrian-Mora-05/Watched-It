@@ -21,4 +21,28 @@ export class ShowService {
         if (error) throw new BadRequestException(error.message)
         return { data: pelicula }
     }
+
+    async getFavoriteShowsByUser(token: string) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+        if (!user || authError) {
+            throw new BadRequestException('No autorizado');
+        }
+
+        console.log("TOKEN:", token);
+
+        const { data, error } = await supabase
+            .from('series_favoritas_x_usuario')
+            .select(`
+            serie:id_serie (
+                id:id,
+                title:titulo,
+                image_link:enlace_imagen
+            )
+            `)
+            .eq('id_usuario', user.id);
+                
+        if (error) throw new BadRequestException(error.message);
+        return data.map(p => p.serie);
+    }
 }
