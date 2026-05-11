@@ -120,7 +120,7 @@ export default function SignUp() {
                 ref={passwordRef as unknown as React.RefObject<RNTextInput>}
                 error={errors.password}
               />
-              <View className="relative w-44 ">
+              <View className="relative w-44 bg-red ">
                   <Text className="text-normal text-white pb-4 w-56" accessibilityLanguage="es">
                   Agregar foto de perfil
                   </Text>

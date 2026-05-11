@@ -1,4 +1,4 @@
-import { Controller, Get,Body,Query } from '@nestjs/common';
+import { Controller, Get,Body,Query, Param, BadRequestException, Headers } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { readMovieParam } from '../../../shared/movie.schema';
 import { createZodDto } from 'node_modules/nestjs-zod/dist/index.mjs';
@@ -9,9 +9,19 @@ class ReadMovieParamDto extends createZodDto(readMovieParam) {} //transforms the
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
-  @Get('/')
+  @Get()
   async getAllMovies(@Query() param: ReadMovieParamDto) {
       return this.movieService.getAllMovies(param);
   }
+
+ @Get('favorites')
+  async getFavorites(@Headers('authorization') auth: string) {
+  console.log("HEADER:", auth);
+  const token = auth?.replace('Bearer ', '');
+  console.log("Received token:", token);
+  if (!token) throw new BadRequestException('No token');
+
+  return this.movieService.getFavoriteMoviesByUser(token);
+}
 
 }

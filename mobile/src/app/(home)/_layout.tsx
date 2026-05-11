@@ -13,6 +13,8 @@ export default function AppLayout() {
         <Tabs.Screen name="index" options={{ headerShown: false, tabBarShowLabel: false, title: "Menú principal", tabBarIcon: ({color,size}, ) => <Entypo name="home" size={size} color={color}/> }} />
         <Tabs.Screen name="(friends)" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Amigos", title: "Mostrar amigos y solicitudes de amistad", tabBarIcon: ({color,size} ) => <FontAwesome5 name="user-friends" size={size} color={color} /> }} />
         <Tabs.Screen name="(logger)" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Registrar", title: "Registrar contenido", tabBarIcon: ({color,size} ) => <AntDesign name="plus-circle" size={size} color={color} /> }} />
+        <Tabs.Screen name="(profile)" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Perfil", title: "Perfil", tabBarIcon: ({color,size} ) => <AntDesign name="user" size={size} color={color} /> }} />
+
       </Tabs>
 
   );

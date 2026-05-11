@@ -33,7 +33,14 @@ export default function ResetPasswordScreen() {
         <Text className="text-white text-medium text-center">
           Este enlace expiró o es inválido. Solicita un nuevo correo de restablecimiento.
         </Text>
-        <Button label="Volver a inicio de sesión" onPress={() => replace("/sign-in")} />
+        <Button label="Volver a inicio de sesión" 
+  onPress={() => {
+    router.dismissAll();
+    
+    setTimeout(() => {
+      router.replace("/sign-in");
+    }, 100);
+  }} />
       </View>
     );
   }
@@ -92,7 +99,13 @@ export default function ResetPasswordScreen() {
         <Text className="text-white text-medium text-center">
           Tu contraseña fue actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
         </Text>
-        <Button label="Ir a inicio de sesión" onPress={() => replace("/sign-in")} />
+        <Button label="Ir a inicio de sesión" onPress={() => {
+          router.dismissAll();
+          
+          setTimeout(() => {
+            router.replace("/sign-in");
+          }, 100);
+        }} />
       </View>
     );
   }
@@ -181,7 +194,13 @@ export default function ResetPasswordScreen() {
                 />
                                 <Button
                   label="Cancelar"
-                  onPress={() => router.replace("/sign-in")}
+                  onPress={() => {
+                    router.dismissAll();
+                    
+                    setTimeout(() => {
+                      router.replace("/sign-in");
+                    }, 100);
+                  }}
                   bgColor= "#808080"
                   disabled={screenState === "loading"}
                   loading={screenState === "loading"}
