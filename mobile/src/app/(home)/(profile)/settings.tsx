@@ -51,8 +51,6 @@ export default function SettingsScreen() {
 
         await updateFavorites(movieIds, showIds, session);
 
-        console.log("PHOTO URI:", photoUri);
-
         if (photoUri?.startsWith("file://")) {
             await uploadProfilePicture(photoUri, session);
         } else if (photoUri === null) {
@@ -62,7 +60,6 @@ export default function SettingsScreen() {
 
         await refetch();
         await refreshUser();
-        console.log("USER PROFILE:", user?.profilePicture);
         console.log("Cambios guardados");
 
         // opcional
