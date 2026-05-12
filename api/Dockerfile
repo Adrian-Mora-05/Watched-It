@@ -13,6 +13,7 @@ COPY shared/ ./shared/
 COPY api/package*.json ./api/
 RUN cd api && npm install --omit=dev
 COPY --from=builder /app/api/dist /app/api/dist
+RUN ln -s /app/api/node_modules /app/node_modules
 WORKDIR /app/api
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
