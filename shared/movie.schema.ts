@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod' 
 
 //general schema for pagination (by param)
 export const readMovieParam = z.object({ 
@@ -9,6 +9,7 @@ export const readMovieParam = z.object({
     genre: z.string().optional(),
     ageRestriction: z.coerce.boolean().optional(),
     length: z.coerce.number().optional(),
+    country: z.string().optional(),
 })
 
 //schema for reading each movie with general info

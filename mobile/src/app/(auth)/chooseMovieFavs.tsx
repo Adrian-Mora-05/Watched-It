@@ -50,8 +50,12 @@ export default function ChooseFavsScreen() {
       });
       skipRef.current += LIMIT;
     } catch (e: any) {
-      setToastMessage("Error al cargar las películas");
-    } finally {
+  console.log("MOVIE ERROR:", e);
+  console.log("MOVIE ERROR RESPONSE:", e?.response?.data);
+  console.log("MOVIE ERROR MESSAGE:", e?.message);
+
+  setToastMessage(e?.message || "Error al cargar las películas");
+} finally {
       isLoadingRef.current = false;
       setLoading(false);
     }
@@ -86,7 +90,7 @@ export default function ChooseFavsScreen() {
       </Text>
 
       <SearchFilter
-        label="¿No aparece la que quieres? Búscala por título"
+        label="¿No aparece la que quieres? Búscala por título."
         placeholder="Escribe un título..."
         onSearch={async (text) => {
           try {

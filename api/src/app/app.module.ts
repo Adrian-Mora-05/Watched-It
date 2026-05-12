@@ -9,9 +9,10 @@ import { CatalogModule } from 'src/catalog/catalog.module';
 import { FriendModule } from 'src/friend/friend.module';
 import { ChatModule } from 'src/chat/chat.module';
 import {DiaryModule} from 'src/diary/diary.module';
+import { ListModule } from '../list/list.module';
 
 @Module({
-  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule],
+  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ListModule],
   controllers: [AppController],
   providers: [AppService],
 })

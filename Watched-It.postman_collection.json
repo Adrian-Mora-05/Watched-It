@@ -1,0 +1,1138 @@
+{
+  "info": {
+    "_postman_id": "f2934b24-b283-4569-ab74-2e6430fbf4cc",
+    "name": "Watched-It",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47801774"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "Send email to change password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"correoprueba\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/forgot-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sign in",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n \"email\": \"amigo@gmail.com\",\r\n \"password\":\"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/signin",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "auth",
+                "signin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"amigo@gmail.com\",\"password\":\"123456\",\"name\":\"paquito\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/signup",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "friend",
+      "item": [
+        {
+          "name": "Get all friend requests",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzAzNTM5LCJpYXQiOjE3NzgyOTk5MzksImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyOTk5Mzl9XSwic2Vzc2lvbl9pZCI6IjE0Y2JhZWY3LTBhOTItNDI3NS05YjVmLTQ5NTFhMWUzY2UzOSIsImlzX2Fub255bW91cyI6ZmFsc2V9.DllTqH6XLIZtoegNBeJT8_Oq6dxGFSsztdLfLhNSAwtgiIJs44k7Q8qkZsEXC4sYEWL8lY_GrdlGLc1rfL0HoA",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/friend/request/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "friend",
+                "request",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get all friend requests",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MjA0NTg5LCJpYXQiOjE3NzgyMDA5ODksImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyMDA5ODl9XSwic2Vzc2lvbl9pZCI6IjJhNWNmOGI4LTQxZmUtNDA0MS05MGZlLTA3ZmYwNGJjMGVmYyIsImlzX2Fub255bW91cyI6ZmFsc2V9.q3yO0Vd5BZ0Yv2dcq_j_TxO6PPPziZnbgOoU1hqunLUn3SShXNcPKgIhvptGl_lnz7MoThJ3fBHjbk_ymJ-Ckw",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/friend/request/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "friend",
+                    "request",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "description": "",
+                  "type": "text"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "60"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3c-KaxU8OKLczRDfkRlkNOrvwLtUVA\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 08 May 2026 00:44:20 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": 5,\n        \"sender_name\": \"paquito\",\n        \"sender_profile_pic\": null\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get all friend",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzEyOTIxLCJpYXQiOjE3NzgzMDkzMjEsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzMDkzMjF9XSwic2Vzc2lvbl9pZCI6IjBiMzQ4NWRmLTRiZWYtNGJhOS05ODUwLTY4NDU1YTQyNDBjZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.oJQQzp9d0qaY4EQUAJJIBxn8aO9O_STOJLXPDQKBN5O0_DVfYorcQR5YL7sllZ1zJ8UUrKp-Kr5acMk9y907tw",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/friend/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "friend",
+                ""
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example get all friend",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzEyOTIxLCJpYXQiOjE3NzgzMDkzMjEsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzMDkzMjF9XSwic2Vzc2lvbl9pZCI6IjBiMzQ4NWRmLTRiZWYtNGJhOS05ODUwLTY4NDU1YTQyNDBjZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.oJQQzp9d0qaY4EQUAJJIBxn8aO9O_STOJLXPDQKBN5O0_DVfYorcQR5YL7sllZ1zJ8UUrKp-Kr5acMk9y907tw",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/friend/",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "friend",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "124"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"7c-vMrDBRs09dpD/GI+KDncFpAvmj0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 09 May 2026 03:30:36 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": 5,\n        \"friend_id\": \"654dedc5-0d81-48d9-8e15-98894b07b5f0\",\n        \"friend_name\": \"paquito\",\n        \"friend_profile_pic\": null,\n        \"chat_id\": 11\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Example accept friend request",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzA5MjM1LCJpYXQiOjE3NzgzMDU2MzUsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzMDU2MzV9XSwic2Vzc2lvbl9pZCI6IjVhY2JkZWM2LWRjOTUtNGUwNy1hZjNkLWU3MDc5YTY3NGU0YSIsImlzX2Fub255bW91cyI6ZmFsc2V9.m23FNHQEpuuGMBnlWm0sJ1tbk9ABHcQlRZtAiF33LYZth7bIkHtw706fsXaLEAzLMRIQLdMtflD_g0u_ZdfuuQ",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/friend/request/7",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "friend",
+                "request",
+                "7"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Accept friend request",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzAxNjg2LCJpYXQiOjE3NzgyOTgwODYsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyOTgwODZ9XSwic2Vzc2lvbl9pZCI6IjJlZGEwZTVhLTgwM2YtNDkxMS05MjBjLTgwNDllMThhMzc4OCIsImlzX2Fub255bW91cyI6ZmFsc2V9.AjrE15lgDC8LYnJgsuPpnTin0vyqUu4R4_pOBBVyfw__KuEHIEITwcCgyZSTTLLWlt9Bn_jvv_9yNthaZXM5TQ",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/friend/request/5",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "friend",
+                    "request",
+                    "5"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "61"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3d-DcPbIS/W3mQEtI3CPKNUs5bH98M\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 09 May 2026 03:47:25 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"message\": \"Solicitud de amistad aceptada \",\n    \"id_new_chat\": 15\n}"
+            }
+          ]
+        },
+        {
+          "name": "Deny friend request",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzA4NjIwLCJpYXQiOjE3NzgzMDUwMjAsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzMDUwMjB9XSwic2Vzc2lvbl9pZCI6Ijc0NjJmNDkxLTNmOTItNDVlNC1iNGZiLWMzOTVjZmZiZWMxYSIsImlzX2Fub255bW91cyI6ZmFsc2V9.uPqfC_om7XAjQSCdRCg57C717QOzAU3Mnpq9gBdQki0dh3aP30ZqTp8HX8U5PETwAGdqk04lETD09J_h70PnPQ",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"requestId\":4\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/friend/request/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "friend",
+                "request",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "item": [
+        {
+          "name": "Get all shows",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/show/?title=s",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "show",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "s"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get all shows",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/show/?year=2014&title=True",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "show",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "year",
+                      "value": "2014"
+                    },
+                    {
+                      "key": "title",
+                      "value": "True",
+                      "type": "text"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "",
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "134"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"86-A9x2MyPENxID5G2N/7ZwHT/bjY8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 07 May 2026 22:40:57 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [
+                {
+                  "expires": "Invalid Date",
+                  "domain": "",
+                  "path": ""
+                }
+              ],
+              "body": "{\n    \"data\": [\n        {\n            \"id\": 20,\n            \"title\": \"True Detective\",\n            \"image_link\": \"MV5BYjgwYzA1NWMtNDYyZi00ZGQyLWI5NTktMDYwZjE2OTIwZWEwXkEyXkFqcGc@._V1_.jpg\"\n        }\n    ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get all movies",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/movie?limit=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "movie"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all movies and shows mixed",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/catalog/?skip=0&limit=5&title=Forrest Gump",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "catalog",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "title",
+                  "value": "Forrest Gump"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "movies + series + catalog"
+    },
+    {
+      "name": "chat",
+      "item": [
+        {
+          "name": "Send message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MjE4Mzc3LCJpYXQiOjE3NzgyMTQ3NzcsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyMTQ3Nzd9XSwic2Vzc2lvbl9pZCI6IjQ1MWMyODhjLTI4YjQtNDVhNi05NzVlLTNjNzkyZWEwOTRjZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.H2GSEsiYox_L-LPbl3be-LA_SGO7TsFn6nqr5Rk12tDKSjBBKFy55133MSLcuq0vzmw6tt8Sm6jJfcKTXFuBNg",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"user_id\":\"fd6c4bac-db04-4439-adb6-e7ec0a7933a5\",\r\n    \"chat_id\":11 , \r\n    \"text\": \"hol156186415141111\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/chat/message",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "chat",
+                "message"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example send message",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzU2NDY0LCJpYXQiOjE3NzgzNTI4NjQsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzNTI4NjR9XSwic2Vzc2lvbl9pZCI6Ijc0ZDcyMjdlLTU3ODAtNDI0MS05ZDYzLTRmZDQ1MDI1N2VlNiIsImlzX2Fub255bW91cyI6ZmFsc2V9.nTGKc67QxrIFf-IDs8U6L1DR76gqO3kvzKojy0ktY4p1cUR4pMcV_TIBeG4HocHSmu9Re-s6XrEvS7dbYm5gUA",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"user_id\":\"fd6c4bac-db04-4439-adb6-e7ec0a7933a5\",\r\n    \"text\": \"hol156186415141111\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/chat/20/message",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "chat",
+                    "20",
+                    "message"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "164"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"a4-Ktrk/NJDV3Kp3xetmTMzeCFYXVE\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 09 May 2026 18:54:40 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": 56,\n        \"fecha_creacion\": \"2026-05-09T18:54:41.62129+00:00\",\n        \"id_usuario\": \"fd6c4bac-db04-4439-adb6-e7ec0a7933a5\",\n        \"texto\": \"hol156186415141111\",\n        \"id_conversacion\": 20\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get messages from chat",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MzU5MjU2LCJpYXQiOjE3NzgzNTU2NTYsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgzNTU2NTZ9XSwic2Vzc2lvbl9pZCI6ImFiYWFmODU3LWI5YzItNDFiMS05MjUyLTY5YTMyNGI1ZGI3MCIsImlzX2Fub255bW91cyI6ZmFsc2V9.yrgpctSakVpfGs89-g_Zy0ULYHhFYFWqZmWMvd1UK28opcE-JPXhDdlaDaGG7wTCsl9v9aibl5LfkQkBhO1lfw",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/chat/20",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "chat",
+                "20"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Example get messages",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc4MjYzNDIwLCJpYXQiOjE3NzgyNTk4MjAsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NzgyNTk4MjB9XSwic2Vzc2lvbl9pZCI6IjAwNGY5OWI1LWIxMjctNGZlZC1iZjY4LWJkMTIxNDAzODcyZiIsImlzX2Fub255bW91cyI6ZmFsc2V9.m6lahdPS_WTsz8czJ7Z-Ee76KNaF-IPk7xMDTUIBE1gtB4_iXLhBZckIIL9l6uGsHxf8pdWTlQcMY76-uWoT4Q",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "http://localhost:3000/api/chat/11?skip=14&limit=14",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "api",
+                    "chat",
+                    "11"
+                  ],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "14"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "14"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "1218"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"4c2-u0RY+jK3sB/JK3flsbWx8GriZ04\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 08 May 2026 17:07:32 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"fecha_creacion\": \"2026-05-08T05:12:04.013625+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 41\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T05:11:44.030131+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 40\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T05:00:10.965662+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 39\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:56:39.57418+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 38\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:55:39.970289+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 37\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:54:29.351035+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 36\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:53:30.523174+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 35\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:52:30.251757+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 34\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:50:45.206151+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 33\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:50:05.385971+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 32\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:48:58.605649+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 31\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:47:43.166276+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 30\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:42:44.356276+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 29\n    },\n    {\n        \"fecha_creacion\": \"2026-05-08T04:42:36.764157+00:00\",\n        \"texto\": \"hola hola hoal\",\n        \"id\": 28\n    }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "Create ratings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJmZDZjNGJhYy1kYjA0LTQ0MzktYWRiNi1lN2VjMGE3OTMzYTUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc3NzAxNjQ4LCJpYXQiOjE3Nzc2OTgwNDgsImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoieGltZW5hbW9saW5hcG9ydGlsbGEwMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoieGltZW1vbGluYSIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiZmQ2YzRiYWMtZGIwNC00NDM5LWFkYjYtZTdlYzBhNzkzM2E1In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3Nzc2OTgwNDh9XSwic2Vzc2lvbl9pZCI6IjgxMTVlMzcyLTVkNjctNDVmNy1hMTliLWE4ZDA3M2ZiOGU4ZSIsImlzX2Fub255bW91cyI6ZmFsc2V9.v-FX3oPTpbYP3TaTs-4Ct0VCkbXVSJ2uD007FPbkE03XdyXF9U57ry-LBYCgazT0KpcaS1Zv0c7KzLF2ZtAUFQ"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"content\": \"really nice\", \"id_content\": 1, \"rating\": 5, \"type_content\": \"Movie\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/rating",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "rating"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload or change profile pic",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc2NDA1ODkxLCJpYXQiOjE3NzY0MDIyOTEsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoidGVzdDAxIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3NjQwMjI5MX1dLCJzZXNzaW9uX2lkIjoiY2U5NDgyZDgtMTY4Yy00NTliLWE2NTEtYmRlMWVmZjhjNWE0IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.PTufPIQoGrdBwoaUTdJw3pJLUGSid6HAwhVJ7exqdZPVsp9-FtaVadVmPj2EaFCqH85Lx-XWUXK0RwMEGljcBg",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "eb44d737-37bb-436e-bc6b-982b5ded1d4a",
+                  "value": null
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/profile-picture",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "profile-picture"
+              ],
+              "query": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc2NDA1MDM4LCJpYXQiOjE3NzY0MDE0MzgsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoidGVzdDAxIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3NjQwMTQzOH1dLCJzZXNzaW9uX2lkIjoiZmI2NjdlNzItOGY4Ny00MjMwLThmNjQtYTMxN2FmNGFjNWM1IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.LUK-Q4Z2EjoFGtF39QZ8iBn_EzUKce39ph34fkZ7Kc9-GhnvOYNuPrVZYBKFi1KTM9yDiskRwje6YWIJlbDlhw",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create user's favorite movies and shows",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6IjZjNzA3YTkwLTY1MDEtNGQwNS1iYzg5LTI3NDZjZWNiN2EzMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Rsemp0aXJ4d25ldWh0Z2Z4eWhsLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc2NzQ4MTA4LCJpYXQiOjE3NzY3NDQ1MDgsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibm9tYnJlIjoidGVzdDAxIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiJlNDEyNTQ5Ny1iN2U0LTQ5ZjQtYTQyYy1jYThlYTczM2IzM2MifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc3Njc0NDUwOH1dLCJzZXNzaW9uX2lkIjoiOGQ3MDE4NTAtNjU2OC00MDMyLWI3OTYtNzI3NDg4ZGI5NWJhIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.w3EElINBQa6Hq4fsEfFUirZBw_PBpFu7aFuuIKnRQDu_OPafvkUGLVLMfDt0S17d3M8EReTBFXn-T_mvacSaug",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"movies\": [1,2,3],\r\n    \"shows\":[4,5,6]\r\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/user/favorites",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "user",
+                "favorites"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Get Server's Health",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "text/html; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "18"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"12-gAblUOXnaY1uM6plxb3xV3835D4\""
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 07 May 2026 03:17:34 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "cookie": [],
+          "body": "holiwis desde nest"
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

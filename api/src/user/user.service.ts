@@ -183,4 +183,27 @@ export class UserService {
     };
     return result;
   }
+
+
+async searchUsers(name: string) {
+
+    const { data, error } = await supabase
+        .from('usuario')
+        .select(`
+            id,
+            nombre,
+            enlace_foto_perfil
+        `)
+        .ilike('nombre', `%${name}%`);
+
+    if (error) {
+        throw new BadRequestException(error.message);
+    }
+
+    return { data };
+}
+
+
+
+
 }

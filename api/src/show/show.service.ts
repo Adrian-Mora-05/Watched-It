@@ -16,6 +16,8 @@ export class ShowService {
         if (parsedParam.year !== undefined)             query = query.eq('anio_inicio', parsedParam.year)
         if (parsedParam.genre !== undefined)            query = query.eq('genero', parsedParam.genre)
         if (parsedParam.ageRestriction !== undefined)   query = query.is('restriccion_edad', parsedParam.ageRestriction)
+        if (parsedParam.country !== undefined) {        query = query.eq('pais', parsedParam.country);
+}
 
         const { data: pelicula, error } = await query
         if (error) throw new BadRequestException(error.message)
@@ -43,4 +45,98 @@ export class ShowService {
         if (error) throw new BadRequestException(error.message);
         return data.map(p => p.serie);
     }
+
+
+    // NUEVO — detalle serie
+    async getShowById(id: number) {
+
+        const { data: show, error } = await supabase
+            .from('serie')
+            .select(`
+                id,
+                titulo,
+                anio_inicio,
+                anio_fin,
+                pais,
+                cant_temporadas,
+                genero,
+                restriccion_edad,
+                sinopsis,
+                enlace_imagen
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            throw new BadRequestException(error.message);
+        }
+
+        // ratings
+        const { data: ratings } = await supabase
+            .from('calificacion_x_serie')
+            .select('calificacion')
+            .eq('id_serie', id);
+
+        const distribution = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0
+        };
+
+        ratings?.forEach(r => {
+            distribution[r.calificacion as keyof typeof distribution]++;
+        });
+
+        // top review
+        const { data: topReview } = await supabase
+            .from('comentario_x_serie')
+            .select(`
+                id,
+                contenido,
+                cant_me_gusta,
+                calificacion_x_serie (
+                    calificacion,
+                    usuario:id_usuario (
+                        nombre
+                    )
+                )
+            `)
+            .order('cant_me_gusta', { ascending: false })
+            .limit(1)
+            .single();
+
+        return {
+            show,
+            ratings_distribution: distribution,
+            top_review: topReview
+        };
+    }
+
+    // NUEVO — reviews serie
+    async getShowReviews(id: number) {
+
+        const { data, error } = await supabase
+            .from('comentario_x_serie')
+            .select(`
+                id,
+                contenido,
+                cant_me_gusta,
+                calificacion_x_serie (
+                    calificacion,
+                    usuario:id_usuario (
+                        nombre
+                    )
+                )
+            `)
+            .eq('calificacion_x_serie.id_serie', id);
+
+        if (error) {
+            throw new BadRequestException(error.message);
+        }
+
+        return { data };
+    }
+
 }

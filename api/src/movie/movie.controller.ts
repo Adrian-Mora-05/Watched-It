@@ -22,4 +22,15 @@ export class MovieController {
   return this.movieService.getFavoriteMoviesByUser(token);
 }
 
+@Get(':id')
+async getMovieById(@Param('id') id: number) {
+    return this.movieService.getMovieById(id);
+}
+
+
+@Get(':id/reviews')
+async getMovieReviews(@Param('id') id: number) {
+    return this.movieService.getMovieReviews(id);
+}
+
 }
