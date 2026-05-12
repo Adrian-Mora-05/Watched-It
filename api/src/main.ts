@@ -6,6 +6,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api'); // base url for all routes
   app.useGlobalPipes(new ZodValidationPipe()); // global validation pipe using Zod
-  await app.listen(3000);
+  await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
