@@ -2,6 +2,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY shared/ ./shared/
 COPY api/package*.json ./api/
+COPY api/tsconfig*.json ./api/
 RUN cd api && npm install
 COPY api/ ./api/
 WORKDIR /app/api
