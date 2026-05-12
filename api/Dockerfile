@@ -1,13 +1,18 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 WORKDIR /app
-
 COPY shared/ ./shared/
-
 COPY api/package*.json ./api/
 RUN cd api && npm install
-
-# Copy api source
 COPY api/ ./api/
-
 WORKDIR /app/api
-CMD ["npm", "run", "start:dev"]
+RUN npm run build
+
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY shared/ ./shared/
+COPY api/package*.json ./api/
+RUN cd api && npm install --omit=dev
+COPY --from=builder /app/api/dist ./api/dist
+WORKDIR /app/api
+EXPOSE 3000
+CMD ["npm", "run", "start:prod"]
