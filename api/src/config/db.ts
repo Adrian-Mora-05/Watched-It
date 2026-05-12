@@ -1,20 +1,22 @@
 import 'dotenv/config'; 
 import { createClient } from '@supabase/supabase-js';
 import process from 'process';
+import ws from 'ws';
 
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_KEY!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
-//this client is used for public requests, it will be created with the user's token in the auth service
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseOptions = {
+  realtime: { transport: ws as any } 
+};
 
-//this client is used for admin requests, it has access to all the data in the database
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
+const supabase = createClient(supabaseUrl, supabaseKey, supabaseOptions);
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, supabaseOptions);
 
-//this client is used for authenticated requests, it will be created with the user's token in the auth service
 export const createUserClient = (userToken: string) =>
   createClient(supabaseUrl, supabaseKey, {
+    ...supabaseOptions,
     global: {
       headers: {
         Authorization: `Bearer ${userToken}`,
