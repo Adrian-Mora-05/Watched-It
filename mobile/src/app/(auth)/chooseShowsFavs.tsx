@@ -92,7 +92,7 @@ export default function ChooseShowsFavsScreen() {
       </Text>
 
       <SearchFilter
-        label="¿No aparece la que quieres? Búscala por título"
+        label="¿No aparece la que quieres? Búscala por título."
         placeholder="Escribe un título..."
         onSearch={async (text) => {
           try {

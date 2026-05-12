@@ -6,6 +6,8 @@ const url = __DEV__
 
 const urlComplete = url?.endsWith('/api') ? url : `${url}/api`;
 
+console.log("BASE URL:", urlComplete);
+
 const api = axios.create({
   baseURL: urlComplete,
   headers: {

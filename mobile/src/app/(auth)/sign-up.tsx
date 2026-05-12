@@ -1,6 +1,17 @@
 import { router } from 'expo-router';
 import { useRef, useState } from "react";
-import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo,  Modal } from "react-native";
+import {
+  View,
+  Keyboard,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput as RNTextInput,
+  AccessibilityInfo,
+  Modal,
+  ScrollView,
+} from "react-native";
+
 import { Text, TouchableOpacity } from "@react-native-ama/react-native";
 import { Form } from "@react-native-ama/forms";
 import Button from "@/components/ui/Button";
@@ -26,26 +37,39 @@ export default function SignUp() {
   const [showCamera, setShowCamera] = useState(false);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
 
+  const passwordRef = useRef<RNTextInput>(null);
+
   const handlePhoto = (uri: string) => {
     setPhotoUri(uri);
     setShowCamera(false);
   };
-  const passwordRef = useRef<RNTextInput>(null);
 
   const validateForm = (): boolean => {
-    const result = createUser.safeParse({ email, password, name });
+    const result = createUser.safeParse({
+      email,
+      password,
+      name,
+    });
 
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
+
       const newErrors = {
         email: fieldErrors.email?.[0],
         password: fieldErrors.password?.[0],
         name: fieldErrors.name?.[0],
-
       };
+
       setErrors(newErrors);
-      const errorMessages = Object.values(newErrors).filter(Boolean).join('. ');
-      AccessibilityInfo.announceForAccessibility(`Errores en el formulario: ${errorMessages}`);
+
+      const errorMessages = Object.values(newErrors)
+        .filter(Boolean)
+        .join('. ');
+
+      AccessibilityInfo.announceForAccessibility(
+        `Errores en el formulario: ${errorMessages}`
+      );
+
       return false;
     }
 
@@ -54,126 +78,182 @@ export default function SignUp() {
   };
 
   return (
-      <View className="bg-dark flex-1">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 bg-dark"
+    <View className="flex-1 bg-dark">
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+        accessible={false}
       >
-        <ErrorToast
-          message={toastMessage}
-          visible={!!toastMessage}
-          onDismiss={() => setToastMessage(undefined)} />
-        <View className="w-full">
-          <ReturnButton label="Volver" onPress={() => router.back()} />
-        </View>
-        <View className="content-start items-center m-16 mt-8 bg-dark justify-around">
-          <Text className="text-white text-large font-bold " accessibilityLanguage="es" accessibilityRole="header">
-            Registrarse
-          </Text>
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1 bg-dark"
+        >
+          <ErrorToast
+            message={toastMessage}
+            visible={!!toastMessage}
+            onDismiss={() => setToastMessage(undefined)}
+          />
 
-        <View className="flex-1 bg-dark items-center justify-center pl-4 pr-4">
-          <View className="w-full h-full gap-7 " accessibilityLanguage="es">
-            <Form onSubmit={() => false}>
-              <Input
-                label="Nombre"
-                placeholder="usuario123"
-                value={name}
-                onChangeText={(text: string) => {
-                  setName(text);
-                  setErrors({});
-                }}
-                keyboardType="default"
-                autoCapitalize="none"
-                autoComplete="username"
-                nextFormField={passwordRef as unknown as React.RefObject<RNTextInput>}
-                hasValidation={false}
-                error={errors.name}
-              />
-              <Input
-                label="Correo electrónico"
-                placeholder="ejemplo@correo.com"
-                value={email}
-                onChangeText={(text: string) => {
-                  setEmail(text);
-                  setErrors({});
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                nextFormField={passwordRef as unknown as React.RefObject<RNTextInput>}
-                hasValidation={false}
-                error={errors.email}
-              />
+          <View className="w-full">
+            <ReturnButton
+              label="Volver"
+              onPress={() => router.back()}
+            />
+          </View>
 
-              <Input
-                label="Contraseña"
-                placeholder="••••••••"
-                value={password}
-                onChangeText={(text: string) => {
-                  setPassword(text);
-                  setErrors({});
-                }}
-                secureTextEntry
-                accessibilityLanguage="es"
-                ref={passwordRef as unknown as React.RefObject<RNTextInput>}
-                error={errors.password}
-              />
-              <View className="relative w-44 bg-red ">
-                  <Text className="text-normal text-white pb-4 w-56" accessibilityLanguage="es">
-                  Agregar foto de perfil
-                  </Text>
-                <ImageButton
-                  borderColor='grey'
-                  borderWidth={1}
-                  size={150}
-                  source={
-                    photoUri
-                      ? { uri: photoUri }
-                      : require('../../../assets/images/camera-icon.png')
-                  }
-                  rounded="md"
-                  onPress={() => setShowCamera(true)}
-                  accessibilityLabel="Foto de perfil"
-                  accessibilityHint="Agrega una foto de perfil"
-                />
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <View className="flex-1 px-5 pb-10">
 
-                {photoUri && (
-                  <TouchableOpacity
-                    onPress={() => setPhotoUri(null)}
-                    accessibilityRole="button"
-                    accessibilityLabel="Eliminar foto de perfil"
-                    className="absolute top-5 left-36 w-14 h-14 rounded-full items-center justify-center"
-                  >
-                    <View className="bg-red rounded-full">
-                      <Feather name="x-circle" size={35} color="white" />
-                    </View>
-                  </TouchableOpacity>
-                )}
+              {/* Header */}
+              <View className="items-center pt-6 pb-8">
+                <Text
+                  className="text-white text-large font-bold"
+                  accessibilityLanguage="es"
+                  accessibilityRole="header"
+                >
+                  Registrarse
+                </Text>
               </View>
 
-              <Modal visible={showCamera} animationType="slide" presentationStyle="fullScreen">
-                <CameraModule
-                  onClose={() => setShowCamera(false)}
-                  onPhoto={handlePhoto}
-                />
-              </Modal>
+              {/* Form */}
+              <View className="flex-1">
+                <Form onSubmit={() => false}>
 
-            <View className="pt-5" />
-              <Button
-                label="Continuar"
-                loading={loading}
-                onPress={async () => {
-                  if (!validateForm()) return;
-                  router.push({ pathname: "/chooseMovieFavs", params: { email: email, password: password, name: name, photoUri: photoUri } })
-                }}
-              />
-            </Form>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+                  <Input
+                    label="Nombre"
+                    placeholder="usuario123"
+                    value={name}
+                    onChangeText={(text: string) => {
+                      setName(text);
+                      setErrors({});
+                    }}
+                    keyboardType="default"
+                    autoCapitalize="none"
+                    autoComplete="username"
+                    nextFormField={passwordRef}
+                    hasValidation={false}
+                    error={errors.name}
+                  />
+
+                  <Input
+                    label="Correo electrónico"
+                    placeholder="ejemplo@correo.com"
+                    value={email}
+                    onChangeText={(text: string) => {
+                      setEmail(text);
+                      setErrors({});
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    nextFormField={passwordRef}
+                    hasValidation={false}
+                    error={errors.email}
+                  />
+
+                  <Input
+                    label="Contraseña"
+                    placeholder="••••••••"
+                    value={password}
+                    onChangeText={(text: string) => {
+                      setPassword(text);
+                      setErrors({});
+                    }}
+                    secureTextEntry
+                    accessibilityLanguage="es"
+                    ref={passwordRef}
+                    error={errors.password}
+                  />
+
+                  {/* Foto de perfil */}
+                  <View className="mt-6 items-center">
+
+                    <Text
+                      className="text-normal text-white pb-4"
+                      accessibilityLanguage="es"
+                    >
+                      Agregar foto de perfil
+                    </Text>
+
+                    <View className="relative">
+
+                      <ImageButton
+                        borderColor="grey"
+                        borderWidth={1}
+                        size={150}
+                        source={
+                          photoUri
+                            ? { uri: photoUri }
+                            : require('../../../assets/images/camera-icon.png')
+                        }
+                        rounded="md"
+                        onPress={() => setShowCamera(true)}
+                        accessibilityLabel="Foto de perfil"
+                        accessibilityHint="Agrega una foto de perfil"
+                      />
+
+                      {photoUri && (
+                        <TouchableOpacity
+                          onPress={() => setPhotoUri(null)}
+                          accessibilityRole="button"
+                          accessibilityLabel="Eliminar foto de perfil"
+                          className="absolute -top-2 -right-2"
+                        >
+                          <View className="bg-red rounded-full">
+                            <Feather
+                              name="x-circle"
+                              size={32}
+                              color="white"
+                            />
+                          </View>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+
+                  {/* Cámara */}
+                  <Modal
+                    visible={showCamera}
+                    animationType="slide"
+                    presentationStyle="fullScreen"
+                  >
+                    <CameraModule
+                      onClose={() => setShowCamera(false)}
+                      onPhoto={handlePhoto}
+                    />
+                  </Modal>
+
+                  {/* Botón */}
+                  <View className="pt-10 pb-6">
+                    <Button
+                      label="Continuar"
+                      loading={loading}
+                      onPress={async () => {
+
+                        if (!validateForm()) return;
+
+                        router.push({
+                          pathname: "/chooseMovieFavs",
+                          params: {
+                            email,
+                            password,
+                            name,
+                            photoUri,
+                          }
+                        });
+                      }}
+                    />
+                  </View>
+
+                </Form>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </View>
   );
 }

@@ -1,21 +1,30 @@
+// shared/show.schema.ts
+
 import { z } from 'zod'
 
-//general schema for filtering shows (by param)
-export const readShowParam = z.object({ 
-    skip: z.coerce.number().default(0).optional(),             
+// general schema for filtering shows (by param)
+export const readShowParam = z.object({
+    skip: z.coerce.number().default(0).optional(),
     limit: z.coerce.number().default(9).optional(),
+
     title: z.string().default('').optional(),
+
     year: z.coerce.number().optional(),
+
     genre: z.string().optional(),
+
+    country: z.string().optional(),
+
     ageRestriction: z.coerce.boolean().optional(),
 })
 
-//schema for reading each show with general info
+// schema for reading each show with general info
 export const readEachShow = z.object({
-        id: z.number(),
-        title: z.string(),
-        image_link: z.string()
+    id: z.number(),
+    title: z.string(),
+    image_link: z.string()
 })
 
-export type ReadShowParam = z.infer<typeof readShowParam> //generates a type from the schema
-export type ReadEachShow = z.infer<typeof readEachShow> //generates a type from the schema
+export type ReadShowParam = z.infer<typeof readShowParam>
+
+export type ReadEachShow = z.infer<typeof readEachShow>

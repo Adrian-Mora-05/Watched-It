@@ -1,4 +1,4 @@
-import { Controller, Patch, UploadedFile, UseInterceptors, Req, UseGuards, Post, Body, Get, BadRequestException, Headers, Put, Delete} from '@nestjs/common';
+import { Controller, Patch, UploadedFile, UseInterceptors, Req, UseGuards, Post, Body, Get, BadRequestException, Headers, Put, Delete, Query, Param} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Multer } from 'multer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -63,4 +63,19 @@ export class UserController {
   ) {
     return this.userService.logContent(req.user.id,body);
   } 
+
+  @Get('search')
+  async searchUsers(@Query('name') name: string) {
+      return this.userService.searchUsers(name);
+  }
+
+
+  @Get(':id')
+  async getUserById(@Param('id') id: string) {
+      return this.userService.getUserById(id);
+  }
+
+
+
+
 }
