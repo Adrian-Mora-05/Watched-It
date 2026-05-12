@@ -17,4 +17,5 @@ COPY --from=builder /app/api/dist /app/api/dist
 RUN ln -s /app/api/node_modules /app/node_modules
 WORKDIR /app/api
 EXPOSE 3000
+ENV NODE_PATH=/app/api/node_modules
 CMD ["npm", "run", "start:prod"]
