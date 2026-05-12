@@ -13,8 +13,7 @@ import { ReviewModule } from 'src/review/review.module';
 import { ListModule } from '../list/list.module';
 
 @Module({
-  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ReviewModule],
-  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ListModule],
+  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ReviewModule,ListModule],
   controllers: [AppController],
   providers: [AppService],
 })

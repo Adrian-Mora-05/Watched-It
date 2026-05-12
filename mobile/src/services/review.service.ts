@@ -2,51 +2,21 @@ import api from "./api";
 
 export const baseUrl = "https://m.media-amazon.com/images/M/"; // all the img urls start with this
 
+//no tomar esta function como referencia en general porque no la he hecho
 export const getAllReviews = async (skip: number, limit: number) => {
-  const response = await api.get("/review", { 
-    params: { skip, limit }
-  });
-  return response.data;
+
   /*[
     {
         "id": 1,
         "contenido": "really nice",
-        "cant_me_gusta": 20,
+        "cant_me_gusta": 2,
         "calificacion": 5,
         "nombre": "ximemolina",
         "titulo": "The Shawshank Redemption",
         "año": 1994,
-        "enlace_imagen": "MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_.jpg"
-    },
-    {
-        "id": 16,
-        "contenido": "de mis favoritas",
-        "cant_me_gusta": 6,
-        "calificacion": 5,
-        "nombre": "camila",
-        "titulo": "Up",
-        "año": 2009,
-        "enlace_imagen": "MV5BNmI1ZTc5MWMtMDYyOS00ZDc2LTkzOTAtNjQ4NWIxNjYyNDgzXkEyXkFqcGc@._V1_.jpg"
-    },
-    {
-        "id": 9,
-        "contenido": "10/10",
-        "cant_me_gusta": 5,
-        "calificacion": 5,
-        "nombre": "ximemolina",
-        "titulo": "Nuovo Cinema Paradiso",
-        "año": 1988,
-        "enlace_imagen": "MV5BYmI5ZDY5ZDQtYmMyZS00NjU4LTg5NzgtZWMxYjFkMzQzZThiXkEyXkFqcGc@._V1_.jpg"
-    },
-    {
-        "id": 5,
-        "contenido": "súper bueno",
-        "cant_me_gusta": 2,
-        "calificacion": 4,
-        "nombre": "camtthom",
-        "titulo": "Ojing-eo geim",
-        "año": 2021,
-        "enlace_imagen": "MV5BYTU3ZDVhNmMtMDVlNC00MDc0LTgwNDMtYWE5MTI2ZGI4YWIwXkEyXkFqcGc@._V1_.jpg"
+        "enlace_imagen": "MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_.jpg",
+        "tipo": "pelicula",
+        "liked": true
     },
     {
         "id": 1,
@@ -56,7 +26,45 @@ export const getAllReviews = async (skip: number, limit: number) => {
         "nombre": "ximemolina",
         "titulo": "Breaking Bad",
         "año": 2008,
-        "enlace_imagen": "MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_.jpg"
+        "enlace_imagen": "MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_.jpg",
+        "tipo": "serie",
+        "liked": true
+    },
+    {
+        "id": 8,
+        "contenido": "super buena me encanta!",
+        "cant_me_gusta": 0,
+        "calificacion": 3,
+        "nombre": "camtthom",
+        "titulo": "The Lord of the Rings: The Two Towers",
+        "año": 2002,
+        "enlace_imagen": "MV5BOGFkYWJhOGQtODVlOC00OGU2LTgwM2ItZjI0M2Q3NzU5Nzk2XkEyXkFqcGc@._V1_.jpg",
+        "tipo": "pelicula",
+        "liked": false
+    },
+    {
+        "id": 11,
+        "contenido": "increible plot twist",
+        "cant_me_gusta": 0,
+        "calificacion": 4,
+        "nombre": "camila",
+        "titulo": "Shutter Island",
+        "año": 2010,
+        "enlace_imagen": "MV5BMGQyNDA2MzEtOWJkNy00M2U1LTgyMjctMjI0YzZjMTI1OTk3XkEyXkFqcGc@._V1_.jpg",
+        "tipo": "pelicula",
+        "liked": false
+    },
+    {
+        "id": 10,
+        "contenido": "increíble mensaje",
+        "cant_me_gusta": 0,
+        "calificacion": 2,
+        "nombre": "evantsk",
+        "titulo": "The Godfather",
+        "año": 1972,
+        "enlace_imagen": "MV5BZmNiNzM4MTctODI5YS00MzczLWE2MzktNzY4YmNjYjA5YmY1XkEyXkFqcGc@._V1_.jpg",
+        "tipo": "pelicula",
+        "liked": false
     }
 ] */
 };

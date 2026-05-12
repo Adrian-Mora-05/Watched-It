@@ -70,12 +70,4 @@ export class UserController {
   }
 
 
-  @Get(':id')
-  async getUserById(@Param('id') id: string) {
-      return this.userService.getUserById(id);
-  }
-
-
-
-
 }
