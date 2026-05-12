@@ -5,14 +5,14 @@ COPY api/package*.json ./api/
 RUN cd api && npm install
 COPY api/ ./api/
 WORKDIR /app/api
-RUN npm run build
+RUN npm run build && ls -la dist/ 
 
 FROM node:20-alpine AS production
 WORKDIR /app
 COPY shared/ ./shared/
 COPY api/package*.json ./api/
 RUN cd api && npm install --omit=dev
-COPY --from=builder /app/api/dist ./api/dist
+COPY --from=builder /app/api/dist /app/api/dist
 WORKDIR /app/api
 EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
