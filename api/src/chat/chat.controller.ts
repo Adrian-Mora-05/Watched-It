@@ -2,7 +2,7 @@ import { UseGuards, Controller, Post,Body, Req, Get, Query,Param } from '@nestjs
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ChatService } from './chat.service';
 import {sendMessageSchema, getChatMessagesSchema} from '../../../shared/message.schema';
-import { createZodDto } from 'node_modules/nestjs-zod/dist/index.mjs';
+import { createZodDto } from 'nestjs-zod'
 
 class sendMessageDto extends createZodDto(sendMessageSchema) {} 
 

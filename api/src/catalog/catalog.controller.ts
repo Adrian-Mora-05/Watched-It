@@ -1,7 +1,7 @@
 import {Controller, Get, Query} from "@nestjs/common";
 import { CatalogService } from "./catalog.service";
-import { readCatalogParam, ReadCatalogParam } from "../../../shared/catalog.schema";
-import { createZodDto } from "node_modules/nestjs-zod/dist/index.mjs";
+import { readCatalogParam } from "../../../shared/catalog.schema";
+import { createZodDto } from 'nestjs-zod'
 
 class ReadCatalogParamDto extends createZodDto(readCatalogParam) {} //transforms the schema into a dto
 

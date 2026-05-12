@@ -1,9 +1,8 @@
-import { Controller, Post, Body, Get, Req, UseGuards, Res, Query } from '@nestjs/common';
+import { Controller, Post, Body, } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { createZodDto } from 'nestjs-zod';
 import { createUser, loginUser } from '../../../shared/user.schema';
 import { ForgotPasswordSchema, ResetPasswordSchema } from '../../../shared/password.schema';
-import { AuthGuard } from '@nestjs/passport/dist/auth.guard';
 
 class CreateUserDto extends createZodDto(createUser) {}
 class LoginUserDto extends createZodDto(loginUser) {}
