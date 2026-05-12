@@ -1,7 +1,7 @@
 import { Controller, Get,Body,Query, Param, BadRequestException, Headers } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { readMovieParam } from '../../../shared/movie.schema';
-import { createZodDto } from 'node_modules/nestjs-zod/dist/index.mjs';
+import { createZodDto } from 'nestjs-zod'
 
 class ReadMovieParamDto extends createZodDto(readMovieParam) {} //transforms the schema into a dto
 

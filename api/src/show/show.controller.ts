@@ -1,6 +1,6 @@
 import { Controller, Get,Body,Query, Param, BadRequestException, Headers } from '@nestjs/common';
 import { ShowService } from './show.service';
-import { createZodDto } from 'node_modules/nestjs-zod/dist/index.mjs';
+import { createZodDto } from 'nestjs-zod'
 import { readShowParam } from '../../../shared/show.schema';
 
 class ReadShowParamDto extends createZodDto(readShowParam) {} //transforms the schema into a dto
