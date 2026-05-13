@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react-native';
-import ListDetailScreen from '@/app/(home)/(index)/(list)/[id]';
+import ListDetailScreen from '@/app/(home)/list/[id]';
 import { getListById } from '@/services/list.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────

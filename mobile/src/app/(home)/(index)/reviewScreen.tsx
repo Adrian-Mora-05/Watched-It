@@ -5,8 +5,10 @@ import { getReviews, addLike, removeLike, baseUrl } from '@/services/review.serv
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from '@/hooks/ctx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
+import ImageButton from '@/components/ui/imageButton';
 
 type Review = {
   id: number;
@@ -27,29 +29,43 @@ export default function ReviewScreen() {
   const { session } = useSession();
   const gap = screenWidth * 0.02;
   const starSize = Math.floor((screenWidth * 0.45) / 6);
+  const loadingRef = useRef(false);
+  const skipRef = useRef(0);
 
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const limit = 15;
 
+
+
   const fetchReviews = async (reset = false) => {
-    if (loading || !hasMore) return;
+    if (loadingRef.current || (!reset && !hasMore)) return;
+    loadingRef.current = true;
     setLoading(true);
+
     try {
-      const currentSkip = reset ? 0 : skip;
+      const currentSkip = reset ? 0 : skipRef.current;
       const data = await getReviews(currentSkip, limit, session!);
-      setReviews(prev => reset ? data : [...prev, ...data]);
-      setSkip(currentSkip + limit);
+
+      if (reset) {
+        setReviews(data);
+        skipRef.current = limit;
+      } else {
+        setReviews(prev => [...prev, ...data]);
+        skipRef.current = currentSkip + limit;
+      }
+
       if (data.length < limit) setHasMore(false);
+      else if (reset) setHasMore(true);
+
     } catch (e) {
       console.error(e);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchReviews(true);
   }, []);
@@ -101,20 +117,25 @@ export default function ReviewScreen() {
 
       {/* Image + comment */}
       <View className='flex-row items-center' style={{ gap }}>
-        <Image
+        <ImageButton
           source={{ uri: `${baseUrl}${item.enlace_imagen}` }}
-          style={{ width: screenWidth * 0.26, height: screenWidth * 0.4, borderRadius: 10 }}
-          contentFit="cover"
-          cachePolicy="disk"
-          placeholder={{ blurhash: 'L36tt6%M00Rj00of~qxuayj[ayj[' }}
-          transition={200}
-          accessible={true}
-          accessibilityLabel={`Imagen de ${item.titulo}`} 
+          width={screenWidth * 0.26}
+          height={screenWidth * 0.4}
+          rounded="md"
+          accessibilityLabel={`Ver detalles de ${item.tipo === 'pelicula' ? 'la película' : 'la serie'} ${item.titulo}`}
+          accessibilityHint={`Toca para ver más información sobre ${item.titulo}`}
+          onPress={() => {
+            if (item.tipo === 'pelicula') {
+              router.push(`/movie/${item.id}`);
+            } else {
+              router.push(`/show/${item.id}`);
+            }
+          }}
         />
         <View className="flex-1">
           <Text
             className="text-white text-normal"
-            accessibilityLabel={`Comentario: ${item.contenido}`} 
+            accessibilityLabel={`Comentario: ${item.contenido}`}
           >
             {item.contenido}
           </Text>

@@ -77,7 +77,7 @@ export default function ListScreen() {
     <TouchableOpacity
       style={{ paddingHorizontal, gap }}
       className="flex-row items-center justify-between py-2"
-      onPress={() => router.push(`/(list)/${item.id}`)}
+      onPress={() => router.push(`/list/${item.id}`)}
       accessibilityRole="button"
       accessibilityLabel={`Lista ${item.nombre_lista}, hecha por ${item.nombre_usuario}, ${item.images.length} ${item.images.length === 1 ? 'imagen' : 'imágenes'}`}
       accessibilityHint="Toca para ver el contenido de esta lista"
