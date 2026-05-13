@@ -1,100 +1,28 @@
-import {
-  BadRequestException,
-  Injectable
-} from '@nestjs/common';
-
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { supabase } from 'src/config/db';
-
-import {
-  CreateList,
-  createListSchema,
-  ReadListParam,
-  readListParam
-} from '../../../shared/list.schema';
+import { CreateList, createListSchema, ReadListParam, readListParam} from '../../../shared/list.schema';
 
 @Injectable()
 export class ListService {
 
-  async getAllLists(param: ReadListParam) {
+  async getLists(userId: string, { skip, limit }: { skip: number; limit: number }) {
+    const { data, error } = await supabase
+      .from('lists_view')
+      .select('id, nombre_lista, nombre_usuario, enlace_imagen, contenido_id')
+      .range(Number(skip) || 0, (Number(skip) || 0) + (Number(limit) || 15) - 1);
 
-    const parsedParam = readListParam.parse(param);
-
-    let query = supabase
-      .from('lista_peliculas')
-      .select(`
-        id,
-        nombre,
-        fecha_creacion,
-        usuario:id_usuario (
-          id,
-          nombre
-        )
-      `);
-
-    if (parsedParam.skip !== undefined &&
-        parsedParam.limit !== undefined) {
-
-      query = query.range(
-        parsedParam.skip,
-        parsedParam.skip + parsedParam.limit - 1
-      );
-    }
-
-    if (parsedParam.name) {
-      query = query.ilike(
-        'nombre',
-        `%${parsedParam.name}%`
-      );
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      throw new BadRequestException(error.message);
-    }
-
-    return { data };
+    if (error) throw new BadRequestException('Error fetching lists: ' + error.message);
+    return data;
   }
 
   async getListById(id: number) {
-
     const { data, error } = await supabase
-      .from('lista_peliculas')
-      .select(`
-        id,
-        nombre,
-        fecha_creacion,
+      .from('lists_view')
+      .select('id, nombre_lista, nombre_usuario, enlace_imagen, contenido_id')
+      .eq('id', id);
 
-        usuario:id_usuario (
-          id,
-          nombre
-        ),
-
-        pelicula_x_lista (
-          pelicula:id_pelicula (
-            id,
-            titulo,
-            enlace_imagen
-          )
-        )
-      `)
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      throw new BadRequestException(error.message);
-    }
-
-    return {
-      data: {
-        id: data.id,
-        nombre: data.nombre,
-        fecha_creacion: data.fecha_creacion,
-        usuario: data.usuario,
-        peliculas:
-          data.pelicula_x_lista.map((p: any) => p.pelicula)
-      }
-    };
+    if (error) throw new BadRequestException('Error fetching list: ' + error.message);
+    return data;
   }
 
   async createList(

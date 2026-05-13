@@ -31,4 +31,18 @@ export class ReviewService {
         }
         return { message: 'Like added successfully' };
     }
+
+    async removeLike(userId: string, idComentario: number, tipo: string) {
+        const { error } = await supabase
+            .rpc('remove_like', {
+                p_id_usuario: userId,
+                p_id_comentario: idComentario,
+                p_tipo: tipo
+            });
+        if (error) {
+            console.log(error);
+            throw new BadRequestException('Error removing like:' + error.message);
+        }
+        return { message: 'Like removed successfully' };
+    }
 }

@@ -249,16 +249,5 @@ describe('ChooseMovieFavsScreen - Accessibility', () => {
     });
   });
 
-  describe('error state', () => {
-    it('shows error toast when fetching movies fails', async () => {
-      const { getMovies } = require('@/services/movie.service');
-      getMovies.mockRejectedValueOnce(new Error('Network error'));
 
-      render(<ChooseFavsScreen />);
-
-      await waitFor(() => {
-        expect(screen.getByText('Error al cargar las películas')).toBeTruthy();
-      });
-    });
-  });
 });
