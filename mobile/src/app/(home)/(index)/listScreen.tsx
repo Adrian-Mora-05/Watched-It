@@ -50,7 +50,7 @@ export default function ListScreen() {
   const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const limit = 30; // fetch more rows since they repeat
+  const limit = 30;
 
   const fetchLists = async (reset = false) => {
     if (loading || !hasMore) return;
@@ -71,23 +71,28 @@ export default function ListScreen() {
 
   useEffect(() => {
     fetchLists(true);
-    
   }, []);
 
   const renderList = ({ item }: { item: GroupedList }) => (
     <TouchableOpacity
       style={{ paddingHorizontal, gap }}
       className="flex-row items-center justify-between py-2"
-      onPress={() => router.push(`/(list)/${item.id}`)} 
+      onPress={() => router.push(`/(list)/${item.id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`Lista ${item.nombre_lista}, hecha por ${item.nombre_usuario}, ${item.images.length} ${item.images.length === 1 ? 'imagen' : 'imágenes'}`}
+      accessibilityHint="Toca para ver el contenido de esta lista"
     >
-      {/* Left: info */}
-      <View className="flex-1">
-        <Text className="text-white text-intermediate">{item.nombre_lista}</Text>
-        <Text className="text-white text-petite">Hecho por: {item.nombre_usuario}</Text>
+      {/* Left: info - hidden from screen reader, parent handles it */}
+      <View className="flex-1" accessible={false}>
+        <Text className="text-white text-intermediate" accessible={false}>{item.nombre_lista}</Text>
+        <Text className="text-white text-petite" accessible={false}>Hecho por: {item.nombre_usuario}</Text>
       </View>
 
-      {/* Middle: stacked images */}
-      <View style={{ width: imgWidth + (Math.min(item.images.length, 3) - 1) * (imgWidth * 0.4), height: imgHeight }}>
+      {/* Middle: stacked images - decorative, parent describes them */}
+      <View
+        style={{ width: imgWidth + (Math.min(item.images.length, 3) - 1) * (imgWidth * 0.4), height: imgHeight }}
+        accessible={false}
+      >
         {item.images.slice(0, 3).map((img, i) => (
           <Image
             key={i}
@@ -105,41 +110,63 @@ export default function ListScreen() {
             cachePolicy="disk"
             placeholder={{ blurhash: 'L36tt6%M00Rj00of~qxuayj[ofof' }}
             transition={200}
-            accessible={false}
+            accessible={false} 
           />
         ))}
         {item.images.length > 3 && (
-          <View style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            borderRadius: 12,
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-          }}>
-            <Text className="text-white text-petite">+{item.images.length - 3}</Text>
+          <View
+            style={{
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.7)',
+              borderRadius: 12,
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+            }}
+            accessible={false} 
+          >
+            <Text className="text-white text-petite" accessible={false}>+{item.images.length - 3}</Text>
           </View>
         )}
       </View>
 
-      {/* Right: arrow */}
-      <MaterialIcons name="navigate-next" size={24} color="white" />
+      {/* Right: arrow - decorative */}
+      <MaterialIcons
+        name="navigate-next"
+        size={24}
+        color="white"
+        accessible={false} 
+      />
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 bg-dark">
+    <View className="flex-1 bg-dark" accessible={false}>
       <FlatList
         data={lists}
         keyExtractor={item => item.id.toString()}
         renderItem={renderList}
         onEndReached={() => fetchLists()}
         onEndReachedThreshold={0.5}
+        accessibilityLabel="Lista de listas de películas y series" 
         ItemSeparatorComponent={() => (
-          <View className="h-0.5 bg-chocolate" style={{ marginHorizontal: paddingHorizontal }} />
+          <View
+            className="h-0.5 bg-chocolate"
+            style={{ marginHorizontal: paddingHorizontal }}
+            accessible={false} 
+            importantForAccessibility="no"
+          />
         )}
-        ListFooterComponent={loading ? <ActivityIndicator color="white" /> : null}
+        ListFooterComponent={
+          loading
+            ? <ActivityIndicator
+                color="white"
+                accessibilityLabel="Cargando más listas"
+                accessibilityLiveRegion="polite"
+              />
+            : null
+        }
         contentContainerStyle={{ gap }}
       />
     </View>
