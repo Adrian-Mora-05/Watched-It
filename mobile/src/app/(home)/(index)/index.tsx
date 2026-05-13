@@ -1,8 +1,5 @@
 import { View } from 'react-native';
 import { Text } from "@react-native-ama/react-native";
-import { useSession } from '@/hooks/ctx';
-import Button from '@/components/ui/Button';
-import { jwtDecode } from 'jwt-decode';
 import { useLayout } from '@/hooks/useLayout';
 import MenuBar from "@/components/ui/MenuBar";
 import { useState } from 'react';
@@ -12,8 +9,6 @@ import ListScreen from './listScreen';
 import MovieScreen from './movieScreen';
 
 export default function Index() {
-  const { session, signOut } = useSession();
-  const user = session ? jwtDecode(session) : null;
   const { headerHeight, screenWidth, headerPaddingBottom, paddingHorizontal, paddingVertical } = useLayout();
   const [tab, setTab] = useState("movieScreen");
   const gap = screenWidth * 0.03;
