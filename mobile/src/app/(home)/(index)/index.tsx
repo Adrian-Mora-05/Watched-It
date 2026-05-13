@@ -51,7 +51,6 @@ export default function Index() {
         {tab === "listScreen" && <ListScreen />}
       </View>
 
-      <Button label="Sign Out" loading={false} onPress={signOut} />
     </View>
   </View>
 );
