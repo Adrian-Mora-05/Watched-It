@@ -51,64 +51,30 @@ async getMovieById(id: number) {
 
     const { data: movie, error } = await supabase
         .from('pelicula')
-        .select(`
-            id,
-            titulo,
-            anio,
-            pais,
-            duracion,
-            genero,
-            restriccion_edad,
-            sinopsis,
-            enlace_imagen
-        `)
+        .select(` id, titulo, anio, pais, duracion, genero, restriccion_edad, sinopsis, enlace_imagen`)
         .eq('id', id)
-        .single();
 
     if (error) {
         throw new BadRequestException(error.message);
     }
 
-    // ratings
-    const { data: ratings } = await supabase
-        .from('calificacion_x_pelicula')
-        .select('calificacion')
+    const { data: calificaciones } = await supabase
+        .from('calificaciones_pelicula_view')
+        .select('*')
         .eq('id_pelicula', id);
 
-    const distribution = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0
-    };
 
-    ratings?.forEach(r => {
-        distribution[r.calificacion as keyof typeof distribution]++;
-    });
+    let query= supabase
+        .from('resenas_principales_peliculas_view')
+        .select('*')
+        .eq('id_pelicula', id);
+    query.range(0, 3); //solo 3 reseñas principales
 
-    // top review
-    const { data: topReview } = await supabase
-        .from('comentario_x_pelicula')
-        .select(`
-            id,
-            contenido,
-            cant_me_gusta,
-            calificacion_x_pelicula (
-                calificacion,
-                usuario:id_usuario (
-                    nombre
-                )
-            )
-        `)
-        .order('cant_me_gusta', { ascending: false })
-        .limit(1)
-        .single();
+    const { data:resenas } = await query
 
     return {
-        movie,
-        ratings_distribution: distribution,
-        top_review: topReview
+        ...movie,
+        calificaciones, resenas
     };
 }
 

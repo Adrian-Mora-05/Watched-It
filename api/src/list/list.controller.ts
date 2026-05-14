@@ -22,14 +22,4 @@ export class ListController {
     return this.listService.getListById(id);
   }
 
-  @Post()
-  async createList(
-    @Req() req,
-    @Body() body: CreateListDto
-  ) {
-    return this.listService.createList(
-      req.user.id,
-      body
-    );
-  }
 }

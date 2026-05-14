@@ -152,7 +152,7 @@ describe('ListScreen - Accessibility', () => {
       await waitFor(() => {
         const disneyList = screen.getByLabelText('Lista Disney, hecha por camila, 2 imágenes');
         fireEvent.press(disneyList);
-        expect(router.push).toHaveBeenCalledWith('/(list)/119');
+        expect(router.push).toHaveBeenCalledWith('/list/119');
       });
     });
 
@@ -163,7 +163,7 @@ describe('ListScreen - Accessibility', () => {
       await waitFor(() => {
         const vaquerasList = screen.getByLabelText('Lista Vaqueras, hecha por camila, 1 imagen');
         fireEvent.press(vaquerasList);
-        expect(router.push).toHaveBeenCalledWith('/(list)/124');
+        expect(router.push).toHaveBeenCalledWith('/list/124');
       });
     });
   });
