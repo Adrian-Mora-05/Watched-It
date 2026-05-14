@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ListService } from './list.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { createZodDto } from 'nestjs-zod';
-import { createListSchema, readListParam } from '../../../shared/list.schema';
+import { addToListSchema,  removeFromListSchema } from '../../../shared/list.schema';
 
-class ReadListParamDto extends createZodDto(readListParam) {}
-class CreateListDto extends createZodDto(createListSchema) {}
+class AddToLista extends createZodDto(addToListSchema) {}
+class RemoveFromList extends createZodDto(removeFromListSchema) {}
 
 @UseGuards(JwtAuthGuard)
 @Controller('list')
@@ -22,4 +22,18 @@ export class ListController {
     return this.listService.getListById(id);
   }
 
+  @Post('/:id')
+  async addToList(@Req() req, @Param('id') id: string,@Body() body: AddToLista
+  ) {
+    const parsed = addToListSchema.parse(body)
+    await this.listService.addToList(body, Number(id),  req.user.id )
+    return { message: 'Contenido agregado a la lista exitosamente' }
+  }
+
+  @Delete('/:id')
+  async removeFromList(@Req() req, @Param('id') id: string, @Body() body: RemoveFromList) {
+    const parsed = removeFromListSchema.parse(body)
+    await this.listService.removeFromList( body,  Number(id),  req.user.id )
+    return { message: 'Contenido eliminado de la lista exitosamente' }
+  }
 }
