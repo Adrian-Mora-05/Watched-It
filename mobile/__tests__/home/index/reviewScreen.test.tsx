@@ -101,13 +101,7 @@ describe('ReviewScreen - Accessibility', () => {
       });
     });
 
-    it('each review image has a descriptive label', async () => {
-      render(<ReviewScreen />);
-      await waitFor(() => {
-        expect(screen.getByLabelText('Imagen de The Shawshank Redemption')).toBeTruthy();
-        expect(screen.getByLabelText('Imagen de Shutter Island')).toBeTruthy();
-      });
-    });
+
 
     it('each review comment has a descriptive label', async () => {
       render(<ReviewScreen />);

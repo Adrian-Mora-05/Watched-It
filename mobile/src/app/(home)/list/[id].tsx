@@ -7,6 +7,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { getListById, baseUrl } from '@/services/list.service';
 import { useSession } from '@/hooks/ctx';
 import { useState, useEffect } from 'react';
+import ImageButton from '@/components/ui/imageButton';
 
 type ListItem = {
   id: number;
@@ -14,6 +15,7 @@ type ListItem = {
   nombre_usuario: string;
   enlace_imagen: string;
   contenido_id: number;
+  tipo: string; 
 };
 
 export default function ListDetailScreen() {
@@ -75,7 +77,7 @@ export default function ListDetailScreen() {
         {items.length > 0 && (
           <View
             accessible={true}
-            accessibilityLabel={`Lista: ${listName}, hecha por ${listOwner}`} // ✅ one clean label
+            accessibilityLabel={`Lista: ${listName}, hecha por ${listOwner}`}
           >
             <Text className="text-white text-intermediate" accessible={false}>{listName}</Text>
             <Text className="text-white text-petite" accessible={false}>Hecho por: {listOwner}</Text>
@@ -98,16 +100,19 @@ export default function ListDetailScreen() {
             contentContainerStyle={{ gap }}
             accessibilityLabel={`Cuadrícula de imágenes de la lista ${listName}, ${items.length} elementos`}
             renderItem={({ item, index }) => (
-              <Image
-                source={{ uri: `${baseUrl}${item.enlace_imagen}` }}
-                style={{ width: imgWidth, height: imgHeight, borderRadius: 8 }}
-                contentFit="cover"
-                cachePolicy="disk"
-                placeholder={{ blurhash: 'L36tt6%M00Rj00of~qxuayj[ofof' }}
-                transition={200}
-                accessible={true}
-                accessibilityLabel={`Imagen ${index + 1} de ${items.length} en la lista ${listName}`} // ✅ positional context
-              />
+            <ImageButton
+              source={{ uri: `${baseUrl}${item.enlace_imagen}` }}
+              width={imgWidth}
+              height={imgHeight}
+              rounded="md"
+              accessibilityLabel={`Imagen ${index + 1} de ${items.length} en la lista ${listName}`}
+              accessibilityHint="Toca para ver más información"
+              onPress={() => router.push(
+                item.tipo === 'pelicula' 
+                  ? `/movie/${item.contenido_id}` 
+                  : `/show/${item.contenido_id}`
+              )} // or /serie/ depending on tipo
+            />
             )}
           />
         )}
