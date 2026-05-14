@@ -7,11 +7,18 @@ export const readListParam = z.object({
     name: z.string().default('').optional(),
 })
 
-// crear lista
-export const createListSchema = z.object({
-    name: z.string(),
-    movieIds: z.array(z.number()).default([]),
+export const addToListSchema =z.object({
+
+  tipo:         z.enum(['pelicula', 'serie']),
+  nombre_lista: z.string(),
 })
 
+export const removeFromListSchema = z.object({
+
+  tipo:         z.enum(['pelicula', 'serie']),
+  nombre_lista: z.string(),
+})
+
+export type RemoveFromList = z.infer<typeof removeFromListSchema>
 export type ReadListParam = z.infer<typeof readListParam>
-export type CreateList = z.infer<typeof createListSchema>
+export type AddToList = z.infer<typeof addToListSchema>

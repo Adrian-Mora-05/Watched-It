@@ -47,7 +47,7 @@ async getFavoriteMoviesByUser(token: string) {
   
 }
 
-async getMovieById(id: number) {
+async getMovieById(id: number,id_user:string) {
 
     const { data: movie, error } = await supabase
         .from('pelicula')
@@ -63,6 +63,13 @@ async getMovieById(id: number) {
         .select('*')
         .eq('id_pelicula', id);
 
+    const { count } = await supabase
+    .from('watchlist_view')
+    .select('*', { count: 'exact', head: true })  // head:true skips fetching rows
+    .eq('id_usuario', id_user)
+    .eq('tipo', 'pelicula')
+    .eq('contenido_id', id)
+    const isInWatchlist = count! > 0
 
     let query= supabase
         .from('resenas_principales_peliculas_view')
@@ -73,34 +80,9 @@ async getMovieById(id: number) {
     const { data:resenas } = await query
 
     return {
-        ...movie,
+        ...movie, isInWatchlist,
         calificaciones, resenas
     };
 }
-
-async getMovieReviews(id: number) {
-
-    const { data, error } = await supabase
-        .from('comentario_x_pelicula')
-        .select(`
-            id,
-            contenido,
-            cant_me_gusta,
-            calificacion_x_pelicula (
-                calificacion,
-                usuario:id_usuario (
-                    nombre
-                )
-            )
-        `)
-        .eq('calificacion_x_pelicula.id_pelicula', id);
-
-    if (error) {
-        throw new BadRequestException(error.message);
-    }
-
-    return { data };
-}
-
 
 }

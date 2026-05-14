@@ -23,14 +23,9 @@ export class MovieController {
 }
 
 @Get(':id')
-async getMovieById(@Param('id') id: number) {
-    return this.movieService.getMovieById(id);
+async getMovieById(@Param('id') id: number, @Body('id_user') id_user:string) {
+    return this.movieService.getMovieById(id,id_user);
 }
 
-
-@Get(':id/reviews')
-async getMovieReviews(@Param('id') id: number) {
-    return this.movieService.getMovieReviews(id);
-}
 
 }
