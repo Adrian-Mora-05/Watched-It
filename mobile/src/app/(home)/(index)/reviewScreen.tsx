@@ -13,6 +13,7 @@ type Review = {
   id: number;
   contenido: string;
   cant_me_gusta: number;
+  id_contenido: number;
   calificacion: number;
   nombre: string;
   titulo: string;
@@ -39,7 +40,9 @@ export default function ReviewScreen() {
 
 
   const fetchReviews = async (reset = false) => {
-    if (loadingRef.current || (!reset && !hasMore)) return;
+    if (loadingRef.current) return;
+    if (!reset && !hasMore) return;
+
     loadingRef.current = true;
     setLoading(true);
 
@@ -51,7 +54,11 @@ export default function ReviewScreen() {
         setReviews(data);
         skipRef.current = limit;
       } else {
-        setReviews(prev => [...prev, ...data]);
+        setReviews(prev => {
+          const existingIds = new Set(prev.map(r => r.id));
+          const newItems = data.filter((r: Review) => !existingIds.has(r.id));
+          return [...prev, ...newItems];
+        });
         skipRef.current = currentSkip + limit;
       }
 
@@ -65,9 +72,6 @@ export default function ReviewScreen() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchReviews(true);
-  }, []);
 
   const handleLike = async (item: Review) => {
     const isLiked = item.liked;
@@ -125,9 +129,9 @@ export default function ReviewScreen() {
           accessibilityHint={`Toca para ver más información sobre ${item.titulo}`}
           onPress={() => {
             if (item.tipo === 'pelicula') {
-              router.push(`/movie/${item.id}`);
+              router.push(`/movie/${item.id_contenido}`);
             } else {
-              router.push(`/show/${item.id}`);
+              router.push(`/show/${item.id_contenido}`);
             }
           }}
         />
@@ -199,6 +203,10 @@ export default function ReviewScreen() {
         renderItem={renderReview}
         onEndReached={() => fetchReviews()}
         onEndReachedThreshold={0.5}
+        initialNumToRender={15}
+        maxToRenderPerBatch={15}
+        windowSize={5}
+
         ListHeaderComponent={
           <Text
             className="text-white text-intermediate"
