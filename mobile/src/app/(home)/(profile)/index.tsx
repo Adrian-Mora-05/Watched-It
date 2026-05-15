@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Text } from "@react-native-ama/react-native";
 import MenuBar from "@/components/ui/MenuBar";
 import SettingButton from '@/components/ui/SettingButton';
-import DiaryScreen from './diary';
+import DiaryScreen from './(diary)';
 import MyProfileScreen from './profile';
+import WatchlistScreen from './watchlist';
+import UserListsScreen from './(lists)';
 import { useSession } from '@/hooks/ctx';
 import { Image } from 'expo-image';
 import { useLayout } from '@/hooks/useLayout';
@@ -69,13 +71,8 @@ export default function ProfileScreen() {
           <View className="flex-1 p-5 ">
             {tab === "userProfile" && <MyProfileScreen />}
             {tab === "diary" && <DiaryScreen />}
-            {tab === "lists" && (
-              <Text className="text-white">Aquí van tus listas</Text>
-            )}
-
-            {tab === "watchlist" && (
-              <Text className="text-white">Aquí va la watchlist</Text>
-            )}
+            {tab === "lists" && <UserListsScreen />} 
+            {tab === "watchlist" &&<WatchlistScreen />}
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -62,7 +62,53 @@ export class UserController {
     @Body() body: logCatalogContentDto
   ) {
     return this.userService.logContent(req.user.id,body);
-  } 
+  }
+  
+  @Put('log/:logId')
+  async updateLogContent(
+    @Param('logId') logId: string,
+    @Body()
+    body: {
+      content?: string;
+      rating: number;
+      type_content: string;
+    },
+    @Req() req: any
+  ) {
+    const userId = req.user.id;
+
+    return this.userService.updateLogContent(
+      userId,
+      Number(logId),
+      body
+    );
+  }
+
+  @Delete('rating/:id')
+  async deleteLogContent(
+    @Req() req,
+    @Param('id') id: string,
+    @Query('type_content') typeContent: string
+  ) {
+    return this.userService.deleteLogContent(
+      req.user.id,
+      Number(id),
+      typeContent
+    );
+  }
+
+  @Get('log/:id')
+  async getLogById(
+    @Req() req,
+    @Param('id') id: string,
+    @Query('type') type: string
+  ) {
+    return this.userService.getUserLogById(
+      req.user.id,
+      Number(id),
+      type
+    );
+  }
 
   @Get('search')
   async searchUsers(@Query('name') name: string) {

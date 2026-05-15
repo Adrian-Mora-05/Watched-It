@@ -74,11 +74,99 @@ export const updateFavorites = async (
   );
 };
 
-export const logContent = async (logCatalogContent: LogCatalogContent, token: string) => {
-  await api.post('/user/rating', logCatalogContent, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+  export const logContent = async (logCatalogContent: LogCatalogContent, token: string) => {
+    await api.post('/user/rating', logCatalogContent, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
+  export type UserLog = {
+    id: number; 
+
+    type: 'movie' | 'series';
+
+    content: string;
+    rating: number;
+    date: string;
+    likes: number;
+
+    catalog: {
+      id: number;
+      title: string;
+      poster: string;
+      year: number;
+    };
+  };
+
+  export const getUserLogs = async (
+    token: string
+  ): Promise<UserLog[]> => {
+
+    const response = await api.get('/user/logs', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  };
+
+  export const updateLogContent = async (
+    logId: number,
+    logCatalogContent: {
+      content?: string;
+      rating: number;
+      type_content: "movie" | "show";
     },
-  });
-};
+    token: string
+  ): Promise<void> => {
+    await api.put(
+      `/user/log/${logId}`,
+      {
+        content: logCatalogContent.content ?? null,
+        rating: logCatalogContent.rating,
+        type_content: logCatalogContent.type_content,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
+
+  export const deleteLogContent = async (
+    logId: number,
+    typeContent: string,
+    token: string
+  ) => {
+
+    await api.delete(
+      `/user/rating/${logId}?type_content=${typeContent}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
+
+  export const getUserLogById = async (
+    logId: number,
+    type: string,
+    token: string
+  ): Promise<UserLog> => {
+    const response = await api.get(`/user/log/${logId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        type,
+      },
+    });
+
+    return response.data;
+  };
