@@ -151,6 +151,141 @@ export class UserService {
 
   }
 
+  async updateLogContent(
+  userId: string,
+  logId: number,
+  body: {
+    content?: string;
+    rating: number;
+    type_content: string;
+  }
+) {
+
+   console.log('RPC params:', {
+    p_id_user: userId,
+    p_id_log: logId,
+    p_type_content: body.type_content,
+    p_rating: body.rating,
+    p_content: body.content ?? null,
+  });
+
+  const { data, error } = await supabase.rpc('update_log_content', {
+    p_id_user: userId,
+    p_id_log: logId,
+    p_type_content: body.type_content,
+    p_rating: body.rating,
+    p_content: body.content ?? null,
+  });
+
+  if (error) {
+    throw new BadRequestException(
+      `Updating log content failed: ${error.message}`
+    );
+  }
+
+  return {
+    message: 'Log updated successfully',
+    data,
+  };
+}
+  async deleteLogContent(
+    userId: string,
+    logId: number,
+    typeContent: string
+  ) {
+    const { data, error } = await supabase.rpc('delete_log_content', {
+      p_id_user: userId,
+      p_id_log: logId,
+      p_type_content: typeContent,
+    });
+
+    if (error) {
+      throw new BadRequestException(
+        `Deleting log failed: ${error.message}`
+      );
+    }
+
+    return { message: 'Log deleted successfully' };
+  }
+  
+async getUserLogById(userId: string, logId: number, typeContent: string) {
+    console.log('LOG ID:', logId);
+console.log('USER ID:', userId);
+console.log('TYPE:', typeContent);
+
+  const isMovie = typeContent?.toLowerCase().trim() === 'movie';
+
+  const ratingsTable = isMovie
+    ? 'calificacion_x_pelicula'
+    : 'calificacion_x_serie';
+
+  const contentTable = isMovie ? 'pelicula' : 'serie';
+
+  const dateColumn = isMovie ? 'fecha_creado' : 'fecha_creacion';
+
+  const commentTable = isMovie
+    ? 'comentario_x_pelicula'
+    : 'comentario_x_serie';
+
+  const { data, error } = await supabase
+    .from(ratingsTable)
+    .select(`
+      id,
+      calificacion,
+      ${dateColumn},
+      ${contentTable} (
+        id,
+        titulo,
+        enlace_imagen,
+        ${isMovie ? 'anio' : 'anio_inicio'}
+      ),
+      ${commentTable} (
+        id,
+        contenido,
+        cant_me_gusta
+      )
+    `)
+    .eq('id', logId)
+    .eq('id_usuario', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new BadRequestException(error.message);
+  }
+
+  if (!data) {
+    throw new BadRequestException("Log not found");
+  }
+
+  const content = Array.isArray(data[contentTable])
+    ? data[contentTable][0]
+    : data[contentTable];
+
+  const comment = Array.isArray(data[commentTable])
+    ? data[commentTable][0]
+    : data[commentTable];
+
+  return {
+    id: data.id,
+    type: isMovie ? 'movie' : 'series',
+
+    rating: data.calificacion,
+    date: data[dateColumn],
+
+    content: comment?.contenido ?? "",
+    likes: comment?.cant_me_gusta ?? 0,
+    
+
+    catalog: {
+      id: content?.id,
+      title: content?.titulo,
+      poster: content?.enlace_imagen,
+      year: isMovie ? content?.anio : content?.anio_inicio,
+    }
+    
+  };
+}
+
   async getUserProfile(userId: string) {
 
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.getUserById(userId);
@@ -183,7 +318,6 @@ export class UserService {
     };
     return result;
   }
-
 
 async searchUsers(name: string) {
 
