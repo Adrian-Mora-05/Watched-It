@@ -17,3 +17,19 @@ export const getListById = async (id: number, token: string) => {
   });
   return response.data;
 };
+
+
+export const addToList = async (token: string, id: number, body: { tipo: string; nombre_lista: string }) => {
+  const response = await api.post(`/list/${id}`, body, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+export const removeFromList = async (token: string, id: number, body: { tipo: string; nombre_lista: string }) => {
+  const response = await api.delete(`/list/${id}`, {
+    data: body,
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};

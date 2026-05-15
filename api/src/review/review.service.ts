@@ -45,4 +45,19 @@ export class ReviewService {
         }
         return { message: 'Like removed successfully' };
     }
+
+    async getReviewById(id: number) {
+        const { data, error } = await supabase
+            .from('get_all_reviews')
+            .select('*')
+            .eq('id', id)
+            .range(0, 9)
+
+        if (error) {
+            throw new BadRequestException('Error fetching review:' + error.message);
+        }
+        return data;
+    }
+
+
 }

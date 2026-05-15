@@ -19,5 +19,12 @@ export const readEachMovie = z.object({
         image_link: z.string()
 })
 
+export const getMovieReviewsSchema = z.object({
+  skip: z.coerce.number().default(0),
+  limit: z.coerce.number().default(15),
+  id_usuario: z.string().uuid(),
+})
+
+export type GetMovieReviews = z.infer<typeof getMovieReviewsSchema>
 export type ReadMovieParam = z.infer<typeof readMovieParam> //generates a type from the schema
 export type ReadEachMovie = z.infer<typeof readEachMovie> //generates a type from the schema

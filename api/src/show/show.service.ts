@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
-import { readShowParam, ReadShowParam } from "../../../shared/show.schema";
+import { readShowParam, ReadShowParam, getshowReviewsSchema, GetShowReviews } from "../../../shared/show.schema";
 
 @Injectable()
 export class ShowService {
@@ -19,9 +19,9 @@ export class ShowService {
         if (parsedParam.country !== undefined) {        query = query.eq('pais', parsedParam.country);
 }
 
-        const { data: pelicula, error } = await query
+        const { data: serie, error } = await query
         if (error) throw new BadRequestException(error.message)
-        return { data: pelicula }
+        return { data: serie }
     }
 
     async getFavoriteShowsByUser(token: string) {
@@ -46,97 +46,61 @@ export class ShowService {
         return data.map(p => p.serie);
     }
 
-
-    // NUEVO — detalle serie
-    async getShowById(id: number) {
+    async getShowById(id: number,id_user:string, name:string) {
 
         const { data: show, error } = await supabase
             .from('serie')
-            .select(`
-                id,
-                titulo,
-                anio_inicio,
-                anio_fin,
-                pais,
-                cant_temporadas,
-                genero,
-                restriccion_edad,
-                sinopsis,
-                enlace_imagen
-            `)
+            .select(` id, titulo, anio_inicio,anio_fin, pais, cant_temporadas, genero, restriccion_edad, sinopsis, enlace_imagen`)
             .eq('id', id)
-            .single();
 
         if (error) {
             throw new BadRequestException(error.message);
         }
 
-        // ratings
-        const { data: ratings } = await supabase
-            .from('calificacion_x_serie')
-            .select('calificacion')
+        const { data: calificaciones } = await supabase
+            .from('calificaciones_serie_view')
+            .select('*')
             .eq('id_serie', id);
 
-        const distribution = {
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0,
-            5: 0
-        };
+        const { count } = await supabase
+            .from('watchlist_view')
+            .select('*', { count: 'exact', head: true })  
+            .eq('id_usuario', id_user)
+            .eq('tipo', 'serie')
+            .eq('contenido_id', id)
+        const isInWatchlist = count! > 0
 
-        ratings?.forEach(r => {
-            distribution[r.calificacion as keyof typeof distribution]++;
-        });
+        const { data: allResenas } = await supabase
+        .rpc('get_reviews', {
+            p_id_usuario: id_user,
+            p_skip: 0,
+            p_limit: 1000000
+        })
 
-        // top review
-        const { data: topReview } = await supabase
-            .from('comentario_x_serie')
-            .select(`
-                id,
-                contenido,
-                cant_me_gusta,
-                calificacion_x_serie (
-                    calificacion,
-                    usuario:id_usuario (
-                        nombre
-                    )
-                )
-            `)
-            .order('cant_me_gusta', { ascending: false })
-            .limit(1)
-            .single();
+        const resenas = allResenas
+            ?.filter(r => r.tipo === 'serie' && r.titulo === show[0].titulo)
+            .slice(0, 3) ?? []
 
         return {
-            show,
-            ratings_distribution: distribution,
-            top_review: topReview
+            ...show, isInWatchlist,
+            calificaciones, resenas
         };
     }
 
-    // NUEVO — reviews serie
-    async getShowReviews(id: number) {
-
+    async getshowReviews(id_serie: number,  { skip, limit,id_usuario }: GetShowReviews) {
         const { data, error } = await supabase
-            .from('comentario_x_serie')
-            .select(`
-                id,
-                contenido,
-                cant_me_gusta,
-                calificacion_x_serie (
-                    calificacion,
-                    usuario:id_usuario (
-                        nombre
-                    )
-                )
-            `)
-            .eq('calificacion_x_serie.id_serie', id);
+            .from('get_all_show_reviews_view')
+            .select('*')
+            .eq('id_serie', id_serie)
+            .order('cant_me_gusta',{ ascending: false })
+            .range(skip, skip + limit - 1)
 
-        if (error) {
-            throw new BadRequestException(error.message);
+        if (error) throw new BadRequestException(error.message)
+        return data.map(review => {
+        return {
+            ...review,
+            liked: review.usuarios_que_dieron_like?.includes(id_usuario) ?? false
         }
-
-        return { data };
+        })
     }
-
 }
