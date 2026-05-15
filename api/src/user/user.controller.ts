@@ -5,7 +5,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
 import { logCatalogContent, LogCatalogContent } from '../../../shared/catalog.schema';
 import { createZodDto } from 'nestjs-zod'
-import { supabase } from 'src/config/db';
 
 class logCatalogContentDto extends createZodDto(logCatalogContent) {} 
 
