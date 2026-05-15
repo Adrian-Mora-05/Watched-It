@@ -22,15 +22,13 @@ export class ShowController {
   return this.showService.getFavoriteShowsByUser(token);
 }
 
-  // detalle serie
-  @Get(':id')
-  async getShowById(@Param('id') id: number) {
-    return this.showService.getShowById(id);
-  }
+@Get(':id')
+async getShowById(
+  @Param('id') id: number,
+  @Query('id_user') id_user: string,
+  @Query('name') name: string
+) {
+  return this.showService.getShowById(id, id_user, name);
+}
 
-  // reviews serie
-  @Get(':id/reviews')
-  async getShowReviews(@Param('id') id: number) {
-    return this.showService.getShowReviews(id);
-  }
 }

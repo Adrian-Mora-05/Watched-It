@@ -18,3 +18,10 @@ export const getFavoriteMoviesByUser = async (token: string) => {
   });
   return response.data;
 };
+
+export const getMovieById = async (id: number, id_user: string, name: string) => {
+  const response = await api.get(`/movie/${id}`, {
+    params: { id_user, name }
+  });
+  return response.data;
+};

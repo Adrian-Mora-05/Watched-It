@@ -16,6 +16,7 @@ export default function AppLayout() {
         <Tabs.Screen name="movie/[id]" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Películas", title: "Ver película",href:null }} />
         <Tabs.Screen name="show/[id]" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Series", title: "Ver serie",href:null }} />
         <Tabs.Screen name="list/[id]" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Listas", title: "Ver lista",href:null }} />
+        <Tabs.Screen name="review/[id]" options={{ headerShown: false, tabBarShowLabel: false, tabBarLabel: "Reseñas", title: "Ver reseña",href:null }} />
       </Tabs>
 
   );

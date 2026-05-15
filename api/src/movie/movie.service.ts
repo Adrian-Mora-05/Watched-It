@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
 import { readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
 
+
 @Injectable()
 export class MovieService {
     async getAllMovies(param: ReadMovieParam) {
@@ -47,7 +48,7 @@ async getFavoriteMoviesByUser(token: string) {
   
 }
 
-async getMovieById(id: number,id_user:string) {
+async getMovieById(id: number,id_user:string, name:string) {
 
     const { data: movie, error } = await supabase
         .from('pelicula')
@@ -64,20 +65,23 @@ async getMovieById(id: number,id_user:string) {
         .eq('id_pelicula', id);
 
     const { count } = await supabase
-    .from('watchlist_view')
-    .select('*', { count: 'exact', head: true })  // head:true skips fetching rows
-    .eq('id_usuario', id_user)
-    .eq('tipo', 'pelicula')
-    .eq('contenido_id', id)
+        .from('watchlist_view')
+        .select('*', { count: 'exact', head: true })  
+        .eq('id_usuario', id_user)
+        .eq('tipo', 'pelicula')
+        .eq('contenido_id', id)
     const isInWatchlist = count! > 0
 
-    let query= supabase
-        .from('resenas_principales_peliculas_view')
-        .select('*')
-        .eq('id_pelicula', id);
-    query.range(0, 3); //solo 3 reseñas principales
+    const { data: allResenas } = await supabase
+    .rpc('get_reviews', {
+        p_id_usuario: id_user,
+        p_skip: 0,
+        p_limit: 1000000
+    })
 
-    const { data:resenas } = await query
+    const resenas = allResenas
+        ?.filter(r => r.tipo === 'pelicula' && r.titulo === movie[0].titulo)
+        .slice(0, 3) ?? []
 
     return {
         ...movie, isInWatchlist,

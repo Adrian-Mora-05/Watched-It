@@ -1,66 +1,256 @@
-import {View} from 'react-native';
+import { View, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import { Text } from '@react-native-ama/react-native';
 import { useLayout } from '@/hooks/useLayout';
 import RatingBarChart from '@/components/ui/RatingBarChart';
 import ReturnButton from '@/components/ui/ReturnButton';
-import { router } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Button from '@/components/ui/Button';
+import { useSession } from '@/hooks/ctx';
+import { getMovieById, baseUrl } from '@/services/movie.service';
+import { addToList, removeFromList } from '@/services/list.service';
+import { addLike, removeLike } from '@/services/review.service';
+import { useCallback, useState } from 'react';
 
 export default function ShowScreen() {
-  const { headerHeight, screenWidth, headerPaddingBottom, paddingHorizontal, paddingVertical } = useLayout();
+  const { headerHeight, screenWidth, paddingHorizontal, paddingVertical } = useLayout();
   const gap = screenWidth * 0.03;
   const imgWidth = screenWidth * 0.28;
   const imgHeight = imgWidth * 1.5;
+
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
+  const { session, user } = useSession();
+  const token = session;
+  const id_user = user?.id;
+
+  const [movie, setMovie] = useState<any>(null);
+  const [calificaciones, setCalificaciones] = useState<any>(null);
+  const [resenas, setResenas] = useState<any[]>([]);
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
+
+  const fetchMovie = async () => {
+    try {
+      const data = await getMovieById(Number(id), id_user!, name)
+      setMovie(data[0])
+      setCalificaciones(data.calificaciones[0])
+      setResenas(data.resenas)
+      setIsInWatchlist(data.isInWatchlist)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      setMovie(null)
+      setCalificaciones(null)
+      setResenas([])
+      setIsInWatchlist(false)
+      setLoading(true)
+      fetchMovie()
+    }, [id])
+  )
+
+  const handleWatchlist = async () => {
+    setWatchlistLoading(true)
+    try {
+
+      if (isInWatchlist) {
+        await removeFromList(token!, Number(id), { tipo: 'pelicula', nombre_lista: 'por_ver' })
+        setIsInWatchlist(false)
+      } else {
+        await addToList(token!, Number(id), { tipo: 'pelicula', nombre_lista: 'por_ver' })
+        setIsInWatchlist(true)
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setWatchlistLoading(false)
+    }
+  }
+
+  const handleLike = async (resena: any) => {
+    const isLiked = resena.liked
+
+    setResenas(prev => prev.map(r =>
+      r.id === resena.id
+        ? { ...r, liked: !isLiked, cant_me_gusta: r.cant_me_gusta + (isLiked ? -1 : 1) }
+        : r
+    ))
+
+    try {
+      if (isLiked) {
+        await removeLike(resena.id, 'pelicula', token!)
+      } else {
+        await addLike(resena.id, 'pelicula', token!)
+      }
+    } catch (e) {
+      setResenas(prev => prev.map(r =>
+        r.id === resena.id
+          ? { ...r, liked: isLiked, cant_me_gusta: r.cant_me_gusta + (isLiked ? 1 : -1) }
+          : r
+      ))
+    }
+  }
+
+  if (loading) return <ActivityIndicator className="flex-1 bg-dark" color="white" />
+
   return (
     <View className="flex-1 bg-dark">
       {/* Header */}
       <View
-        className="items-start justify-end"
+        className="items-end justify-between flex-row"
         style={{ padding: gap, gap, width: screenWidth, height: headerHeight }}
         accessible={false}
       >
-        <ReturnButton
-          label="Volver"
-          onPress={() => router.back()}
-        />
+        <ReturnButton label="Volver" onPress={() => router.back()} />
       </View>
-      {/* Movie Info */}
-      <View style={{ paddingHorizontal, paddingVertical, gap }} >
+
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal, paddingVertical: paddingVertical / 2, gap: gap * 2 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Basic Info */}
-        <Text className="text-white text-intermediate font-bold flex-wrap">Título de la película</Text>
-        <View className="flex-row">
-          {/* Text Info */}
-          <View style={{ gap }} className="w-1/2">
-            <Text className="text-white text-medium font-bold">AñoPelículas</Text>
-            <Text className="text-white text-normal font-bold">Duración: 10mins</Text>
-            <Text className="text-white text-normal font-bold">Origen: Estados Unidos</Text>
-            <Text className="text-white text-normal font-bold">Género: Acción</Text>
-            <Text className="text-white text-normal font-bold">Clasificación: +18</Text>
-          </View>
-          {/* Poster Image and button */}
-          <View style={{  gap }} className="w-2/4 items-end ">
-          <View className="flex-row items-center " style={{ gap }}>
-            <Text className="text-white text-petite">Agregar a lista de películas por ver</Text>
-            <Ionicons name="add-circle-outline" size={gap*2.5} color="white" />
+        <View>
+          <View className="flex-row">
+            {/* Text Info */}
+            <View style={{ gap }} className="w-3/4 justify-start">
+              <Text className="text-white text-intermediate font-bold flex-wrap">{movie?.titulo}</Text>
+              <Text className="text-white text-medium font-bold" style={{ marginBottom: gap }}>{movie?.anio}</Text>
+              <View className="justify-start" style={{ gap }}>
+                <View className="flex-row">
+                  <Text className="text-white text-normal font-bold">Duración: </Text>
+                  <Text className="text-white text-normal">{movie?.duracion} mins</Text>
+                </View>
+                <View className="flex-row">
+                  <Text className="text-white text-normal font-bold">Origen: </Text>
+                  <Text className="text-white text-normal">{movie?.pais}</Text>
+                </View>
+                <View className="flex-row">
+                  <Text className="text-white text-normal font-bold">Género: </Text>
+                  <Text className="text-white text-normal">{movie?.genero}</Text>
+                </View>
+                <View className="flex-row">
+                  <Text className="text-white text-normal font-bold">Calificación: </Text>
+                  <Text className="text-white text-normal">{movie?.restriccion_edad ? '+18' : 'Apta para todo público'}</Text>
+                </View>
+              </View>
             </View>
-            <Image
-              source={{ uri: 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.pexels.com%2Fphotos%2F30994370%2Fpexels-photo-30994370.jpeg%3Fcs%3Dsrgb%26dl%3Dpexels-optical-chemist-340351297-30994370.jpg%26fm%3Djpg&f=1&nofb=1&ipt=3405ba99b343eaed9a70090697c960bcf9f7129e74c2aba780abccef56dd1fa0' }}
-              style={{ width: imgWidth, height: imgHeight, borderRadius: 8 }}
-            />
+
+            {/* Poster and watchlist button */}
+            <View style={{ gap }} className="w-1/4 items-end">
+              <TouchableOpacity
+                onPress={handleWatchlist}
+                disabled={watchlistLoading}
+                className="flex-row items-center"
+                style={{ gap }}
+              >
+                {watchlistLoading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <>
+                    <Text className="text-white text-normal">
+                      {isInWatchlist ? 'Guardado' : 'Guardar'}
+                    </Text>
+                    <AntDesign
+                      name={isInWatchlist ? 'close-circle' : 'check-circle'}
+                      size={24}
+                      color="white"
+                      accessible={false}
+                    />
+                  </>
+                )}
+              </TouchableOpacity>
+              <Image
+                source={{ uri: `${baseUrl}${movie?.enlace_imagen}` }}
+                style={{ width: imgWidth, height: imgHeight, borderRadius: 8 }}
+              />
+            </View>
           </View>
+
+          {/* Sinopsis */}
+          <Text className="text-white text-normal" style={{ marginTop: gap }}>
+            {movie?.sinopsis}
+          </Text>
         </View>
-        {/* Summary */}
-        <Text className="text-white text-normal">Esta es una película de acción que combina efectos especiales impresionantes con una trama emocionante.</Text>
-      <RatingBarChart
-        cant_1={0}
-        cant_2={3}
-        cant_3={8}
-        cant_4={12}
-        cant_5={20}
-        total_calificaciones={44}
-      />
-      
-    </View></View>
+
+        <View className="bg-chocolate w-full" style={{ height: 1, borderRadius: 8 }} />
+
+        {/* Ratings */}
+        <Text className="text-white text-intermediate font-bold">Puntuaciones</Text>
+        {calificaciones && calificaciones.total_calificaciones > 0 ? (
+          <RatingBarChart
+            cant_1={calificaciones.cant_1}
+            cant_2={calificaciones.cant_2}
+            cant_3={calificaciones.cant_3}
+            cant_4={calificaciones.cant_4}
+            cant_5={calificaciones.cant_5}
+            total_calificaciones={calificaciones.total_calificaciones}
+          />
+        ) : (
+          <Text className="text-bone text-medium">Nadie ha calificado esta película aún.</Text>
+        )}
+
+        <View className="bg-chocolate w-full" style={{ height: 1, borderRadius: 8 }} />
+
+        {/* Reviews */}
+        <Text className="text-white text-intermediate font-bold">Reseñas</Text>
+        {resenas.length === 0 ? (
+          <Text className="text-bone text-medium">Nadie ha escrito una reseña de esta película aún.</Text>
+        ) : (
+          <>
+            {resenas.map((resena, index) => (
+              <View key={index} style={{ gap }}>
+                <Text className="text-white text-normal">{resena.contenido}</Text>
+                <View className="flex-row items-center justify-between" style={{ gap }}>
+                  <View>
+                    <View className="flex-row items-center" style={{ gap:gap/3 }}>
+                      <Text className="text-bone text-normal">Puntuación: </Text>
+                      {[...Array(resena.calificacion)].map((_, i) => (
+                        <FontAwesome key={i} name="star" size={15} color="#AA500F" accessible={false} />
+                      ))}
+                    </View>
+                    <Text className="text-bone text-normal">Por: {resena.nombre}</Text>
+                  </View>
+                  <TouchableOpacity
+                    className="flex-row items-center"
+                    style={{ gap }}
+                    onPress={() => handleLike(resena)}
+                    accessibilityRole="button"
+                    accessibilityLabel={resena.liked ? `Quitar me gusta. ${resena.cant_me_gusta} me gusta` : `Dar me gusta. ${resena.cant_me_gusta} me gusta`}
+                  >
+                    <Text className="text-white text-normal">{resena.cant_me_gusta}</Text>
+                    <AntDesign
+                      name="heart"
+                      size={25}
+                      color={resena.liked ? 'red' : 'white'}
+                      accessible={false}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+            ))}
+
+            <View className="flex-row items-center justify-start" style={{ gap }}>
+              <Button
+                label="Ver más reseñas"
+                onPress={() => router.push(`/(home)/review/${id}`)}
+                loading={false}
+                disabled={false}
+              />
+            </View>
+          </>
+        )}
+
+
+      </ScrollView>
+    </View>
   );
 }

@@ -6,7 +6,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from '@/hooks/ctx';
 import { useState, useEffect, useRef } from 'react';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import ImageButton from '@/components/ui/imageButton';
 
