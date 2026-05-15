@@ -1,9 +1,10 @@
 import { Controller, Get,Body,Query, Param, BadRequestException, Headers } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { createZodDto } from 'nestjs-zod'
-import { readShowParam } from '../../../shared/show.schema';
+import { readShowParam, getshowReviewsSchema, GetShowReviews  } from '../../../shared/show.schema';
 
 class ReadShowParamDto extends createZodDto(readShowParam) {} //transforms the schema into a dto
+class GetShowReviewsDto extends createZodDto(getshowReviewsSchema) {}
 
 @Controller('show')
 export class ShowController {
@@ -31,4 +32,10 @@ async getShowById(
   return this.showService.getShowById(id, id_user, name);
 }
 
+@Get(':id/reviews')
+async getShowReviews( @Param('id') id: string,  @Query() query: GetShowReviewsDto
+) {
+  const parsed = getshowReviewsSchema.parse(query)
+  return this.showService.getshowReviews(Number(id), parsed)
+}
 }

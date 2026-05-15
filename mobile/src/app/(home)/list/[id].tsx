@@ -3,11 +3,11 @@ import { Text } from "@react-native-ama/react-native";
 import { Image } from 'expo-image';
 import { useLayout } from '@/hooks/useLayout';
 import ReturnButton from '@/components/ui/ReturnButton';
-import { router, useLocalSearchParams } from 'expo-router';
 import { getListById, baseUrl } from '@/services/list.service';
 import { useSession } from '@/hooks/ctx';
-import { useState, useEffect } from 'react';
 import ImageButton from '@/components/ui/imageButton';
+import { useState, useCallback, useRef } from 'react';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 
 type ListItem = {
   id: number;
@@ -28,26 +28,27 @@ export default function ListDetailScreen() {
 
   const [items, setItems] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const data = await getListById(Number(id), session!);
-        // deduplicate by contenido_id
-        const unique = data.filter((item: ListItem, index: number, self: ListItem[]) =>
-          index === self.findIndex(t => t.contenido_id === item.contenido_id)
-        );
-        setItems(unique);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch();
-  }, [id]);
-
+  
+  useFocusEffect(
+    useCallback(() => {
+      const fetch = async () => {
+        setItems([]);
+        setLoading(true);
+        try {
+          const data = await getListById(Number(id), session!);
+          const unique = data.filter((item: ListItem, index: number, self: ListItem[]) =>
+            index === self.findIndex(t => t.contenido_id === item.contenido_id)
+          );
+          setItems(unique);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetch();
+    }, [id])
+  )
   const listName = items[0]?.nombre_lista ?? '';
   const listOwner = items[0]?.nombre_usuario ?? '';
 

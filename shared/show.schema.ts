@@ -25,6 +25,14 @@ export const readEachShow = z.object({
     image_link: z.string()
 })
 
-export type ReadShowParam = z.infer<typeof readShowParam>
 
+export const getshowReviewsSchema = z.object({
+  skip: z.coerce.number().default(0),
+  limit: z.coerce.number().default(15),
+  id_usuario: z.string().uuid(),
+})
+
+
+export type GetShowReviews = z.infer<typeof getshowReviewsSchema>
+export type ReadShowParam = z.infer<typeof readShowParam>
 export type ReadEachShow = z.infer<typeof readEachShow>

@@ -5,8 +5,8 @@ import { getReviews, addLike, removeLike, baseUrl } from '@/services/review.serv
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useSession } from '@/hooks/ctx';
-import { useState, useEffect, useRef } from 'react';
-import { router } from 'expo-router';
+import { useState, useRef, useCallback, memo } from 'react';
+import { router, useFocusEffect } from 'expo-router';
 import ImageButton from '@/components/ui/imageButton';
 
 type Review = {
@@ -23,6 +23,100 @@ type Review = {
   liked: boolean;
 };
 
+const ReviewItem = memo(({ item, onLike, screenWidth, gap, starSize, paddingHorizontal }: {
+  item: Review;
+  onLike: (item: Review) => void;
+  screenWidth: number;
+  gap: number;
+  starSize: number;
+  paddingHorizontal: number;
+}) => (
+  <View style={{ paddingHorizontal, gap }} accessible={false}>
+    <View
+      accessible={true}
+      accessibilityLabel={`${item.titulo}, ${item.año}. Reseña de ${item.nombre}`}
+      className='flex-row flex-wrap justify-between items-center'
+      style={{ gap }}
+    >
+      <View className="flex-row items-center flex-wrap" style={{ gap }}>
+        <Text className="text-white text-normal" accessible={false}>{item.titulo}</Text>
+        <Text className="text-white text-normal" accessible={false}>{item.año}</Text>
+      </View>
+      <Text className="text-bone text-normal" accessible={false}>{item.nombre}</Text>
+    </View>
+
+    <View className='flex-row items-center' style={{ gap }}>
+      <ImageButton
+        source={{ uri: `${baseUrl}${item.enlace_imagen}` }}
+        width={screenWidth * 0.26}
+        height={screenWidth * 0.4}
+        rounded="md"
+        accessibilityLabel={`Ver detalles de ${item.tipo === 'pelicula' ? 'la película' : 'la serie'} ${item.titulo}`}
+        accessibilityHint={`Toca para ver más información sobre ${item.titulo}`}
+        onPress={() => {
+          if (item.tipo === 'pelicula') {
+            router.push(`/movie/${item.id_contenido}`);
+          } else {
+            router.push(`/show/${item.id_contenido}`);
+          }
+        }}
+      />
+      <View className="flex-1">
+        <Text className="text-white text-normal" accessibilityLabel={`Comentario: ${item.contenido}`}>
+          {item.contenido}
+        </Text>
+      </View>
+    </View>
+
+    <View className='flex-row items-center justify-between' style={{ gap }}>
+      <View
+        className='flex-row items-center'
+        style={{ gap }}
+        accessible={true}
+        accessibilityLabel={`Calificación: ${item.calificacion} de 5 estrellas`}
+      >
+        {Array.from({ length: 5 }).map((_, i) => (
+          <FontAwesome
+            key={i}
+            name="star"
+            size={starSize}
+            color={i < item.calificacion ? 'orange' : 'gray'}
+            accessible={false}
+          />
+        ))}
+      </View>
+
+      <TouchableOpacity
+        className='flex-row items-center'
+        style={{ gap }}
+        onPress={() => onLike(item)}
+        accessibilityRole="button"
+        accessibilityLabel={
+          item.liked
+            ? `Quitar me gusta. ${item.cant_me_gusta} me gusta`
+            : `Dar me gusta. ${item.cant_me_gusta} me gusta`
+        }
+        accessibilityState={{ checked: item.liked }}
+        accessibilityHint={item.liked ? 'Toca para quitar el me gusta' : 'Toca para dar me gusta'}
+      >
+        <Text className="text-white text-normal" accessible={false}>{item.cant_me_gusta}</Text>
+        <AntDesign
+          name="heart"
+          size={starSize}
+          color={item.liked ? 'red' : 'white'}
+          accessible={false}
+        />
+      </TouchableOpacity>
+    </View>
+
+    <View
+      className="flex-row items-center h-0.5 bg-chocolate"
+      accessible={false}
+      importantForAccessibility="no"
+    />
+  </View>
+));
+
 export default function ReviewScreen() {
   const { screenWidth } = useLayout();
   const paddingHorizontal = screenWidth * 0.02;
@@ -36,8 +130,6 @@ export default function ReviewScreen() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const limit = 15;
-
-
 
   const fetchReviews = async (reset = false) => {
     if (loadingRef.current) return;
@@ -73,7 +165,16 @@ export default function ReviewScreen() {
     }
   };
 
-  const handleLike = async (item: Review) => {
+  useFocusEffect(
+    useCallback(() => {
+      setReviews([]);
+      setHasMore(true);
+      skipRef.current = 0;
+      fetchReviews(true);
+    }, [])
+  )
+
+  const handleLike = useCallback(async (item: Review) => {
     const isLiked = item.liked;
 
     setReviews(prev => prev.map(r =>
@@ -95,105 +196,18 @@ export default function ReviewScreen() {
           : r
       ));
     }
-  };
+  }, [session]);
 
-  const renderReview = ({ item }: { item: Review }) => (
-
-    <View
-      style={{ paddingHorizontal, gap }}
-      accessible={false}
-    >
-      {/* Title row */}
-
-      <View
-        accessible={true}
-        accessibilityLabel={`${item.titulo}, ${item.año}. Reseña de ${item.nombre}`}
-        className='flex-row flex-wrap justify-between items-center'
-        style={{ gap }}
-      >
-        <View className="flex-row items-center flex-wrap" style={{ gap }}>
-          <Text className="text-white text-normal" accessible={false}>{item.titulo}</Text>
-          <Text className="text-white text-normal" accessible={false}>{item.año}</Text>
-        </View>
-        <Text className="text-bone text-normal" accessible={false}>{item.nombre}</Text>
-      </View>
-
-      {/* Image + comment */}
-      <View className='flex-row items-center' style={{ gap }}>
-        <ImageButton
-          source={{ uri: `${baseUrl}${item.enlace_imagen}` }}
-          width={screenWidth * 0.26}
-          height={screenWidth * 0.4}
-          rounded="md"
-          accessibilityLabel={`Ver detalles de ${item.tipo === 'pelicula' ? 'la película' : 'la serie'} ${item.titulo}`}
-          accessibilityHint={`Toca para ver más información sobre ${item.titulo}`}
-          onPress={() => {
-            if (item.tipo === 'pelicula') {
-              router.push(`/movie/${item.id_contenido}`);
-            } else {
-              router.push(`/show/${item.id_contenido}`);
-            }
-          }}
-        />
-        <View className="flex-1">
-          <Text
-            className="text-white text-normal"
-            accessibilityLabel={`Comentario: ${item.contenido}`}
-          >
-            {item.contenido}
-          </Text>
-        </View>
-      </View>
-
-      {/* Stars + likes */}
-      <View className='flex-row items-center justify-between' style={{ gap }}>
-        <View
-          className='flex-row items-center'
-          style={{ gap }}
-          accessible={true}
-          accessibilityLabel={`Calificación: ${item.calificacion} de 5 estrellas`}
-        >
-          {Array.from({ length: 5 }).map((_, i) => (
-            <FontAwesome
-              key={i}
-              name="star"
-              size={starSize}
-              color={i < item.calificacion ? 'orange' : 'gray'}
-              accessible={false} 
-            />
-          ))}
-        </View>
-
-        <TouchableOpacity
-          className='flex-row items-center'
-          style={{ gap }}
-          onPress={() => handleLike(item)}
-          accessibilityRole="button"
-          accessibilityLabel={
-            item.liked
-              ? `Quitar me gusta. ${item.cant_me_gusta} me gusta`
-              : `Dar me gusta. ${item.cant_me_gusta} me gusta`
-          }
-          accessibilityState={{ checked: item.liked }} 
-          accessibilityHint={item.liked ? 'Toca para quitar el me gusta' : 'Toca para dar me gusta'}
-        >
-          <Text className="text-white text-normal" accessible={false}>{item.cant_me_gusta}</Text>
-          <AntDesign
-            name="heart"
-            size={starSize}
-            color={item.liked ? 'red' : 'white'}
-            accessible={false}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View
-        className="flex-row items-center h-0.5 bg-chocolate"
-        accessible={false} 
-        importantForAccessibility="no"
-      />
-    </View>
-  );
+  const renderReview = useCallback(({ item }: { item: Review }) => (
+    <ReviewItem
+      item={item}
+      onLike={handleLike}
+      screenWidth={screenWidth}
+      gap={gap}
+      starSize={starSize}
+      paddingHorizontal={paddingHorizontal}
+    />
+  ), [handleLike]);
 
   return (
     <View className="flex-1" accessible={false}>
@@ -206,7 +220,6 @@ export default function ReviewScreen() {
         initialNumToRender={15}
         maxToRenderPerBatch={15}
         windowSize={5}
-
         ListHeaderComponent={
           <Text
             className="text-white text-intermediate"
@@ -226,7 +239,6 @@ export default function ReviewScreen() {
             : null
         }
         contentContainerStyle={{ gap }}
-       
         accessibilityLabel="Lista de reseñas populares"
       />
     </View>

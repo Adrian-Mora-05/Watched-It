@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
-import { readShowParam, ReadShowParam } from "../../../shared/show.schema";
+import { readShowParam, ReadShowParam, getshowReviewsSchema, GetShowReviews } from "../../../shared/show.schema";
 
 @Injectable()
 export class ShowService {
@@ -87,5 +87,20 @@ export class ShowService {
         };
     }
 
+    async getshowReviews(id_serie: number,  { skip, limit,id_usuario }: GetShowReviews) {
+        const { data, error } = await supabase
+            .from('get_all_show_reviews_view')
+            .select('*')
+            .eq('id_serie', id_serie)
+            .order('cant_me_gusta',{ ascending: false })
+            .range(skip, skip + limit - 1)
 
+        if (error) throw new BadRequestException(error.message)
+        return data.map(review => {
+        return {
+            ...review,
+            liked: review.usuarios_que_dieron_like?.includes(id_usuario) ?? false
+        }
+        })
+    }
 }

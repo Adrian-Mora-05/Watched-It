@@ -241,7 +241,7 @@ export default function ShowScreen() {
             <View className="flex-row items-center justify-start" style={{ gap }}>
               <Button
                 label="Ver más reseñas"
-                onPress={() => router.push(`/(home)/review/${id}`)}
+                onPress={() => router.push(`/movie/review/${id}?movie_id=${id}&name=${movie?.titulo}`)}
                 loading={false}
                 disabled={false}
               />

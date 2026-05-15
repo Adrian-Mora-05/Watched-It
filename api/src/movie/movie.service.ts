@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
-import { readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
+import { GetMovieReviews, readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
 
 
 @Injectable()
@@ -89,4 +89,20 @@ async getMovieById(id: number,id_user:string, name:string) {
     };
 }
 
+    async getMovieReviews(id_pelicula: number,  { skip, limit,id_usuario }: GetMovieReviews) {
+        const { data, error } = await supabase
+            .from('get_all_movie_reviews_view')
+            .select('*')
+            .eq('id_pelicula', id_pelicula)
+            .order('cant_me_gusta',{ ascending: false })
+            .range(skip, skip + limit - 1)
+
+        if (error) throw new BadRequestException(error.message)
+        return data.map(review => {
+        return {
+            ...review,
+            liked: review.usuarios_que_dieron_like?.includes(id_usuario) ?? false
+        }
+        })
+    }
 }
