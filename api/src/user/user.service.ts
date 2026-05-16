@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Multer } from 'multer';
 import { supabase, supabaseAdmin } from '../config/db';
 import { LogCatalogContent } from '../../../shared/catalog.schema';
+import { ReadUserParam, readUserParam } from '../../../shared/user.schema';
 
 @Injectable()
 export class UserService {
@@ -184,26 +185,56 @@ export class UserService {
     return result;
   }
 
+async searchUsers(param: ReadUserParam) {
 
-async searchUsers(name: string) {
+  const parsedParam =
+    readUserParam.parse(param);
 
-    const { data, error } = await supabase
-        .from('usuario')
-        .select(`
-            id,
-            nombre,
-            enlace_foto_perfil
-        `)
-        .ilike('nombre', `%${name}%`);
+  let query = supabase
+    .from('usuario')
+    .select(`
+      id,
+      nombre,
+      enlace_foto_perfil
+    `);
 
-    if (error) {
-        throw new BadRequestException(error.message);
-    }
+  // paginación
+  if (
+    parsedParam.skip !== undefined &&
+    parsedParam.limit !== undefined
+  ) {
 
-    return { data };
+    query = query.range(
+      parsedParam.skip,
+      parsedParam.skip + parsedParam.limit - 1
+    );
+  }
+
+  // búsqueda parcial
+  if (parsedParam.name) {
+
+    query = query.ilike(
+      'nombre',
+      `%${parsedParam.name}%`
+    );
+  }
+
+  // ordenar alfabéticamente
+  query = query.order(
+    'nombre',
+    { ascending: true }
+  );
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new BadRequestException(
+      error.message
+    );
+  }
+
+  return { data };
 }
-
-
 
 
 }

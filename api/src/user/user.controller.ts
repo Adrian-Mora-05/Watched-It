@@ -5,8 +5,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors/file.interceptor';
 import { logCatalogContent, LogCatalogContent } from '../../../shared/catalog.schema';
 import { createZodDto } from 'nestjs-zod'
+import { readUserParam } from '../../../shared/user.schema';
 
 class logCatalogContentDto extends createZodDto(logCatalogContent) {} 
+class ReadUserParamDto extends createZodDto(readUserParam) {}
 
 @UseGuards(JwtAuthGuard)// Protect all routes in this controller with JWT authentication
 @Controller('user')
@@ -65,8 +67,10 @@ export class UserController {
   } 
 
   @Get('search')
-  async searchUsers(@Query('name') name: string) {
-      return this.userService.searchUsers(name);
+  async searchUsers(
+    @Query() param: ReadUserParamDto
+  ) {
+    return this.userService.searchUsers(param);
   }
 
 

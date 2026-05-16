@@ -25,4 +25,49 @@ export class ListService {
     return data;
   }
 
+  async searchLists(param: ReadListParam) {
+
+    const parsedParam = readListParam.parse(param);
+
+    let query = supabase
+      .from('lists_view')
+      .select(`
+        id,
+        nombre_lista,
+        nombre_usuario,
+        enlace_imagen,
+        contenido_id,
+        tipo
+      `);
+
+    if (parsedParam.name) {
+      query = query.ilike('nombre_lista', `%${parsedParam.name}%`);
+    }
+
+    if (parsedParam.type) {
+      query = query.eq('tipo', parsedParam.type);
+    }
+
+    if (
+      parsedParam.skip !== undefined &&
+      parsedParam.limit !== undefined
+    ) {
+      query = query.range(
+        parsedParam.skip,
+        parsedParam.skip + parsedParam.limit - 1
+      );
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new BadRequestException(
+        'Error searching lists: ' + error.message
+      );
+    }
+
+    return { data };
+  }
+
+
 }
