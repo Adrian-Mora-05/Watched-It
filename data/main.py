@@ -1,4 +1,5 @@
-import loaders.loadMovies as loadMovies, generators.usersInfo as usersInfo
+import loaders.loadMovies as loadMovies, generators.usersInfo as usersInfo, loaders.loadShows as loadShows
+
 #import generators.movieEmbeddings as movieEmbeddings
 
 from db import supabase
@@ -15,6 +16,11 @@ try:
     print("\nMovie dataset generated.")
 
     print("--------------------------------------------------------------")
+    print("\nGenerating movie dataset...\n")
+    show_dict,reviews_dict = loadShows.createShowDataset()
+    print("\nMovie dataset generated.")
+
+    print("--------------------------------------------------------------")
     print("\nInserting user data into the database...\n")
     usersUuids = usersInfo.loadUsersIntoDB(user_dict)
     print("\nUser data inserted into the database.")
@@ -22,6 +28,11 @@ try:
     print("--------------------------------------------------------------")
     print("\nInserting movie data into the database...\n")
     loadMovies.loadMoviesIntoDB(movie_dict)
+    print("\nMovie data inserted into the database.")
+
+    print("--------------------------------------------------------------")
+    print("\nInserting movie data into the database...\n")
+    loadShows.loadShowsIntoDB(show_dict)
     print("\nMovie data inserted into the database.")
     
     print("--------------------------------------------------------------")
