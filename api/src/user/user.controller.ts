@@ -115,5 +115,8 @@ export class UserController {
       return this.userService.searchUsers(name);
   }
 
-
+  @Get('rating-stats')
+  async getRatingStats(@Req() req) {
+    return this.userService.getRatingStats(req.user.id);
+  }
 }

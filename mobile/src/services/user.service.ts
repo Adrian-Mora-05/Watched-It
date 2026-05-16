@@ -170,3 +170,19 @@ export const updateFavorites = async (
 
     return response.data;
   };
+
+  export type UserRatingStats = {
+  total_calificaciones: number;
+  cant_1: number;
+  cant_2: number;
+  cant_3: number;
+  cant_4: number;
+  cant_5: number;
+};
+
+export const getRatingStats = async (token: string): Promise<UserRatingStats> => {
+  const response = await api.get('/user/rating-stats', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
