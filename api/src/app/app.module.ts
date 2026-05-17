@@ -11,9 +11,10 @@ import { ChatModule } from 'src/chat/chat.module';
 import {DiaryModule} from 'src/diary/diary.module';
 import { ReviewModule } from 'src/review/review.module';
 import { ListModule } from '../list/list.module';
+import { RecommendationModule } from 'src/recommendations/recommendation.module';
 
 @Module({
-  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ReviewModule,ListModule],
+  imports: [AuthModule, UserModule, MovieModule,ShowModule, CatalogModule, FriendModule, ChatModule, DiaryModule, ReviewModule,ListModule,RecommendationModule],
   controllers: [AppController],
   providers: [AppService],
 })
