@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import DiaryScreen from '@/app/(home)/(profile)/diary';
+import DiaryScreen from '@/app/(home)/(tabs)/(profile)/diary';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

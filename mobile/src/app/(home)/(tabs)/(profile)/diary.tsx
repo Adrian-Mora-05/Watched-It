@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { View, FlatList } from "react-native";
 import { Text } from "@react-native-ama/react-native";
-import DiaryEntryCard from '../../../components/ui/DiaryEntryCard';
+import DiaryEntryCard from '../../../../components/ui/DiaryEntryCard';
 import { useSession } from '@/hooks/ctx';
 import { getDiaryEntries } from "@/services/diary.service";
 

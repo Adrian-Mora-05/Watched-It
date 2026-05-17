@@ -52,7 +52,7 @@ export default function ProfileScreen() {
                 source={
                     user?.profilePicture
                       ? { uri: user.profilePicture }
-                      : require('../../../../assets/images/default-profile-pic.png')
+                      : require('../../../../../assets/images/default-profile-pic.png')
                   }
                 style={{ width: 85, height: 85, borderRadius: 45 }}
                 cachePolicy="none"

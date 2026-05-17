@@ -33,7 +33,7 @@ export const readShowParam = z.object({
     ),
 
     sortBy: z.enum([
-        'popularity',
+        'popularity', 
         'year',
         'title'
     ]).optional(),

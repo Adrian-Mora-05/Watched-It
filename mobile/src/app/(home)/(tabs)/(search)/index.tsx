@@ -2,13 +2,13 @@ import { View, TouchableOpacity, ScrollView } from 'react-native';
 import { Text } from "@react-native-ama/react-native";
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { supabase } from '@/services/supabase';
 import { useLayout } from '@/hooks/useLayout';
-
+import api from '@/services/api';
 import MenuBar from "@/components/ui/MenuBar";
 import Input from "@/components/ui/Input";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import TitleGrid from '@/components/ui/TitleGrid';
+import { supabase } from '@/services/supabase';
 
 type SearchTab =
   | "movies"
@@ -99,6 +99,7 @@ export default function SearchScreen() {
     tab
   ]);
 
+  
   const fetchResults = async () => {
 
     try {
@@ -178,28 +179,17 @@ export default function SearchScreen() {
 
         case 'lists':
           endpoint =
-            `/list/search?${params.toString()}`;
+            `/list?${params.toString()}`;
           break;
       }
+      
+      const sessionData =
+        await supabase.auth.getSession();
 
-      const {
-        data: { session }
-      } = await supabase.auth.getSession();
+      console.log(sessionData);
+      const response = await api.get(endpoint);
 
-      const token =
-        session?.access_token;
-        
-      const response = await fetch(
-        `http://192.168.1.10:3000/api${endpoint}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      const json =
-        await response.json();
+      const json = response.data;
 
       console.log(json);
 
@@ -593,12 +583,18 @@ export default function SearchScreen() {
               onPress={() => {
 
                 if (tab === "movies") {
-                  router.push(`/movie/${item.id}`);
+                  router.push({
+                  pathname: '/movie/[id]',
+                  params: { id: item.id }
+                });
                   return;
                 }
 
                 if (tab === "shows") {
-                  router.push(`/show/${item.id}`);
+                  router.push({
+                    pathname: '/show/[id]',
+                    params: { id: item.id }
+                  });
                   return;
                 }
 
@@ -611,29 +607,35 @@ export default function SearchScreen() {
 
       ) : (
 
-        <View className="mt-6 gap-3 px-4">
+          <View className="mt-6 px-4">
 
-          {results.map((item, index) => (
+            {results.map((item, index) => (
 
-            <TouchableOpacity
-              key={`${item.id}-${index}`}
-              className="bg-white rounded-xl px-4 py-4"
-              onPress={() => {
+              <TouchableOpacity
+                key={`${item.id}-${index}`}
+                className="py-4 border-b border-gray-500"
+                onPress={() => {
 
                 if (tab === "lists") {
-                  router.push(`/list/${item.id}`);
+                  router.push({
+                  pathname: '/list/[id]',
+                  params: { id: item.id }
+                });
                   return;
                 }
 
                 if (tab === "users") {
-                  router.push(`/user/${item.id}`);
+                  router.push({
+                    pathname: '/user/[id]',
+                    params: { id: item.id }
+                  });
                   return;
                 }
 
               }}
             >
 
-              <Text className="text-black font-bold">
+              <Text className="text-white font-bold text-lg">
                 {item.title}
               </Text>
 

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
-import LoggerIndex from '@/app/(home)/(logger)/index';
+import LoggerIndex from '@/app/(home)/(tabs)/(logger)/index';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 jest.mock('react-native-safe-area-context', () => ({

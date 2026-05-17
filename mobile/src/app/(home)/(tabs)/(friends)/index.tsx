@@ -53,7 +53,7 @@ const RequestRow = memo(({
             <Image
                 source={avatarUrl
                     ? { uri: avatarUrl }
-                    : require('../../../../assets/images/default-profile-pic.png')
+                    : require('../../../../../assets/images/default-profile-pic.png')
                 }
                 style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
                 accessibilityLabel={`Foto de perfil de ${item.sender_name}`}
@@ -116,7 +116,7 @@ const FriendRow = memo(({
             <Image
                 source={avatarUrl
                     ? { uri: avatarUrl }
-                    : require('../../../../assets/images/default-profile-pic.png')
+                    : require('../../../../../assets/images/default-profile-pic.png')
                 }
                 style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
                 accessibilityLabel={`Foto de perfil de ${item.friend_name}`}

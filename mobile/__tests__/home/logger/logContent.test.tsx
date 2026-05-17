@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import LogContent from '@/app/(home)/(logger)/logContent';
+import LogContent from '@/app/(home)/(tabs)/(logger)/logContent';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

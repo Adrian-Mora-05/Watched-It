@@ -24,6 +24,7 @@ import ImageButton from '@/components/ui/imageButton';
 import { CameraModule } from '@/components/camera/CameraProvider';
 import Feather from '@expo/vector-icons/Feather';
 
+
 type SignUpErrors = Partial<Record<keyof z.infer<typeof createUser>, string>>;
 
 export default function SignUp() {

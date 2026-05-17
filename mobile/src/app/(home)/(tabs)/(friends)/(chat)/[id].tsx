@@ -153,7 +153,7 @@ export default function Chat() {
                         <Image
                             source={avatarUrl
                                 ? { uri: avatarUrl }
-                                : require('../../../../../assets/images/default-profile-pic.png')
+                                : require('../../../../../../assets/images/default-profile-pic.png')
                             }
                             style={{
                                 width: avatarSize,
