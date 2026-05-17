@@ -153,11 +153,10 @@ export default function ListScreen() {
         accessibilityLabel="Lista de listas de películas y series" 
         ItemSeparatorComponent={() => (
           <View
-            className="h-0.5 bg-chocolate"
-            style={{ marginHorizontal: paddingHorizontal }}
-            accessible={false} 
+            style={{ height: 1, marginBottom:gap, backgroundColor: '#5D3E14' }}
+            accessible={false}
             importantForAccessibility="no"
-          />
+        />
         )}
         ListFooterComponent={
           loading

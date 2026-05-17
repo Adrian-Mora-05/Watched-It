@@ -16,7 +16,8 @@ export default function ProfileScreen() {
   
   const [tab, setTab] = useState("userProfile");
   const { user, isLoadingUser} = useSession();
-  const { headerPaddingBottom, headerHeight } = useLayout();
+  const { headerPaddingBottom, headerHeight,screenWidth } = useLayout();
+  const gap = screenWidth * 0.03;
 
 
   if (isLoadingUser) {
@@ -41,25 +42,28 @@ export default function ProfileScreen() {
         className="flex-1 bg-dark"
         >
         <View className="flex-1 bg-dark">
-          <View className="bg-chocolate h-40 flex-row justify-evenly items-center gap-4 pt-10" style={{ height: headerHeight}}>
+          <View className="bg-chocolate  flex-row justify-evenly items-center pt-10" style={{ height: headerHeight, gap, padding:gap  }}>
+            
             <SettingButton onPress={() => router.push("/settings")} />
+            
+            <Text
+              className="text-white text-large font-bold"
+              style={{ flex: 1, flexWrap: 'wrap', textAlign: 'center' }}
+              numberOfLines={2}  // limits to 2 lines, remove if you want unlimited
+            >
+              {user?.name || "Usuario"}
+            </Text>
 
-            <View className="flex-row items-center gap-4">
-              <Text className="text-white text-large font-bold">
-                {user?.name || "Usuario"}
-              </Text>
-          
-              </View>
             <Image
-                source={
-                    user?.profilePicture
-                      ? { uri: user.profilePicture }
-                      : require('../../../../assets/images/default-profile-pic.png')
-                  }
-                style={{ width: 85, height: 85, borderRadius: 45 }}
-                cachePolicy="none"
-              />
-        
+              source={
+                user?.profilePicture
+                  ? { uri: user.profilePicture }
+                  : require('../../../../assets/images/default-profile-pic.png')
+              }
+              style={{ width: 85, height: 85, borderRadius: 45 }}
+              cachePolicy="disk"
+            />
+
           </View>
           <View className="px-4 mt-6 ">
               <MenuBar

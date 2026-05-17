@@ -19,6 +19,8 @@ export default function ChooseFavsScreen() {
     name: string;
     photoUri?: string;
   }>();
+  const { headerHeight, screenWidth, headerPaddingBottom, paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | undefined>();
   const [movies, setMovies] = useState<ReadEachMovie[]>([]);
@@ -50,9 +52,7 @@ export default function ChooseFavsScreen() {
       });
       skipRef.current += LIMIT;
     } catch (e: any) {
-  console.log("MOVIE ERROR:", e);
-  console.log("MOVIE ERROR RESPONSE:", e?.response?.data);
-  console.log("MOVIE ERROR MESSAGE:", e?.message);
+
 
   setToastMessage(e?.message || "Error al cargar las películas");
 } finally {
@@ -73,10 +73,12 @@ export default function ChooseFavsScreen() {
         onDismiss={() => setToastMessage(undefined)}
       />
       
-      <ReturnButton label="Volver" onPress={() => router.back()} />
+      <View className="w-full items-start justify-end" style={{height: headerHeight}}>
+        <ReturnButton label="Volver" onPress={() => router.back()} />
+      </View>
 
       {/* Título */}
-      <View className="items-center m-5 mt-0" accessible={true} accessibilityRole="header">
+      <View className="items-center " accessible={true} accessibilityRole="header">
         <Text className="text-white text-large font-bold">Comencemos</Text>
       </View>
 

@@ -63,12 +63,14 @@ export default function MovieScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!session) return;
+
     const fetchRecommendations = async () => {
       try {
         const [paraTiData, joyasData, cineMundialData] = await Promise.all([
-          getMoviesForYou(session!),
-          getMoviesHiddenGems(session!),
-          getMoviesWorldCinema(session!),
+          getMoviesForYou(session),
+          getMoviesHiddenGems(session),
+          getMoviesWorldCinema(session),
         ]);
         setParaTi(paraTiData);
         setJoyasOcultas(joyasData);
@@ -81,7 +83,7 @@ export default function MovieScreen() {
     };
 
     fetchRecommendations();
-  }, [session]);
+  }, [session]); // re-runs once session is available
 
   if (loading) return <ActivityIndicator className="flex-1" color="white" />;
 

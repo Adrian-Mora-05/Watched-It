@@ -1,12 +1,12 @@
 import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, AccessibilityInfo, } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { replace } from "expo-router/build/global-state/routing";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useState, useRef } from "react";
 import { resetPassword } from "@/services/auth.service";
 import { ResetPasswordSchema } from "@shared/password.schema";
+import { useLayout } from "@/hooks/useLayout";
 
 type ScreenState = "idle" | "loading" | "success" | "error";
 
@@ -17,7 +17,10 @@ export default function ResetPasswordScreen() {
   const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
   const [screenState, setScreenState] = useState<ScreenState>("idle");
   const [apiError, setApiError] = useState<string>("");
-
+  const { headerHeight, screenWidth,  paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
+  const imgWidth = screenWidth * 0.28;
+  const imgHeight = imgWidth * 1.5;
   const confirmPasswordRef = useRef<any>(null);
 
   if (!token) {
@@ -117,10 +120,10 @@ export default function ResetPasswordScreen() {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="flex-1 bg-dark">
-          <View className="content-start bg-dark justify-around mt-28 gap-8">
-            <View className="mb-10">
+          <View className="content-start bg-dark justify-around" style={{ paddingHorizontal, paddingVertical }}>
+
             <Text
-              className="text-white text-large font-bold my-10 text-center"
+              className="text-white text-large font-bold my-10 text-center" style={{marginTop: headerHeight}}
               accessibilityRole="header"
             >
               Nueva contraseña
@@ -208,7 +211,6 @@ export default function ResetPasswordScreen() {
               </View>
             </View>
           </View>
-        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
