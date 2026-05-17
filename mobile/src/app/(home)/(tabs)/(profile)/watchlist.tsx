@@ -1,9 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
-import { View, FlatList, ActivityIndicator, Image, ScrollView, Pressable,} from "react-native";
+import { View, FlatList, ActivityIndicator, ScrollView } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 import { useSession } from "@/hooks/ctx";
 import { useLayout } from "@/hooks/useLayout";
 import { getPorVer, baseUrl } from "@/services/list.service";
+import ImageButton from "@/components/ui/imageButton";
+import { router } from "expo-router";
 
 type WatchItem = {
   lista_id: number;
@@ -84,20 +86,6 @@ export default function WatchlistScreen() {
     return Object.values(map);
   }, [data]);
 
-  const Card = ({ uri }: { uri: string }) => (
-    <Pressable className="mr-4 active:opacity-80">
-      <Image
-        source={{ uri: baseUrl + uri }}
-        style={{
-          width: movieCardWidth,
-          height: movieCardHeight,
-          borderRadius: 16,
-        }}
-        resizeMode="cover"
-      />
-    </Pressable>
-  );
-
   const Section = ({ item }: { item: GroupedList }) => (
     <View className="mb-10">
 
@@ -105,15 +93,23 @@ export default function WatchlistScreen() {
       {item.peliculas.length > 0 && (
         <>
           <Text className="text-white mb-2 font-bold text-medium">Películas</Text>
-
           <FlatList
             data={item.peliculas}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(i, index) =>
-              `${item.id}-pelicula-${i.contenido_id}-${index}`
-            }
-            renderItem={({ item }) => <Card uri={item.imagen} />}
+            keyExtractor={(i, index) => `${item.id}-pelicula-${i.contenido_id}-${index}`}
+            contentContainerStyle={{ gap: 12 }}
+            renderItem={({ item: pelicula, index }) => (
+              <ImageButton
+                source={{ uri: `${baseUrl}${pelicula.imagen}` }}
+                width={movieCardWidth}
+                height={movieCardHeight}
+                rounded="md"
+                accessibilityLabel={`Película ${index + 1} de ${item.peliculas.length}`}
+                accessibilityHint="Toca para ver más información"
+                onPress={() => router.push(`/movie/${pelicula.contenido_id}`)}
+              />
+            )}
           />
         </>
       )}
@@ -126,10 +122,19 @@ export default function WatchlistScreen() {
             data={item.series}
             horizontal
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(i, index) =>
-              `${item.id}-serie-${i.contenido_id}-${index}`
-            }
-            renderItem={({ item }) => <Card uri={item.imagen} />}
+            keyExtractor={(i, index) => `${item.id}-serie-${i.contenido_id}-${index}`}
+            contentContainerStyle={{ gap: 12 }}
+            renderItem={({ item: serie, index }) => (
+              <ImageButton
+                source={{ uri: `${baseUrl}${serie.imagen}` }}
+                width={movieCardWidth}
+                height={movieCardHeight}
+                rounded="md"
+                accessibilityLabel={`Serie ${index + 1} de ${item.series.length}`}
+                accessibilityHint="Toca para ver más información"
+                onPress={() => router.push(`/show/${serie.contenido_id}`)}
+              />
+            )}
           />
         </>
       )}
@@ -150,9 +155,8 @@ export default function WatchlistScreen() {
         <Text className="text-white text-2xl font-bold text-center">
           Tu watchlist está vacía
         </Text>
-
         <Text className="text-gray-400 text-center mt-3">
-          Agrega películas o series a “por ver” para verlas aquí
+          Agrega películas o series a "por ver" para verlas aquí
         </Text>
       </View>
     );
@@ -163,9 +167,7 @@ export default function WatchlistScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         className="px-5"
-        contentContainerStyle={{
-          paddingBottom: headerHeight * 0.5,
-        }}
+        contentContainerStyle={{ paddingBottom: headerHeight * 0.5 }}
       >
         {groupedData.map((item) => (
           <Section key={item.id} item={item} />

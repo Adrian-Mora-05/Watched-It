@@ -13,7 +13,6 @@ import { login, refreshSession } from '@/services/auth.service';
 import { getMe, UserProfile } from '@/services/user.service';
 import { LoginUser } from "@shared/user.schema";
 import { router } from 'expo-router';
-import { supabase } from '@/services/supabase';
 
 const AuthContext = createContext<{
   signIn: (user: LoginUser) => Promise<void>;
@@ -137,33 +136,13 @@ export function SessionProvider({ children }: PropsWithChildren) {
     <AuthContext.Provider
       value={{
         signIn: async (user: LoginUser) => {
-
           const data = await login(user);
-
-          if (!data.session) {
-            throw new Error('No session returned');
-          }
-
-          await supabase.auth.setSession({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-          });
-
-          setSessionJson(
-            JSON.stringify(
-              slimSession(data.session)
-            )
-          );
+          setSessionJson(JSON.stringify(slimSession(data.session)));
         },
 
-        signOut: async () => {
-
-          await supabase.auth.signOut();
-
+        signOut: () => {
           setSessionJson(null);
-
           setUser(null);
-
           router.replace('/(auth)/sign-in');
         },
 

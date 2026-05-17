@@ -23,17 +23,18 @@ type GroupedList = {
 };
 
 const groupLists = (data: ListItem[]): GroupedList[] => {
-  const map: Record<number, GroupedList> = {};
+  const map: Record<string, GroupedList> = {};
   data.forEach(item => {
-    if (!map[item.id]) {
-      map[item.id] = {
+    const key = `${item.id}-${item.nombre_lista}`;
+    if (!map[key]) {
+      map[key] = {
         id: item.id,
         nombre_lista: item.nombre_lista,
         nombre_usuario: item.nombre_usuario,
         images: [],
       };
     }
-    map[item.id].images.push(item.enlace_imagen);
+    map[key].images.push(item.enlace_imagen);
   });
   return Object.values(map);
 };
@@ -145,18 +146,17 @@ export default function ListScreen() {
     <View className="flex-1 bg-dark" accessible={false}>
       <FlatList
         data={lists}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item, index) => `${item.id}-${item.nombre_lista}-${index}`}
         renderItem={renderList}
         onEndReached={() => fetchLists()}
         onEndReachedThreshold={0.5}
         accessibilityLabel="Lista de listas de películas y series" 
         ItemSeparatorComponent={() => (
           <View
-            className="h-0.5 bg-chocolate"
-            style={{ marginHorizontal: paddingHorizontal }}
-            accessible={false} 
+            style={{ height: 1, marginBottom:gap, backgroundColor: '#5D3E14' }}
+            accessible={false}
             importantForAccessibility="no"
-          />
+        />
         )}
         ListFooterComponent={
           loading

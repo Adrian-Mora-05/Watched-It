@@ -7,6 +7,14 @@ from bs4 import BeautifulSoup
 import json
 import re
 from db import supabase
+from datetime import datetime, timezone
+import random
+
+def random_date():
+    start = datetime(2025, 1, 1, tzinfo=timezone.utc)
+    end = datetime.now(timezone.utc)
+    random_timestamp = random.uniform(start.timestamp(), end.timestamp())
+    return datetime.fromtimestamp(random_timestamp, tz=timezone.utc).isoformat()
 
 def getTitle(page_props):
     return page_props["originalTitleText"]["text"] #title in original language
@@ -187,8 +195,8 @@ def loadReviewsIntoDB(records, uuids):
     response = supabase.table("calificacion_x_pelicula").select("id", count="exact").execute()
     if response.count >= 300:
         print("Database already has 300+ reviews, skipping load.")
-        return    
-    
+        return
+
     if not records:
         print("No reviews to insert.")
         return
@@ -196,23 +204,28 @@ def loadReviewsIntoDB(records, uuids):
         print("No UUIDs available, cannot insert reviews.")
         return
 
-    for i, review in enumerate(records):  # i increments for every review globally
+    movies_response = supabase.table("pelicula").select("id").order("id").execute()
+    db_ids = [row["id"] for row in movies_response.data]
+
+    for i, review in enumerate(records):
         try:
-            assigned_uuid = uuids[i % len(uuids)]  # rotates across all users
+            db_id = db_ids[i // 5]  # reviews 0-4 → movie 0, reviews 5-9 → movie 1, etc.
+            assigned_uuid = uuids[i % len(uuids)]
 
             rating_response = (
                 supabase.table("calificacion_x_pelicula")
                 .insert({
-                    "id_pelicula": review["movie_index"] + 1,
+                    "id_pelicula": db_id,
                     "calificacion": review["rating"],
-                    "id_usuario": assigned_uuid
+                    "id_usuario": assigned_uuid,
+                    "fecha_creado": random_date()  # random timestamptz between Jan 1 2025 and today
                 })
                 .execute()
             )
 
             inserted = rating_response.data
             if not inserted:
-                print(f"Failed to insert rating for movie index {review['movie_index']}, skipping comment.")
+                print(f"Failed to insert rating for movie DB id {db_id}, skipping comment.")
                 continue
 
             rating_id = inserted[0]["id"]
@@ -223,7 +236,7 @@ def loadReviewsIntoDB(records, uuids):
                 "contenido": review["text"]
             }).execute()
 
-            print(f"Inserted review {i} for movie index {review['movie_index']} by user {assigned_uuid}")
+            print(f"Inserted review {i} for movie DB id {db_id} by user {assigned_uuid}")
 
-        except Exception as e:  # also fixed the __Exception__ typo
+        except Exception as e:
             print(f"Error on review for movie index {review['movie_index']}: {e}")

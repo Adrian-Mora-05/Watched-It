@@ -34,6 +34,8 @@ export default function ChooseShowsFavsScreen() {
   const LIMIT = 12;
   const [selected, setSelected] = useState<number[]>([]);
   const resolvedPhotoUri = Array.isArray(photoUri) ? photoUri[0] : photoUri;
+  const { headerHeight, screenWidth, headerPaddingBottom, paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
 
   const toggleShow = (id: number) => {
     setSelected(prev => {
@@ -75,10 +77,12 @@ export default function ChooseShowsFavsScreen() {
         onDismiss={() => setToastMessage(undefined)}
       />
 
-      <ReturnButton label="Volver" onPress={() => router.back()} />
+      <View className="w-full items-start justify-end" style={{height: headerHeight}}>
+        <ReturnButton label="Volver" onPress={() => router.back()} />
+      </View>
 
       {/* Título */}
-      <View className="items-center m-5 mt-0" accessible={true} accessibilityRole="header">
+      <View className="items-center " accessible={true} accessibilityRole="header">
         <Text className="text-white text-large font-bold">Ya casi terminas</Text>
       </View>
 
@@ -176,7 +180,7 @@ export default function ChooseShowsFavsScreen() {
               try {
                 await signup({ email, password, name }, resolvedPhotoUri, favsMovies, selected);
                 await signIn({ email, password });
-                router.replace('/(home)');
+                router.replace('/(index)');
               } catch (e) {
                 setToastMessage("Hubo un error al crear tu cuenta");
               } finally {

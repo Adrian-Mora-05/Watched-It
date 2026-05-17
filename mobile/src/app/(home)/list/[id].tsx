@@ -112,7 +112,7 @@ export default function ListDetailScreen() {
                 item.tipo === 'pelicula' 
                   ? `/movie/${item.contenido_id}` 
                   : `/show/${item.contenido_id}`
-              )} // or /serie/ depending on tipo
+              )}
             />
             )}
           />
