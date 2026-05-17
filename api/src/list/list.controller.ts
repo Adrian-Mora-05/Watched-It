@@ -14,12 +14,27 @@ class RenameListDto extends createZodDto(renameListSchema) {}
 @UseGuards(JwtAuthGuard)
 @Controller('list')
 export class ListController {
+
   constructor(private readonly listService: ListService) {}
 
-  @Get('/')
-  async getLists(@Req() req, @Query() param: { skip: number; limit: number }) {
-    return this.listService.getLists(req.user.id,param);
+@Get('/')
+  async getListsOrSearch(
+    @Req() req,
+    @Query() param: ReadListParamDto
+  ) {
+
+    // si viene name => búsqueda
+    if (param.name) {
+      return this.listService.searchLists(param);
+    }
+
+    // si no => listas normales
+    return this.listService.getLists(req.user.id, {
+      skip: param.skip ?? 0,
+      limit: param.limit ?? 15
+    });
   }
+  
 
   @Get('/user-lists')
   async getUserLists( @Req() req, @Query() param: ReadListParamDto,) {
@@ -51,7 +66,8 @@ export class ListController {
     renameListSchema.parse(body);
     return this.listService.renameList(req.user.id, body);
   }
-  
+
+
   @Get('/:id')
   async getListById(@Param('id') id: number) {
     return this.listService.getListById(id);

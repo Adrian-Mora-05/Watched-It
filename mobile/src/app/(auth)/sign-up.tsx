@@ -16,6 +16,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useSession } from '@/hooks/ctx';
 import { useLayout } from '@/hooks/useLayout';
 
+
 type SignUpErrors = Partial<Record<keyof z.infer<typeof createUser>, string>>;
 
 export default function SignUp() {

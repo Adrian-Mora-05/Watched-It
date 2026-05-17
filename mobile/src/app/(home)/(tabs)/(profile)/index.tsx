@@ -55,15 +55,15 @@ export default function ProfileScreen() {
             </Text>
 
             <Image
-              source={
-                user?.profilePicture
-                  ? { uri: user.profilePicture }
-                  : require('../../../../assets/images/default-profile-pic.png')
-              }
-              style={{ width: 85, height: 85, borderRadius: 45 }}
-              cachePolicy="disk"
-            />
-
+                source={
+                    user?.profilePicture
+                      ? { uri: user.profilePicture }
+                      : require('../../../../../assets/images/default-profile-pic.png')
+                  }
+                style={{ width: 85, height: 85, borderRadius: 45 }}
+                cachePolicy="none"
+              />
+        
           </View>
           <View className="px-4 mt-6 ">
               <MenuBar

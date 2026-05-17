@@ -5,25 +5,119 @@ import { GetMovieReviews, readMovieParam, ReadMovieParam } from "../../../shared
 
 @Injectable()
 export class MovieService {
-    async getAllMovies(param: ReadMovieParam) {
-        const parsedParam = readMovieParam.parse(param);
+async getAllMovies(param: ReadMovieParam) {
 
-        let query = supabase
-            .from('pelicula')
-            .select('id:id, title:titulo, image_link:enlace_imagen') 
+    const parsedParam = readMovieParam.parse(param);
 
-        if (parsedParam.skip !== undefined && parsedParam.limit !== undefined) query = query.range(parsedParam.skip, parsedParam.skip + parsedParam.limit - 1)    
-        if (parsedParam.title)                          query = query.ilike('titulo', `%${parsedParam.title}%`)
-        if (parsedParam.year !== undefined)             query = query.eq('anio', parsedParam.year)
-        if (parsedParam.genre !== undefined)            query = query.eq('genero', parsedParam.genre)
-        if (parsedParam.ageRestriction !== undefined)   query = query.is('restriccion_edad', parsedParam.ageRestriction)
-        if (parsedParam.length !== undefined)           query = query.eq('duracion', parsedParam.length)
-        if (parsedParam.country !== undefined)          query = query.eq('pais', parsedParam.country)  
+    let query = supabase
+        .from('pelicula')
+        .select(`
+            id:id,
+            title:titulo,
+            image_link:enlace_imagen,
+            anio,
+            popularidad,
+            genero,
+            duracion
+        `);
 
-        const { data: pelicula, error } = await query
-        if (error) throw new BadRequestException(error.message)
-        return { data: pelicula }
+    // paginación
+    if (
+        parsedParam.skip !== undefined &&
+        parsedParam.limit !== undefined
+    ) {
+        query = query.range(
+            parsedParam.skip,
+            parsedParam.skip + parsedParam.limit - 1
+        );
     }
+
+    // búsqueda por título
+    if (parsedParam.title) {
+        query = query.ilike(
+            'titulo',
+            `%${parsedParam.title}%`
+        );
+    }
+
+    // año
+    if (parsedParam.year !== undefined) {
+        query = query.eq(
+            'anio',
+            parsedParam.year
+        );
+    }
+
+    // país
+    if (parsedParam.country !== undefined) {
+        query = query.ilike(
+            'pais',
+            `%${parsedParam.country}%`
+        );
+    }
+
+    // múltiples géneros
+    if (parsedParam.genres) {
+
+        const genreList = parsedParam.genres
+            .split(',')
+            .map(g => g.trim());
+
+        query = query.in(
+            'genero',
+            genreList
+        );
+    }
+
+    // restricción edad
+    if (parsedParam.ageRestriction !== undefined) {
+        query = query.eq(
+            'restriccion_edad',
+            parsedParam.ageRestriction
+        );
+    }
+
+    // duración mínima
+    if (parsedParam.minLength !== undefined) {
+        query = query.gte(
+            'duracion',
+            parsedParam.minLength
+        );
+    }
+
+    // duración máxima
+    if (parsedParam.maxLength !== undefined) {
+        query = query.lte(
+            'duracion',
+            parsedParam.maxLength
+        );
+    }
+
+    // ordenamiento
+    if (parsedParam.sortBy) {
+
+        const columnMap = {
+            popularity: 'popularidad',
+            year: 'anio',
+            title: 'titulo'
+        };
+
+        query = query.order(
+            columnMap[parsedParam.sortBy],
+            {
+                ascending: parsedParam.order === 'asc'
+            }
+        );
+    }
+
+    const { data: pelicula, error } = await query;
+
+    if (error) {
+        throw new BadRequestException(error.message);
+    }
+
+    return { data: pelicula };
+}
     
 async getFavoriteMoviesByUser(token: string) {
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);

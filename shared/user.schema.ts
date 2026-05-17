@@ -20,5 +20,15 @@ export const loginUser = z.object({
     .min(6, 'Contraseña debe tener al menos 6 caracteres'),
 })
 
+export const readUserParam = z.object({
+
+    skip: z.coerce.number().default(0).optional(),
+
+    limit: z.coerce.number().default(12).optional(),
+
+    name: z.string().default('').optional(),
+})
+
 export type CreateUser = z.infer<typeof createUser> //generates a type from the schema
 export type LoginUser = z.infer<typeof loginUser> //generates a type from the schema
+export type ReadUserParam = z.infer<typeof readUserParam> //generates a type from the schema

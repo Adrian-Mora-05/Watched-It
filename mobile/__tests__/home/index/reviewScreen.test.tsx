@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import ReviewScreen from '@/app/(home)/(index)/reviewScreen';
+import ReviewScreen from '@/app/(home)/(tabs)/(index)/reviewScreen';
 import { getReviews, addLike, removeLike } from '@/services/review.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────

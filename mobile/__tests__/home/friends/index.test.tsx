@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo } from 'react-native';
-import FriendsScreen from '@/app/(home)/(friends)';
+import FriendsScreen from '@/app/(home)/(tabs)/(friends)';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 

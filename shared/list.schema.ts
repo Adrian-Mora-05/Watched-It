@@ -5,6 +5,7 @@ export const readListParam = z.object({
     skip: z.coerce.number().default(0).optional(),
     limit: z.coerce.number().default(10).optional(),
     name: z.string().default('').optional(),
+    type: z.enum(['pelicula', 'serie']).optional(),
 })
 
 export const addToListSchema =z.object({

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import ListScreen from '@/app/(home)/(index)/listScreen';
+import ListScreen from '@/app/(home)/(tabs)/(index)/listScreen';
 import { getLists } from '@/services/list.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
