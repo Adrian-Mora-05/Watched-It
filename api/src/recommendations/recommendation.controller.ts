@@ -39,7 +39,7 @@ export class RecommendationsMoviesController {
     }
 }
 
-@Controller('recommendations/series')
+@Controller('recommendations/shows')
 export class RecommendationsSeriesController {
     constructor(private readonly recommendationsService: RecommendationService) {}
 
