@@ -1,8 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
 import { Text } from "@react-native-ama/react-native";
+<<<<<<<< HEAD:mobile/src/app/(home)/(tabs)/(profile)/diary.tsx
+import DiaryEntryCard from '../../../../components/ui/DiaryEntryCard';
+import { useSession } from '@/hooks/ctx';
+========
 import DiaryEntryCard from "@/components/ui/DiaryEntryCard";
 import { useSession } from "@/hooks/ctx";
+>>>>>>>> 08c2dca91cfa9c7cb6f47e032d1f42b2612b5ecd:mobile/src/app/(home)/(tabs)/(profile)/(diary)/index.tsx
 import { getDiaryEntries } from "@/services/diary.service";
 import { router } from "expo-router";
 

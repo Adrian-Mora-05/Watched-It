@@ -3,6 +3,17 @@ import ReviewScreen from '@/app/(home)/(tabs)/(index)/reviewScreen';
 import { getReviews, addLike, removeLike } from '@/services/review.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+    back: jest.fn(),
+  },
+  useFocusEffect: (cb: () => void) => {
+    const { useEffect } = require('react');
+    useEffect(cb, []);
+  },
+  useLocalSearchParams: () => ({}),
+}));
 
 jest.mock('@/hooks/ctx', () => ({
   useSession: () => ({ session: 'mock-token' }),

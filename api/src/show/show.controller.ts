@@ -1,9 +1,10 @@
 import { Controller, Get,Body,Query, Param, BadRequestException, Headers } from '@nestjs/common';
 import { ShowService } from './show.service';
 import { createZodDto } from 'nestjs-zod'
-import { readShowParam } from '../../../shared/show.schema';
+import { readShowParam, getshowReviewsSchema, GetShowReviews  } from '../../../shared/show.schema';
 
 class ReadShowParamDto extends createZodDto(readShowParam) {} //transforms the schema into a dto
+class GetShowReviewsDto extends createZodDto(getshowReviewsSchema) {}
 
 @Controller('show')
 export class ShowController {
@@ -22,15 +23,19 @@ export class ShowController {
   return this.showService.getFavoriteShowsByUser(token);
 }
 
-  // detalle serie
-  @Get(':id')
-  async getShowById(@Param('id') id: number) {
-    return this.showService.getShowById(id);
-  }
+@Get(':id')
+async getShowById(
+  @Param('id') id: number,
+  @Query('id_user') id_user: string,
+  @Query('name') name: string
+) {
+  return this.showService.getShowById(id, id_user, name);
+}
 
-  // reviews serie
-  @Get(':id/reviews')
-  async getShowReviews(@Param('id') id: number) {
-    return this.showService.getShowReviews(id);
-  }
+@Get(':id/reviews')
+async getShowReviews( @Param('id') id: string,  @Query() query: GetShowReviewsDto
+) {
+  const parsed = getshowReviewsSchema.parse(query)
+  return this.showService.getshowReviews(Number(id), parsed)
+}
 }

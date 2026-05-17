@@ -6,13 +6,7 @@ from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
 import json
 import re
-import supabase
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-supabase = supabase.create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_ROLE_KEY"))
+from db import supabase
 
 def getTitle(page_props):
     return page_props["originalTitleText"]["text"] #title in original language
@@ -46,7 +40,7 @@ def getSynopsis(page_props):
 def getPopularity(page_props):
     return page_props["ratingsSummary"]["voteCount"] #popularity is measured by the number of votes, not by the rating itself
 
-def trim_to_limit(text, limit=4999): # deep translator has a limit of 5000 characters
+def trim_to_limit(text, limit=1000): # deep translator has a limit of 5000 characters
     if not isinstance(text, str) or len(text) <= limit:
         return text
     
@@ -161,7 +155,7 @@ def createMovieDataset():
             all_movies.append(movie)
             all_reviews.extend(reviews)
             print(f"Processed movie {index + 1}/{len(hrefs)}: {movie['titulo']} with {len(reviews)} reviews.")
-
+   
         except Exception as e:
             print(f"Skipping movie {index + 1}/{len(hrefs)} ({href}): {type(e).__name__}: {e}")
             continue
@@ -170,7 +164,7 @@ def createMovieDataset():
 
     return all_movies, all_reviews
 
-def loadIntoDB(records):
+def loadMoviesIntoDB(records):
     response = supabase.table("pelicula").select("id", count="exact").execute()
 
     if response.count >= 200:
@@ -188,3 +182,48 @@ def loadIntoDB(records):
 
     except Exception as e:
         print(f"Error loading movies: {e}")
+
+def loadReviewsIntoDB(records, uuids):
+    response = supabase.table("calificacion_x_pelicula").select("id", count="exact").execute()
+    if response.count >= 300:
+        print("Database already has 300+ reviews, skipping load.")
+        return    
+    
+    if not records:
+        print("No reviews to insert.")
+        return
+    if not uuids:
+        print("No UUIDs available, cannot insert reviews.")
+        return
+
+    for i, review in enumerate(records):  # i increments for every review globally
+        try:
+            assigned_uuid = uuids[i % len(uuids)]  # rotates across all users
+
+            rating_response = (
+                supabase.table("calificacion_x_pelicula")
+                .insert({
+                    "id_pelicula": review["movie_index"] + 1,
+                    "calificacion": review["rating"],
+                    "id_usuario": assigned_uuid
+                })
+                .execute()
+            )
+
+            inserted = rating_response.data
+            if not inserted:
+                print(f"Failed to insert rating for movie index {review['movie_index']}, skipping comment.")
+                continue
+
+            rating_id = inserted[0]["id"]
+
+            supabase.table("comentario_x_pelicula").insert({
+                "cant_me_gusta": 0,
+                "id_calificacion_x_pelicula": rating_id,
+                "contenido": review["text"]
+            }).execute()
+
+            print(f"Inserted review {i} for movie index {review['movie_index']} by user {assigned_uuid}")
+
+        except Exception as e:  # also fixed the __Exception__ typo
+            print(f"Error on review for movie index {review['movie_index']}: {e}")

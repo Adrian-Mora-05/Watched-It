@@ -84,55 +84,16 @@ export class UserService {
 
   }
 
-  async updateUserFavorites(
-  userId: string,
-  movies: number[],
-  shows: number[]
-) {
-
-  // borrar películas anteriores
-  const { error: moviesDeleteError } = await supabase
-    .from('peliculas_favoritas_x_usuario')
-    .delete()
-    .eq('id_usuario', userId);
-
-  if (moviesDeleteError) {
-    throw new BadRequestException(
-      `Deleting movie favorites failed: ${moviesDeleteError.message}`
-    );
-  }
-
-  // borrar series anteriores
-  const { error: showsDeleteError } = await supabase
-    .from('series_favoritas_x_usuario')
-    .delete()
-    .eq('id_usuario', userId);
-
-  if (showsDeleteError) {
-    throw new BadRequestException(
-      `Deleting show favorites failed: ${showsDeleteError.message}`
-    );
-  }
-
-  // volver a insertar favoritos
-  let { data, error } = await supabase
-    .rpc('add_favorites', {
-      id_pelicula1: movies[0] ?? null,
-      id_pelicula2: movies[1] ?? null,
-      id_pelicula3: movies[2] ?? null,
-      id_serie1: shows[0] ?? null,
-      id_serie2: shows[1] ?? null,
-      id_serie3: shows[2] ?? null,
-      id_usuario: userId
-    });
+ async updateUserFavorites(userId: string, movies: number[], shows: number[]) {
+  const { error } = await supabase.rpc('update_favorites', {
+    p_id_usuario: userId,
+    p_movies: movies.length > 0 ? movies : null,
+    p_shows: shows.length > 0 ? shows : null,
+  });
 
   if (error) {
-    throw new BadRequestException(
-      `Updating favorites failed: ${error.message}`
-    );
+    throw new BadRequestException(`Updating favorites failed: ${error.message}`);
   }
-
-  return data;
 }
 
   async logContent(userId: string, logCatalogContent: LogCatalogContent) {
@@ -151,6 +112,129 @@ export class UserService {
     } else return data;
 
   }
+
+  async updateLogContent(
+    userId: string,
+    logId: number,
+    body: {
+      content?: string;
+      rating: number;
+      type_content: string;
+    }
+  ) {
+
+    const { data, error } = await supabase.rpc('update_log_content', {
+      p_id_user: userId,
+      p_id_log: logId,
+      p_type_content: body.type_content,
+      p_rating: body.rating,
+      p_content: body.content ?? null,
+    });
+
+    if (error) {
+      throw new BadRequestException(
+        `Updating log content failed: ${error.message}`
+      );
+    }
+
+    return {
+      message: 'Log updated successfully',
+      data,
+    };
+  }
+  async deleteLogContent(
+    userId: string,
+    logId: number,
+    typeContent: string
+  ) {
+    const { data, error } = await supabase.rpc('delete_log_content', {
+      p_id_user: userId,
+      p_id_log: logId,
+      p_type_content: typeContent,
+    });
+
+    if (error) {
+      throw new BadRequestException(
+        `Deleting log failed: ${error.message}`
+      );
+    }
+
+    return { message: 'Log deleted successfully' };
+  }
+  
+async getUserLogById(userId: string, logId: number, typeContent: string) {
+  const isMovie = typeContent?.toLowerCase().trim() === 'movie';
+
+  const ratingsTable = isMovie
+    ? 'calificacion_x_pelicula'
+    : 'calificacion_x_serie';
+
+  const contentTable = isMovie ? 'pelicula' : 'serie';
+
+  const dateColumn = isMovie ? 'fecha_creado' : 'fecha_creacion';
+
+  const commentTable = isMovie
+    ? 'comentario_x_pelicula'
+    : 'comentario_x_serie';
+
+  const { data, error } = await supabase
+    .from(ratingsTable)
+    .select(`
+      id,
+      calificacion,
+      ${dateColumn},
+      ${contentTable} (
+        id,
+        titulo,
+        enlace_imagen,
+        ${isMovie ? 'anio' : 'anio_inicio'}
+      ),
+      ${commentTable} (
+        id,
+        contenido,
+        cant_me_gusta
+      )
+    `)
+    .eq('id', logId)
+    .eq('id_usuario', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new BadRequestException(error.message);
+  }
+
+  if (!data) {
+    throw new BadRequestException("Log not found");
+  }
+
+  const content = Array.isArray(data[contentTable])
+    ? data[contentTable][0]
+    : data[contentTable];
+
+  const comment = Array.isArray(data[commentTable])
+    ? data[commentTable][0]
+    : data[commentTable];
+
+  return {
+    id: data.id,
+    type: isMovie ? 'movie' : 'series',
+
+    rating: data.calificacion,
+    date: data[dateColumn],
+
+    content: comment?.contenido ?? "",
+    likes: comment?.cant_me_gusta ?? 0,
+    
+
+    catalog: {
+      id: content?.id,
+      title: content?.titulo,
+      poster: content?.enlace_imagen,
+      year: isMovie ? content?.anio : content?.anio_inicio,
+    }
+    
+  };
+}
 
   async getUserProfile(userId: string) {
 
@@ -235,6 +319,28 @@ async searchUsers(param: ReadUserParam) {
 
   return { data };
 }
+
+async getRatingStats(userId: string) {
+  const { data, error } = await supabase
+    .from('calificaciones_usuario_view')
+    .select('*')
+    .eq('id_usuario', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new BadRequestException(`Error fetching rating stats: ${error.message}`);
+  }
+
+  return data ?? {
+    total_calificaciones: 0,
+    cant_1: 0,
+    cant_2: 0,
+    cant_3: 0,
+    cant_4: 0,
+    cant_5: 0,
+  };
+}
+
 
 
 }

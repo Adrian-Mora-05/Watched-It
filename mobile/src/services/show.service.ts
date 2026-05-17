@@ -18,3 +18,17 @@ export const getFavoriteShowsByUser = async (token: string) => {
   });
   return response.data;
 };
+
+export const getShowById = async (id: number, id_user: string, name: string) => {
+  const response = await api.get(`/show/${id}`, {
+    params: { id_user, name }
+  });
+  return response.data;
+};
+
+export const getshowReviews = async (id: number, id_usuario: string, skip: number, limit: number) => {
+  const response = await api.get(`/show/${id}/reviews`, {
+    params: { id_usuario, skip, limit }
+  });
+  return response.data;
+};

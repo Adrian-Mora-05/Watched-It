@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { supabase } from "src/config/db";
-import { readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
+import { GetMovieReviews, readMovieParam, ReadMovieParam } from "../../../shared/movie.schema";
+
 
 @Injectable()
 export class MovieService {
@@ -141,7 +142,7 @@ async getFavoriteMoviesByUser(token: string) {
   
 }
 
-async getMovieById(id: number) {
+async getMovieById(id: number,id_user:string, name:string) {
 
     const { data: movie, error } = await supabase
         .from('pelicula')
@@ -157,44 +158,45 @@ async getMovieById(id: number) {
         .select('*')
         .eq('id_pelicula', id);
 
+    const { count } = await supabase
+        .from('watchlist_view')
+        .select('*', { count: 'exact', head: true })  
+        .eq('id_usuario', id_user)
+        .eq('tipo', 'pelicula')
+        .eq('contenido_id', id)
+    const isInWatchlist = count! > 0
 
-    let query= supabase
-        .from('resenas_principales_peliculas_view')
-        .select('*')
-        .eq('id_pelicula', id);
-    query.range(0, 3); //solo 3 reseñas principales
+    const { data: allResenas } = await supabase
+    .rpc('get_reviews', {
+        p_id_usuario: id_user,
+        p_skip: 0,
+        p_limit: 1000000
+    })
 
-    const { data:resenas } = await query
+    const resenas = allResenas
+        ?.filter(r => r.tipo === 'pelicula' && r.titulo === movie[0].titulo)
+        .slice(0, 3) ?? []
 
     return {
-        ...movie,
+        ...movie, isInWatchlist,
         calificaciones, resenas
     };
 }
 
-async getMovieReviews(id: number) {
+    async getMovieReviews(id_pelicula: number,  { skip, limit,id_usuario }: GetMovieReviews) {
+        const { data, error } = await supabase
+            .from('get_all_movie_reviews_view')
+            .select('*')
+            .eq('id_pelicula', id_pelicula)
+            .order('cant_me_gusta',{ ascending: false })
+            .range(skip, skip + limit - 1)
 
-    const { data, error } = await supabase
-        .from('comentario_x_pelicula')
-        .select(`
-            id,
-            contenido,
-            cant_me_gusta,
-            calificacion_x_pelicula (
-                calificacion,
-                usuario:id_usuario (
-                    nombre
-                )
-            )
-        `)
-        .eq('calificacion_x_pelicula.id_pelicula', id);
-
-    if (error) {
-        throw new BadRequestException(error.message);
+        if (error) throw new BadRequestException(error.message)
+        return data.map(review => {
+        return {
+            ...review,
+            liked: review.usuarios_que_dieron_like?.includes(id_usuario) ?? false
+        }
+        })
     }
-
-    return { data };
-}
-
-
 }
