@@ -8,7 +8,8 @@ import MenuBar from "@/components/ui/MenuBar";
 import Input from "@/components/ui/Input";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import TitleGrid from '@/components/ui/TitleGrid';
-import { supabase } from '@/services/supabase';
+import { useSession } from '@/hooks/ctx';
+import { getListsOrSearch, getAllMovies, getAllShows, searchUsers } from "@/services/filters.service";
 
 type SearchTab =
   | "movies"
@@ -17,7 +18,7 @@ type SearchTab =
   | "lists";
 
 export default function SearchScreen() {
-
+  const { session } = useSession();
   const {
     headerHeight,
     screenWidth,
@@ -100,137 +101,47 @@ export default function SearchScreen() {
   ]);
 
   
-  const fetchResults = async () => {
 
-    try {
 
-      setLoading(true);
+const fetchResults = async () => {
+  try {
+    setLoading(true);
 
-      let endpoint = '';
+    let data: any[] = [];
 
-      const params =
-        new URLSearchParams();
-
-      // SEARCH
-      if (search) {
-
-        if (tab === 'movies') {
-          params.append('title', search);
-        }
-
-        if (tab === 'shows') {
-          params.append('title', search);
-        }
-
-        if (tab === 'users') {
-          params.append('name', search);
-        }
-
-        if (tab === 'lists') {
-          params.append('name', search);
-        }
-      }
-
-      // FILTERS
-      if (year) {
-        params.append('year', year);
-      }
-
-      if (country) {
-        params.append('country', country);
-      }
-
-      if (genre) {
-        params.append('genres', genre);
-      }
-
-      if (duration && tab === 'movies') {
-        params.append(
-        'minLength',
-        String(Number(duration))
-      );
-      }
-
-      if (hasAgeRestriction !== null) {
-
-        params.append(
-          'ageRestriction',
-          String(hasAgeRestriction)
-        );
-      }
-
-      // ENDPOINTS
-      switch (tab) {
-
-        case 'movies':
-          endpoint =
-            `/movie?${params.toString()}`;
-          break;
-
-        case 'shows':
-          endpoint =
-            `/show?${params.toString()}`;
-          break;
-
-        case 'users':
-          endpoint =
-            `/user/search?${params.toString()}`;
-          break;
-
-        case 'lists':
-          endpoint =
-            `/list?${params.toString()}`;
-          break;
-      }
-      
-      const sessionData =
-        await supabase.auth.getSession();
-
-      console.log(sessionData);
-      const response = await api.get(endpoint);
-
-      const json = response.data;
-
-      console.log(json);
-
-      const rawResults =
-        Array.isArray(json.data)
-          ? json.data
-          : Array.isArray(json)
-            ? json
-            : [];
-
-      const normalizedResults =
-        rawResults.map((item: any) => ({
-
-          id:
-            item.id,
-
-          title:
-            item.title ||
-            item.nombre ||
-            item.nombre_lista,
-
-          image_link:
-            item.image_link ||
-            item.enlace_imagen ||
-            null,
-
-          type:
-            tab,
-        }));
-
-      setResults(normalizedResults);
-
-    } catch (error) {
-
-      console.log(error);
-
-    } finally {
-
-      setLoading(false);
+    if (tab === "movies") {
+      const res = await getAllMovies({ title: search, year: Number(year) || undefined, country, genres: genre, minLength: Number(duration) || undefined, ageRestriction: hasAgeRestriction ?? undefined });
+      data = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
     }
-  };
+
+    if (tab === "shows") {
+      const res = await getAllShows({ title: search, year: Number(year) || undefined, country, genres: genre, ageRestriction: hasAgeRestriction ?? undefined });
+      data = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
+    }
+
+    if (tab === "users") {
+      const res = await searchUsers(session!,{ name: search });
+      data = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
+    }
+
+    if (tab === "lists") {
+      const res = await getListsOrSearch(session!,{ name: search });
+      data = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
+    }
+
+    setResults(data.map((item: any) => ({
+      id: item.id,
+      title: item.title || item.nombre || item.nombre_lista,
+      image_link: item.image_link || item.enlace_imagen || null,
+      type: tab,
+    })));
+
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
 

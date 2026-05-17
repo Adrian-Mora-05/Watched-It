@@ -155,7 +155,7 @@ export default function showReviewScreen() {
         style={{ padding: gap, gap, width: screenWidth, height: headerHeight }}
         accessible={false}
       >
-        <ReturnButton label="Volver" onPress={() => router.push(`/show/${show_id}`)} />
+        <ReturnButton label="Volver" onPress={() => router.back()} />
       </View>
 
       <Text

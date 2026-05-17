@@ -155,7 +155,7 @@ export default function MovieReviewScreen() {
         style={{ padding: gap, gap, width: screenWidth, height: headerHeight }}
         accessible={false}
       >
-        <ReturnButton label="Volver" onPress={() => router.push(`/movie/${movie_id}`)} />
+        <ReturnButton label="Volver" onPress={() => router.back()} />
       </View>
 
       <Text
