@@ -80,7 +80,7 @@ const ReviewItem = memo(({ item, onLike, screenWidth, gap, starSize, paddingHori
             key={i}
             name="star"
             size={starSize}
-            color={i < item.calificacion ? 'orange' : 'gray'}
+            color={i < item.calificacion ? '#AA500F' : 'gray'}
             accessible={false}
           />
         ))}
@@ -198,16 +198,16 @@ export default function ReviewScreen() {
     }
   }, [session]);
 
-  const renderReview = useCallback(({ item }: { item: Review }) => (
-    <ReviewItem
-      item={item}
-      onLike={handleLike}
-      screenWidth={screenWidth}
-      gap={gap}
-      starSize={starSize}
-      paddingHorizontal={paddingHorizontal}
-    />
-  ), [handleLike]);
+const renderReview = useCallback(({ item }: { item: Review }) => (
+  <ReviewItem
+    item={item}
+    onLike={handleLike}
+    screenWidth={screenWidth}
+    gap={gap}
+    starSize={starSize}
+    paddingHorizontal={paddingHorizontal}
+  />
+), [handleLike, screenWidth, gap, starSize, paddingHorizontal]); 
 
   return (
     <View className="flex-1" accessible={false}>
@@ -220,6 +220,9 @@ export default function ReviewScreen() {
         initialNumToRender={15}
         maxToRenderPerBatch={15}
         windowSize={5}
+        removeClippedSubviews={true}  
+        updateCellsBatchingPeriod={50} 
+
         ListFooterComponent={
           loading
             ? <ActivityIndicator

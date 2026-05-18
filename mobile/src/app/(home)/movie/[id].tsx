@@ -35,8 +35,8 @@ export default function ShowScreen() {
   const fetchMovie = async () => {
     try {
       const data = await getMovieById(Number(id), id_user!, name)
-      setMovie(data[0])
-      setCalificaciones(data.calificaciones[0])
+      setMovie(data)
+      setCalificaciones(data.calificaciones_pelicula_view?.[0])
       setResenas(data.resenas)
       setIsInWatchlist(data.isInWatchlist)
     } catch (e) {
@@ -207,17 +207,16 @@ export default function ShowScreen() {
           <>
             {resenas.map((resena, index) => (
               <View key={index} style={{ gap }}>
-                <Text className="text-white text-normal">{resena.contenido}</Text>
-                <View className="flex-row items-center justify-between" style={{ gap }}>
-                  <View>
-                    <View className="flex-row items-center" style={{ gap:gap/3 }}>
-                      <Text className="text-bone text-normal">Puntuación: </Text>
+                <View className='flex-row justify-between'>
+                  <Text className="text-white font-bold text-normal">{resena.nombre}</Text>
+                                    <View className="flex-row items-center" style={{ gap:gap/3 }}>
                       {[...Array(resena.calificacion)].map((_, i) => (
                         <FontAwesome key={i} name="star" size={15} color="#AA500F" accessible={false} />
                       ))}
                     </View>
-                    <Text className="text-bone text-normal">Por: {resena.nombre}</Text>
-                  </View>
+                    </View>
+                <Text className="text-white text-normal">{resena.contenido}</Text>
+                <View className="flex-row items-center justify-end" style={{ gap }}>
                   <TouchableOpacity
                     className="flex-row items-center"
                     style={{ gap }}
@@ -234,11 +233,12 @@ export default function ShowScreen() {
                     />
                   </TouchableOpacity>
                 </View>
-
+              <View className="bg-chocolate w-full" style={{ height: 1, borderRadius: 8 }} />
               </View>
+              
             ))}
 
-            <View className="flex-row items-center justify-start" style={{ gap }}>
+            <View className="flex-row items-center justify-start" style={{ gap, marginBottom: gap }}>
               <Button
                 label="Ver más reseñas"
                 onPress={() => router.push(`/movie/review/${id}?movie_id=${id}&name=${movie?.titulo}`)}
@@ -248,8 +248,6 @@ export default function ShowScreen() {
             </View>
           </>
         )}
-
-
       </ScrollView>
     </View>
   );

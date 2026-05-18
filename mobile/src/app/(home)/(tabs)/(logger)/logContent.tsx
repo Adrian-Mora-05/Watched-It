@@ -204,7 +204,7 @@ export default function LogContent() {
                                             <FontAwesome
                                                 name={rating >= star ? "star" : "star-o"}
                                                 size={starSize}
-                                                color="orange"
+                                                color="#AA500F"
                                             />
                                         </Pressable>
                                     ))}
