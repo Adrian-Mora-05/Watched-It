@@ -200,21 +200,37 @@ export type PublicUserProfile = {
 };
 
 export const getPublicUserProfile = async (
-  id: string
+  id: string,
+  token: string
 ): Promise<PublicUserProfile> => {
 
   const response =
-    await api.get(`/user/${id}/public`);
+    await api.get(
+      `/user/${id}/public`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
   return response.data;
 };
 
 export const getPublicUserRatingStats = async (
-  id: string
+  id: string,
+  token: string
 ): Promise<UserRatingStats> => {
 
   const response =
-    await api.get(`/user/${id}/rating-stats`);
+    await api.get(
+      `/user/${id}/rating-stats`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
   return response.data;
 };

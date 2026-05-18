@@ -5,43 +5,41 @@ import { AddToList, RemoveFromList, ReadListParam, readListParam, CreateList, De
 @Injectable()
 export class ListService {
 
-  async getLists(
-    userId: string,
-    {
-      skip,
-      limit
-    }: {
-      skip: number;
-      limit: number;
-    }
-  ) {
-
-    const { data, error } = await supabase
-      .from('lists_view')
-      .select(`
-        id,
-        nombre_lista,
-        nombre_usuario,
-        enlace_imagen,
-        tipo
-      `)
-      .order('id')
-      .range(
-        Number(skip) || 0,
-        (Number(skip) || 0) +
-        (Number(limit) || 15) - 1
-      );
-
-    if (error) {
-      throw new BadRequestException(
-        'Error fetching lists: ' + error.message
-      );
-    }
-
-
-
-    return data;
+async getLists(
+  userId: string,
+  {
+    skip,
+    limit
+  }: {
+    skip: number;
+    limit: number;
   }
+) {
+
+  const { data, error } = await supabase
+    .from('unique_lists_view')
+    .select(`
+      id,
+      nombre_lista,
+      nombre_usuario,
+      enlace_imagen,
+      tipo
+    `)
+    .order('id')
+    .range(
+      Number(skip) || 0,
+      (Number(skip) || 0) +
+      (Number(limit) || 15) - 1
+    );
+
+  if (error) {
+    throw new BadRequestException(
+      'Error fetching lists: ' + error.message
+    );
+  }
+
+  return data;
+}
 
   async getListById(id: number) {
 
@@ -173,76 +171,68 @@ async removeFromList({ tipo, nombre_lista }: RemoveFromList, id_contenido: numbe
 
     return { message: 'Lista renombrada exitosamente' };
   }
-  async searchLists(param: ReadListParam) {
 
-    const parsedParam =
-      readListParam.parse(param);
 
-    let query = supabase
-      .from('lists_view')
-      .select(`
-        id,
-        nombre_lista,
-        nombre_usuario,
-        enlace_imagen,
-        tipo
-      `)
-      .order('id');
+async searchLists(param: ReadListParam) {
 
-    // búsqueda nombre
-    if (parsedParam.name) {
+  const parsedParam =
+    readListParam.parse(param);
 
-      query = query.ilike(
-        'nombre_lista',
-        `%${parsedParam.name}%`
-      );
-    }
+  let query = supabase
+    .from('unique_lists_view')
+    .select(`
+      id,
+      nombre_lista,
+      nombre_usuario,
+      enlace_imagen,
+      tipo
+    `)
+    .order('id');
 
-    // filtro tipo
-    if (parsedParam.type) {
+  // búsqueda nombre
+  if (parsedParam.name) {
 
-      query = query.eq(
-        'tipo',
-        parsedParam.type
-      );
-    }
-
-    // paginación
-    if (
-      parsedParam.skip !== undefined &&
-      parsedParam.limit !== undefined
-    ) {
-
-      query = query.range(
-        parsedParam.skip,
-        parsedParam.skip +
-        parsedParam.limit - 1
-      );
-    }
-
-    const { data, error } =
-      await query;
-
-    if (error) {
-
-      throw new BadRequestException(
-        'Error searching lists: ' +
-        error.message
-      );
-    }
-
-    // quitar repetidos
-    const uniqueLists = Array.from(
-      new Map(
-        (data || []).map(item => [
-          item.id,
-          item
-        ])
-      ).values()
+    query = query.ilike(
+      'nombre_lista',
+      `%${parsedParam.name}%`
     );
-
-    return {
-      data: uniqueLists
-    };
   }
+
+  // filtro tipo
+  if (parsedParam.type) {
+
+    query = query.eq(
+      'tipo',
+      parsedParam.type
+    );
+  }
+
+  // paginación
+  if (
+    parsedParam.skip !== undefined &&
+    parsedParam.limit !== undefined
+  ) {
+
+    query = query.range(
+      parsedParam.skip,
+      parsedParam.skip +
+      parsedParam.limit - 1
+    );
+  }
+
+  const { data, error } =
+    await query;
+
+  if (error) {
+
+    throw new BadRequestException(
+      'Error searching lists: ' +
+      error.message
+    );
+  }
+
+  return {
+    data: data || []
+  };
+}
 }

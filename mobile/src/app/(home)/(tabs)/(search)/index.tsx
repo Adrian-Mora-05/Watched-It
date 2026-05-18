@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Text } from "@react-native-ama/react-native";
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
@@ -7,6 +7,7 @@ import api from '@/services/api';
 import MenuBar from "@/components/ui/MenuBar";
 import Input from "@/components/ui/Input";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { getAvatarUrl } from '@/services/friend.service';
 import TitleGrid from '@/components/ui/TitleGrid';
 import { useSession } from '@/hooks/ctx';
 import { getListsOrSearch, getAllMovies, getAllShows, searchUsers } from "@/services/filters.service";
@@ -120,8 +121,15 @@ const fetchResults = async () => {
     }
 
     if (tab === "users") {
-      const res = await searchUsers(session!,{ name: search });
-      data = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
+      const res = await searchUsers(session!, { name: search });
+
+      const raw = Array.isArray(res.data) ? res.data : Array.isArray(res) ? res : [];
+
+      data = raw.map((u: any) => ({
+        id: u.id,
+        title: u.nombre,
+        image_link: u.enlace_foto_perfil,
+      }));
     }
 
     if (tab === "lists") {
@@ -142,6 +150,43 @@ const fetchResults = async () => {
     setLoading(false);
   }
 };
+
+  const UserRow = ({ item }: any) => {
+    const avatarUrl = item.image_link ? getAvatarUrl(item.image_link) : null;
+
+    return (
+      <TouchableOpacity
+        className="flex-row items-center py-4 border-b border-chocolate"
+        onPress={() =>
+          router.push({
+            pathname: '/user/[id]',
+            params: { id: item.id }
+          })
+        }
+      >
+        <Image
+          source={
+            avatarUrl
+              ? { uri: avatarUrl }
+              : require('../../../../../assets/images/default-profile-pic.png')
+          }
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            marginRight: 12,
+          }}
+        />
+
+        <Text className="text-white font-bold text-lg">
+          {item.title}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+
+
 
   return (
 
@@ -520,39 +565,35 @@ const fetchResults = async () => {
 
           <View className="mt-6 px-4">
 
-            {results.map((item, index) => (
+          {results.map((item, index) => {
 
+            if (tab === "users") {
+              return <UserRow key={`${item.id}-${index}`} item={item} />;
+            }
+
+            return (
               <TouchableOpacity
                 key={`${item.id}-${index}`}
                 className="py-4 border-b border-chocolate"
                 onPress={() => {
 
-                if (tab === "lists") {
-                  router.push({
-                  pathname: '/list/[id]',
-                  params: { id: item.id }
-                });
-                  return;
-                }
+                  if (tab === "lists") {
+                    router.push({
+                      pathname: '/list/[id]',
+                      params: { id: item.id }
+                    });
+                    return;
+                  }
 
-                if (tab === "users") {
-                  router.push({
-                    pathname: '/user/[id]',
-                    params: { id: item.id }
-                  });
-                  return;
-                }
+                }}
+              >
+                <Text className="text-white font-bold text-lg">
+                  {item.title}
+                </Text>
+              </TouchableOpacity>
+            );
 
-              }}
-            >
-
-              <Text className="text-white font-bold text-lg">
-                {item.title}
-              </Text>
-
-            </TouchableOpacity>
-
-          ))}
+          })}
 
         </View>
 

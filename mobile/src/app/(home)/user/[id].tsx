@@ -4,10 +4,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
+  Image,
+  Modal,
+  Pressable
 } from 'react-native';
 
 import { Text } from '@react-native-ama/react-native';
-
 import ReturnButton from '@/components/ui/ReturnButton';
 
 import {
@@ -35,6 +37,7 @@ import {
 import { useSession } from '@/hooks/ctx';
 
 import Toast from 'react-native-toast-message';
+import { getAvatarUrl } from '@/services/friend.service';
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -48,6 +51,7 @@ export default function UserScreen() {
 
   const { session } = useSession();
 
+  const [imageOpen, setImageOpen] = useState(false);
   const [user, setUser] =
     useState<PublicUserProfile | null>(null);
 
@@ -67,10 +71,16 @@ export default function UserScreen() {
       try {
 
         const profile =
-          await getPublicUserProfile(String(id));
+        await getPublicUserProfile(
+          String(id),
+          session!
+        );
 
         const ratingStats =
-          await getPublicUserRatingStats(String(id));
+        await getPublicUserRatingStats(
+          String(id),
+          session!
+        );
 
         setUser(profile);
         setStats(ratingStats);
@@ -179,35 +189,42 @@ export default function UserScreen() {
         "
       >
 
-        <View
-          style={{
-            flex: 1,
-            paddingRight: 12,
-          }}
+      <View className="flex-row items-center flex-1">
+
+        {/* FOTO PERFIL CLICKABLE */}
+        <TouchableOpacity onPress={() => setImageOpen(true)}>
+          <Image
+            source={
+              user.profilePicture
+                ? { uri: user.profilePicture }
+                : require('../../../../assets/images/default-profile-pic.png')
+            }
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 30,
+              marginRight: 12,
+            }}
+          />
+        </TouchableOpacity>
+
+        {/* NOMBRE */}
+        <Text
+          className="text-white text-3xl font-bold"
+          numberOfLines={2}
         >
+          {user.name}
+        </Text>
 
-          <Text
-            className="
-              text-white
-              text-3xl
-              font-bold
-            "
-            numberOfLines={2}
-          >
-            {user.name}
-          </Text>
+      </View>
 
-        </View>
-
+        {/* BOTÓN AMISTAD */}
         {!user.isFriend &&
           !user.friendRequestPending && (
 
           <TouchableOpacity
             disabled={sendingRequest}
-            className="
-              items-center
-              justify-center
-            "
+            className="items-center justify-center"
             style={{
               width: 95,
               opacity: sendingRequest ? 0.5 : 1,
@@ -245,9 +262,7 @@ export default function UserScreen() {
                 });
 
               } finally {
-
                 setSendingRequest(false);
-
               }
             }}
           >
@@ -258,16 +273,8 @@ export default function UserScreen() {
               color="white"
             />
 
-            <Text
-              className="
-                text-white
-                mt-2
-                text-center
-                text-xs
-              "
-            >
-              Enviar solicitud{'\n'}
-              de amistad
+            <Text className="text-white mt-2 text-center text-xs">
+              Enviar solicitud{'\n'}de amistad
             </Text>
 
           </TouchableOpacity>
@@ -416,6 +423,32 @@ export default function UserScreen() {
         )}
 
       </View>
+
+
+      <Modal visible={imageOpen} transparent animationType="fade">
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        onPress={() => setImageOpen(false)}
+      >
+        <Image
+          source={
+            user.profilePicture
+              ? { uri: user.profilePicture }
+              : require('../../../../assets/images/default-profile-pic.png')
+          }
+          style={{
+            width: '90%',
+            height: '70%',
+            resizeMode: 'contain',
+          }}
+        />
+      </Pressable>
+    </Modal>
 
     </ScrollView>
   );
