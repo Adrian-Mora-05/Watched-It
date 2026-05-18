@@ -48,3 +48,22 @@ export const denyFriendRequest = async (token: string, requestId: number) => {
   });
   return response.data;
 };
+
+export const removeFriendship = async (
+  token: string,
+  userId: string
+) => {
+
+  const response =
+    await api.delete(
+      `/friend/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+  return response.data;
+};

@@ -45,8 +45,8 @@ export default function Button({
         backgroundColor: disabled ? '#431407' : bgColor,
         width,
         height,
-        minHeight: 44, 
-        minWidth: 44,  
+        minHeight: 48, 
+        minWidth: 48,  
         paddingHorizontal: width ? undefined : screenWidth * 0.04,
         paddingVertical: height ? undefined : screenHeight * 0.020,
       }}

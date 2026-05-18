@@ -246,8 +246,8 @@ export default function Chat() {
                             busy: isSending,
                         }}
                         style={{
-                            minWidth: 44,
-                            minHeight: 44,
+                            minWidth: 48,
+                            minHeight: 48,
                             alignItems: 'center',
                             justifyContent: 'center',
                             opacity: !messageText.trim() ? 0.4 : 1,

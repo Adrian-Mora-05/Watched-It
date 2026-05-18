@@ -255,8 +255,8 @@ export default function EditLogContent() {
                       key={star}
                       onPress={() => setRating(star)}
                       style={{
-                        minWidth: 44,
-                        minHeight: 44,
+                        minWidth: 48,
+                        minHeight: 48,
                         justifyContent: "center",
                         alignItems: "center",
                       }}

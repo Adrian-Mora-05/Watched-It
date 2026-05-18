@@ -42,7 +42,12 @@ export class FriendService {
         const userId = user?.id as string
         let { data, error } = await supabase
         .from('friends_view')
-        .select("id, sender_name,sender_profile_pic")
+        .select(`
+            id,
+            sender_id,
+            sender_name,
+            sender_profile_pic
+            `)
         .eq('request_accepted', false)
         .eq('receiver_id', userId); //only show requests received, not the ones i sent
         // RLS already filters by user
@@ -82,4 +87,113 @@ export class FriendService {
         } else return {"message": "Solicitud de amistad denegada exitosamente"};
 
     }
+
+    async removeFriendship(
+    token: string,
+    otherUserId: string
+    ) {
+
+    const supabase =
+        createUserClient(token);
+
+    const {
+        data: { user }
+    } = await supabase.auth.getUser();
+
+    const myUserId = user?.id;
+
+    const {
+        data: friendship,
+        error: findError
+    } = await supabase
+        .from('amigo')
+        .select('*')
+        .or(
+        `and(id_usuario1.eq.${myUserId},id_usuario2.eq.${otherUserId}),and(id_usuario1.eq.${otherUserId},id_usuario2.eq.${myUserId})`
+        )
+        .maybeSingle();
+
+    if (findError) {
+
+        throw new BadRequestException(
+        findError.message
+        );
+    }
+
+    if (!friendship) {
+
+        throw new BadRequestException(
+        'Relationship not found'
+        );
+    }
+
+    // Buscar conversación asociada
+    const {
+        data: conversation
+    } = await supabase
+        .from('conversacion')
+        .select('id')
+        .eq('id_amigo', friendship.id)
+        .maybeSingle();
+
+    // Si existe conversación:
+    if (conversation) {
+
+        // Borrar mensajes
+        const {
+        error: messagesError
+        } = await supabase
+        .from('mensaje')
+        .delete()
+        .eq(
+            'id_conversacion',
+            conversation.id
+        );
+
+        if (messagesError) {
+
+        throw new BadRequestException(
+            messagesError.message
+        );
+        }
+
+        // Borrar conversación
+        const {
+        error: conversationError
+        } = await supabase
+        .from('conversacion')
+        .delete()
+        .eq('id', conversation.id);
+
+        if (conversationError) {
+
+        throw new BadRequestException(
+            conversationError.message
+        );
+        }
+    }
+
+    // Finalmente borrar amistad
+    const {
+        error: friendshipError
+    } = await supabase
+        .from('amigo')
+        .delete()
+        .eq('id', friendship.id);
+
+    if (friendshipError) {
+
+        throw new BadRequestException(
+        friendshipError.message
+        );
+    }
+
+    return {
+        message:
+        friendship.solicitud_aceptada
+            ? 'Friend removed'
+            : 'Friend request cancelled',
+    };
+    }
+
 }

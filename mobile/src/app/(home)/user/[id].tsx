@@ -34,10 +34,16 @@ import {
   sendFriendRequest
 } from '@/services/user.service';
 
+
 import { useSession } from '@/hooks/ctx';
 
 import Toast from 'react-native-toast-message';
-import { getAvatarUrl } from '@/services/friend.service';
+import {
+  getAvatarUrl,
+  removeFriendship,
+  acceptFriendRequest,
+  getFriendRequests
+} from '@/services/friend.service';
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -219,8 +225,7 @@ export default function UserScreen() {
       </View>
 
         {/* BOTÓN AMISTAD */}
-        {!user.isFriend &&
-          !user.friendRequestPending && (
+        {user.relationStatus === 'none' && (
 
           <TouchableOpacity
             disabled={sendingRequest}
@@ -248,7 +253,7 @@ export default function UserScreen() {
 
                 setUser({
                   ...user,
-                  friendRequestPending: true,
+                  relationStatus: 'request_sent',
                 });
 
               } catch (e) {
@@ -262,7 +267,9 @@ export default function UserScreen() {
                 });
 
               } finally {
+
                 setSendingRequest(false);
+
               }
             }}
           >
@@ -275,6 +282,148 @@ export default function UserScreen() {
 
             <Text className="text-white mt-2 text-center text-xs">
               Enviar solicitud{'\n'}de amistad
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
+
+        {user.relationStatus === 'request_sent' && (
+
+          <TouchableOpacity
+            className="items-center justify-center"
+            style={{
+              width: 95,
+            }}
+            onPress={async () => {
+
+              await removeFriendship(
+              session!,
+              String(id)
+            );
+
+              Toast.show({
+                type: 'success',
+                text1: 'Solicitud cancelada',
+                position: 'top',
+              });
+
+              setUser({
+                ...user,
+                relationStatus: 'none',
+              });
+
+            }}
+          >
+
+            <Feather
+              name="x-circle"
+              size={24}
+              color="white"
+            />
+
+            <Text className="text-white mt-2 text-center text-xs">
+              Cancelar{'\n'}solicitud
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
+
+        {user.relationStatus === 'friends' && (
+
+          <TouchableOpacity
+            className="items-center justify-center"
+            style={{
+              width: 95,
+            }}
+            onPress={async () => {
+
+              await removeFriendship(
+              session!,
+              String(id)
+            );
+
+              Toast.show({
+                type: 'success',
+                text1: 'Amistad eliminada',
+                position: 'top',
+              });
+
+              setUser({
+                ...user,
+                relationStatus: 'none',
+              });
+
+            }}
+          >
+
+            <Feather
+              name="user-minus"
+              size={24}
+              color="white"
+            />
+
+            <Text className="text-white mt-2 text-center text-xs">
+              Eliminar{'\n'}amistad
+            </Text>
+
+          </TouchableOpacity>
+
+        )}
+
+        {user.relationStatus === 'request_received' && (
+
+          <TouchableOpacity
+            className="items-center justify-center"
+            style={{
+              width: 95,
+            }}
+            onPress={async () => {
+
+            const requests =
+              await getFriendRequests(session!);
+
+            const request =
+              requests.find(
+                (r: any) =>
+                  r.sender_id === id
+              );
+
+            if (!request) {
+
+              throw new Error(
+                'Solicitud no encontrada'
+              );
+            }
+
+            await acceptFriendRequest(
+              session!,
+              request.id
+            );
+
+              Toast.show({
+                type: 'success',
+                text1: 'Solicitud aceptada',
+                position: 'top',
+              });
+
+              setUser({
+                ...user,
+                relationStatus: 'friends',
+              });
+
+            }}
+          >
+
+            <Feather
+              name="user-check"
+              size={24}
+              color="white"
+            />
+
+            <Text className="text-white mt-2 text-center text-xs">
+              Aceptar{'\n'}solicitud
             </Text>
 
           </TouchableOpacity>

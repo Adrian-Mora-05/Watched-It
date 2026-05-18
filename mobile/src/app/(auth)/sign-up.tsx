@@ -197,7 +197,7 @@ export default function SignUp() {
                           accessibilityRole="button"
                           accessibilityLabel="Eliminar foto de perfil"
                           className="absolute -top-2 -right-2"
-                          style={{minWidth: 44, minHeight: 44, }} >
+                          style={{minWidth: 48, minHeight: 48, }} >
                           <View className="bg-red rounded-full">
                             <Feather
                               name="x-circle"

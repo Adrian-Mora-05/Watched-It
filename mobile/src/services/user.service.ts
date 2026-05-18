@@ -195,8 +195,11 @@ export type PublicUserProfile = {
   favoriteMovies: any[];
   favoriteShows: any[];
 
-  isFriend: boolean;
-  friendRequestPending: boolean;
+  relationStatus:
+    | 'none'
+    | 'request_sent'
+    | 'request_received'
+    | 'friends';
 };
 
 export const getPublicUserProfile = async (

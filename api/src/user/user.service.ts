@@ -383,12 +383,38 @@ async searchUsers(param: ReadUserParam) {
       )
       .maybeSingle();
 
-    const isFriend =
-      friendship?.solicitud_aceptada ?? false;
+    let relationStatus:
+      | 'none'
+      | 'request_sent'
+      | 'request_received'
+      | 'friends'
+      = 'none';
 
-    const friendRequestPending =
-      friendship !== null &&
-      !friendship?.solicitud_aceptada;
+    if (friendship) {
+
+      // Ya son amigos
+      if (friendship.solicitud_aceptada) {
+
+        relationStatus = 'friends';
+
+      }
+
+      // YO envié la solicitud
+      else if (
+        friendship.id_usuario1 === loggedUserId
+      ) {
+
+        relationStatus = 'request_sent';
+
+      }
+
+      // EL OTRO usuario me la envió
+      else {
+
+        relationStatus = 'request_received';
+
+      }
+    }
 
     return {
       id: userData.id,
@@ -401,8 +427,7 @@ async searchUsers(param: ReadUserParam) {
       favoriteShows:
         favoriteShows?.map((x: any) => x.serie) ?? [],
 
-      isFriend,
-      friendRequestPending,
+      relationStatus,
     };
   }
 

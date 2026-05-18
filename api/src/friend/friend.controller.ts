@@ -30,4 +30,21 @@ export class FriendController {
     const token = req.headers.authorization?.replace('Bearer ', '');
     return this.friendService.denyFriendRequest(token, requestId);
   }
+
+  @Delete('/:userId')
+  async removeFriendship(
+    @Req() req,
+    @Param('userId') userId: string
+  ) {
+    const token =
+      req.headers.authorization?.replace(
+        'Bearer ',
+        ''
+      );
+
+    return this.friendService.removeFriendship(
+      token,
+      userId
+    );
+  }
 }

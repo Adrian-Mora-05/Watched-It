@@ -111,7 +111,7 @@ const FriendRow = memo(({
             accessibilityHint="Abre la conversación con este amigo"
             accessibilityLanguage="es"
             className="flex-row items-center"
-            style={{ gap, minHeight: 44 }}
+            style={{ gap, minHeight: 48 }}
         >
             <Image
                 source={avatarUrl

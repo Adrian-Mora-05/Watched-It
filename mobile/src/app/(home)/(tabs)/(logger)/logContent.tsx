@@ -195,8 +195,8 @@ export default function LogContent() {
                                             }
                                             accessibilityState={{ selected: rating >= star }}
                                             style={{
-                                                minWidth: 44,
-                                                minHeight: 44,
+                                                minWidth: 48,
+                                                minHeight: 48,
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                             }}
