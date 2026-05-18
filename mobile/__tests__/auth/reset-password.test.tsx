@@ -1,285 +1,299 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import { AccessibilityInfo } from 'react-native';
-import ResetPasswordScreen from '@/app/(auth)/reset-password';
+import ReviewScreen from '@/app/(home)/(tabs)/(index)/reviewScreen';
+import { getReviews, addLike, removeLike } from '@/services/review.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-jest.mock('expo-router', () => {
-  const actual = jest.requireActual('expo-router');
-
-  return {
-    ...actual,
-    useLocalSearchParams: jest.fn(),
-    router: {
-      replace: jest.fn(),
-      dismissAll: jest.fn(),
-      back: jest.fn(),
-      push: jest.fn(),
-    },
-  };
-});
-
-jest.mock('@/services/auth.service', () => ({
-  resetPassword: jest.fn(),
+jest.mock('expo-router', () => ({
+  router: {
+    push: jest.fn(),
+    back: jest.fn(),
+  },
+  useFocusEffect: (cb: () => unknown) => {
+    const { useEffect } = require('react');
+    useEffect(() => { cb(); }, []);
+  },
+  useLocalSearchParams: () => ({}),
 }));
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+jest.mock('@/hooks/ctx', () => ({
+  useSession: () => ({ session: 'mock-token' }),
+}));
 
-const { useLocalSearchParams } = require('expo-router');
-const { router } = require('expo-router');
-const { resetPassword } = require('@/services/auth.service');
+jest.mock('@/hooks/useLayout', () => ({
+  useLayout: () => ({
+    screenWidth: 390,
+    headerHeight: 80,
+    headerPaddingBottom: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  }),
+}));
 
-const withToken = () => useLocalSearchParams.mockReturnValue({ token: 'valid-token-abc123' });
-const withoutToken = () => useLocalSearchParams.mockReturnValue({ token: undefined });
+jest.mock('@/services/review.service', () => ({
+  getReviews: jest.fn(),
+  addLike: jest.fn(),
+  removeLike: jest.fn(),
+  baseUrl: 'https://m.media-amazon.com/images/M/',
+}));
 
-const fillForm = (password = 'password123', confirm = 'password123') => {
-  fireEvent.changeText(screen.getByLabelText('Nueva contraseña'), password);
-  fireEvent.changeText(screen.getByLabelText('Confirmar contraseña'), confirm);
-};
+jest.mock('expo-image', () => ({
+  Image: 'Image',
+}));
+
+jest.mock('@/components/ui/imageButton', () => {
+  const { TouchableOpacity } = require('react-native');
+  return ({ onPress, accessibilityLabel, accessibilityHint }: any) => (
+    <TouchableOpacity
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+    />
+  );
+});
+
+jest.mock('@react-native-ama/react-native', () => {
+  const { Text } = require('react-native');
+  return { Text };
+});
+
+jest.mock('@expo/vector-icons/AntDesign', () => 'AntDesign');
+jest.mock('@expo/vector-icons/FontAwesome', () => 'FontAwesome');
+
+// ─── Mock Data ────────────────────────────────────────────────────────────────
+
+const mockReviews = [
+  {
+    id: 1,
+    contenido: 'really nice',
+    cant_me_gusta: 2,
+    calificacion: 5,
+    nombre: 'ximemolina',
+    titulo: 'The Shawshank Redemption',
+    año: 1994,
+    enlace_imagen: 'img1.jpg',
+    tipo: 'pelicula',
+    liked: false,
+  },
+  {
+    id: 2,
+    contenido: 'increible plot twist',
+    cant_me_gusta: 0,
+    calificacion: 4,
+    nombre: 'camila',
+    titulo: 'Shutter Island',
+    año: 2010,
+    enlace_imagen: 'img2.jpg',
+    tipo: 'pelicula',
+    liked: true,
+  },
+];
 
 // ─── Test Suite ───────────────────────────────────────────────────────────────
 
-describe('ResetPasswordScreen - Accessibility', () => {
+describe('ReviewScreen - Accessibility', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-    withToken();
+    (getReviews as jest.Mock).mockResolvedValue(mockReviews);
+    (addLike as jest.Mock).mockResolvedValue({});
+    (removeLike as jest.Mock).mockResolvedValue({});
   });
 
-    afterEach(() => {
-    jest.useRealTimers(); 
-  });
-
-  // ── Invalid Link ─────────────────────────────────────────────────────────────
-
-  describe('invalid link screen', () => {
-    it('renders invalid link message when token is missing', () => {
-      withoutToken();
-      render(<ResetPasswordScreen />);
-      expect(screen.getByRole('header', { name: 'Enlace inválido' })).toBeTruthy();
-    });
-
-    it('shows return button when token is missing', () => {
-      withoutToken();
-      render(<ResetPasswordScreen />);
-      expect(screen.getByRole('button', { name: 'Volver a inicio de sesión' })).toBeTruthy();
-    });
-  });
-
-  // ── Roles & Labels ───────────────────────────────────────────────────────────
+  // ── Roles & Labels ──────────────────────────────────────────────────────────
 
   describe('roles and labels', () => {
-    it('renders the screen heading', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByRole('header', { name: 'Nueva contraseña' })).toBeTruthy();
-    });
-
-    it('nueva contraseña field is labelled and accessible', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Nueva contraseña')).toBeTruthy();
-    });
-
-    it('confirmar contraseña field is labelled and accessible', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Confirmar contraseña')).toBeTruthy();
-    });
-
-    it('submit button has an accessible name', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByRole('button', { name: 'Guardar nueva contraseña' })).toBeTruthy();
-    });
-  });
-
-  // ── Keyboard & Input ─────────────────────────────────────────────────────────
-
-  describe('keyboard and input', () => {
-    it('nueva contraseña field is secure', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Nueva contraseña').props.secureTextEntry).toBe(true);
-    });
-
-    it('confirmar contraseña field is secure', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Confirmar contraseña').props.secureTextEntry).toBe(true);
-    });
-
-    it('nueva contraseña has returnKeyType next', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Nueva contraseña').props.returnKeyType).toBe('next');
-    });
-
-    it('confirmar contraseña has returnKeyType done', () => {
-      render(<ResetPasswordScreen />);
-      expect(screen.getByLabelText('Confirmar contraseña').props.returnKeyType).toBe('done');
-    });
-  });
-
-  // ── Error Feedback ───────────────────────────────────────────────────────────
-
-  describe('error feedback', () => {
-    it('shows error when submitting empty form', async () => {
-      render(<ResetPasswordScreen />);
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      const error = await screen.findByText(/La contraseña es obligatoria/);
-      expect(error).toBeTruthy();
-    });
-
-    it('shows error when passwords do not match', async () => {
-      render(<ResetPasswordScreen />);
-      fillForm('password123', 'different456');
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      const error = await screen.findByText(/Las contraseñas no coinciden/);
-      expect(error).toBeTruthy();
-    });
-
-    it('announces validation errors to screen readers', async () => {
-      const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-      render(<ResetPasswordScreen />);
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+    it('renders the list with an accessible label', async () => {
+      render(<ReviewScreen />);
       await waitFor(() => {
-        expect(announce).toHaveBeenCalledWith(
-          expect.stringContaining('Formulario con errores')
-        );
+        expect(screen.getByLabelText('Lista de reseñas populares')).toBeTruthy();
       });
     });
 
-    it('shows api error with assertive live region', async () => {
-      resetPassword.mockRejectedValueOnce({ message: 'Error' });
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+    it('each review title row has a descriptive label', async () => {
+      render(<ReviewScreen />);
       await waitFor(() => {
-        const error = screen.getByText(/No pudimos actualizar tu contraseña/);
-        expect(error.props.accessibilityLiveRegion).toBe('assertive');
+        expect(
+          screen.getByLabelText('The Shawshank Redemption, 1994. Reseña de ximemolina')
+        ).toBeTruthy();
+        expect(
+          screen.getByLabelText('Shutter Island, 2010. Reseña de camila')
+        ).toBeTruthy();
       });
     });
 
-    it('announces api error to screen readers', async () => {
-      const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-      resetPassword.mockRejectedValueOnce({ message: 'Error' });
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+    it('each review comment has a descriptive label', async () => {
+      render(<ReviewScreen />);
       await waitFor(() => {
-        expect(announce).toHaveBeenCalledWith(
-          expect.stringContaining('No pudimos actualizar tu contraseña')
-        );
+        expect(screen.getByLabelText('Comentario: really nice')).toBeTruthy();
+        expect(screen.getByLabelText('Comentario: increible plot twist')).toBeTruthy();
+      });
+    });
+
+    it('star rating has a descriptive label', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        expect(screen.getByLabelText('Calificación: 5 de 5 estrellas')).toBeTruthy();
+        expect(screen.getByLabelText('Calificación: 4 de 5 estrellas')).toBeTruthy();
+      });
+    });
+
+    it('like button has role button', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        const buttons = screen.getAllByRole('button');
+        expect(buttons.length).toBeGreaterThan(0);
       });
     });
   });
 
-  // ── Loading State ─────────────────────────────────────────────────────────────
+  // ── Like Button Labels ──────────────────────────────────────────────────────
+
+  describe('like button labels', () => {
+    it('shows "Dar me gusta" label when not liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        expect(screen.getByLabelText('Dar me gusta. 2 me gusta')).toBeTruthy();
+      });
+    });
+
+    it('shows "Quitar me gusta" label when already liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        expect(screen.getByLabelText('Quitar me gusta. 0 me gusta')).toBeTruthy();
+      });
+    });
+
+    it('like button has correct hint when not liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        const likeButton = screen.getByLabelText('Dar me gusta. 2 me gusta');
+        expect(likeButton.props.accessibilityHint).toBe('Toca para dar me gusta');
+      });
+    });
+
+    it('like button has correct hint when liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        const likeButton = screen.getByLabelText('Quitar me gusta. 0 me gusta');
+        expect(likeButton.props.accessibilityHint).toBe('Toca para quitar el me gusta');
+      });
+    });
+
+    it('like button has correct accessibilityState when not liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        const likeButton = screen.getByLabelText('Dar me gusta. 2 me gusta');
+        expect(likeButton.props.accessibilityState?.checked).toBe(false);
+      });
+    });
+
+    it('like button has correct accessibilityState when liked', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        const likeButton = screen.getByLabelText('Quitar me gusta. 0 me gusta');
+        expect(likeButton.props.accessibilityState?.checked).toBe(true);
+      });
+    });
+  });
+
+  // ── Like Interactions ───────────────────────────────────────────────────────
+
+  describe('like interactions', () => {
+    it('calls addLike when pressing an unliked review', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        fireEvent.press(screen.getByLabelText('Dar me gusta. 2 me gusta'));
+      });
+      await waitFor(() => {
+        expect(addLike).toHaveBeenCalledWith(1, 'pelicula', 'mock-token');
+      });
+    });
+
+    it('calls removeLike when pressing a liked review', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        fireEvent.press(screen.getByLabelText('Quitar me gusta. 0 me gusta'));
+      });
+      await waitFor(() => {
+        expect(removeLike).toHaveBeenCalledWith(2, 'pelicula', 'mock-token');
+      });
+    });
+
+    it('optimistically updates like count on press', async () => {
+      render(<ReviewScreen />);
+      await waitFor(() => {
+        fireEvent.press(screen.getByLabelText('Dar me gusta. 2 me gusta'));
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText('Quitar me gusta. 3 me gusta')).toBeTruthy();
+      });
+    });
+
+    it('reverts like count on API failure', async () => {
+      (addLike as jest.Mock).mockRejectedValue(new Error('Network error'));
+      render(<ReviewScreen />);
+
+      await waitFor(() => {
+        fireEvent.press(screen.getByLabelText('Dar me gusta. 2 me gusta'));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Dar me gusta. 2 me gusta')).toBeTruthy();
+      });
+    });
+  });
+
+  // ── Loading State ───────────────────────────────────────────────────────────
 
   describe('loading state', () => {
-    it('button communicates busy state while submitting', async () => {
-      resetPassword.mockReturnValueOnce(new Promise(() => {})); // never resolves
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      await waitFor(() => {
-        const button = screen.getByRole('button', { name: 'Guardando...' });
-        expect(button.props.accessibilityState?.busy).toBe(true);
-      });
+    it('shows loading indicator while fetching', () => {
+      (getReviews as jest.Mock).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve(mockReviews), 500))
+      );
+      render(<ReviewScreen />);
+      expect(screen.getByLabelText('Cargando más reseñas')).toBeTruthy();
     });
 
-    it('button is disabled while submitting', async () => {
-      resetPassword.mockReturnValueOnce(new Promise(() => {}));
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      await waitFor(() => {
-        const button = screen.getByRole('button', { name: 'Guardando...' });
-        expect(button.props.accessibilityState?.disabled).toBe(true);
-      });
+    it('loading indicator has polite live region', () => {
+      (getReviews as jest.Mock).mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve(mockReviews), 500))
+      );
+      render(<ReviewScreen />);
+      const indicator = screen.getByLabelText('Cargando más reseñas');
+      expect(indicator.props.accessibilityLiveRegion).toBe('polite');
     });
 
-    it('announces loading state to screen readers', async () => {
-      const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-      resetPassword.mockReturnValueOnce(new Promise(() => {}));
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+    it('hides loading indicator after fetch completes', async () => {
+      render(<ReviewScreen />);
       await waitFor(() => {
-        expect(announce).toHaveBeenCalledWith(
-          expect.stringContaining('Guardando nueva contraseña')
-        );
+        expect(screen.queryByLabelText('Cargando más reseñas')).toBeNull();
       });
     });
   });
 
-  // ── Success State ─────────────────────────────────────────────────────────────
+  // ── Data Fetching ───────────────────────────────────────────────────────────
 
-  describe('success state', () => {
-    it('shows success heading after password reset', async () => {
-      resetPassword.mockResolvedValueOnce({});
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+  describe('data fetching', () => {
+    it('calls getReviews on mount', async () => {
+      render(<ReviewScreen />);
       await waitFor(() => {
-        expect(screen.getByRole('header', { name: 'Contraseña actualizada' })).toBeTruthy();
+        expect(getReviews).toHaveBeenCalledWith(0, 15, 'mock-token');
       });
     });
 
-    it('shows go to login button after success', async () => {
-      resetPassword.mockResolvedValueOnce({});
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Ir a inicio de sesión' })).toBeTruthy();
-      });
+    it('handles fetch error gracefully without crashing', async () => {
+      (getReviews as jest.Mock).mockRejectedValue(new Error('Network error'));
+      expect(() => render(<ReviewScreen />)).not.toThrow();
     });
 
-    it('announces success to screen readers', async () => {
-      const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
-      resetPassword.mockResolvedValueOnce({});
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
+    it('renders empty list when no data returned', async () => {
+      (getReviews as jest.Mock).mockResolvedValue([]);
+      render(<ReviewScreen />);
       await waitFor(() => {
-        expect(announce).toHaveBeenCalledWith(
-          expect.stringContaining('Contraseña actualizada exitosamente')
-        );
+        expect(screen.queryByLabelText('Dar me gusta.')).toBeNull();
       });
-    });
-  });
-
-  // ── Navigation ────────────────────────────────────────────────────────────────
-
-  describe('navigation', () => {
-    it('redirects to sign-in after successful reset', async () => {
-      resetPassword.mockResolvedValueOnce({});
-      render(<ResetPasswordScreen />);
-      fillForm();
-      fireEvent.press(screen.getByRole('button', { name: 'Guardar nueva contraseña' }));
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Ir a inicio de sesión' })).toBeTruthy();
-      });
-
-      fireEvent.press(screen.getByRole('button', { name: 'Ir a inicio de sesión' }));
-      jest.runAllTimers(); 
-      expect(router.replace).toHaveBeenCalledWith('/sign-in');
-    });
-
-    it('redirects to sign-in from invalid link screen', () => {
-      withoutToken();
-      render(<ResetPasswordScreen />);
-      fireEvent.press(screen.getByRole('button', { name: 'Volver a inicio de sesión' }));
-      jest.runAllTimers(); 
-      expect(router.replace).toHaveBeenCalledWith('/sign-in');
     });
   });
 

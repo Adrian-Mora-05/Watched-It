@@ -58,7 +58,7 @@ export default function ForgotPasswordScreen() {
         const message = "No pudimos enviar el correo. Intenta de nuevo más tarde.";
         setApiError(message);
         setScreenState("error");
-        AccessibilityInfo.announceForAccessibility(`Error: ${message}`);
+        AccessibilityInfo.announceForAccessibility(message);
       });
   };
 

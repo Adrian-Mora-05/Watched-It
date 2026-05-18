@@ -116,7 +116,7 @@ export default function showReviewScreen() {
               key={i}
               name="star"
               size={starSize}
-              color={i < item.calificacion ? 'orange' : 'gray'}
+              color={i < item.calificacion ? '#AA500F' : 'gray'}
               accessible={false}
             />
           ))}

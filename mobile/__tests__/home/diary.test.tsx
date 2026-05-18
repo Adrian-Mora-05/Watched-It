@@ -2,6 +2,22 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react-nativ
 import DiaryScreen from '@/app/(home)/(tabs)/(profile)/diary';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({ children }: any) => children,
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+}));
+
+jest.mock('@/hooks/useLayout', () => ({
+  useLayout: () => ({
+    screenWidth: 390,
+    headerHeight: 80,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  }),
+}));
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn() },
+}));
 
 jest.mock('@/hooks/ctx', () => ({
   useSession: () => ({ session: 'mock-token' }),
@@ -40,7 +56,6 @@ jest.mock('@/services/diary.service', () => ({
 
 jest.mock('@/components/ui/DiaryEntryCard', () => {
   const { Pressable, Text } = require('react-native');
-
   return ({ title, onPress }: any) => (
     <Pressable
       onPress={onPress}
@@ -70,72 +85,73 @@ describe('DiaryScreen - Accessibility', () => {
   // ── Roles & Labels ──────────────────────────────────────────────────────────
 
   describe('roles and labels', () => {
-
     it('renders month header with accessibility label', async () => {
       render(<DiaryScreen />);
-
       await waitFor(() => {
-        expect(
-          screen.getByRole('header', { name: /mayo/i })
-        ).toBeTruthy();
+        expect(screen.getByRole('header', { name: /mayo/i })).toBeTruthy();
       });
     });
 
     it('renders diary entries as accessible buttons', async () => {
-  render(<DiaryScreen />);
-
-  await waitFor(() => {
-    expect(screen.getByLabelText('Entrada Interstellar')).toBeTruthy();
-    expect(screen.getByLabelText('Entrada Breaking Bad')).toBeTruthy();
-  }, { timeout: 8000 });
-});
-
+      render(<DiaryScreen />);
+      await waitFor(() => {
+        expect(screen.getByLabelText('Entrada Interstellar')).toBeTruthy();
+        expect(screen.getByLabelText('Entrada Breaking Bad')).toBeTruthy();
+      });
+    });
   });
 
   // ── Interaction ─────────────────────────────────────────────────────────────
 
   describe('interaction', () => {
-
-    it('calls onPress when entry is pressed', async () => {
-
+    it('navigates when entry is pressed', async () => {
+      const { router } = require('expo-router');
       render(<DiaryScreen />);
 
       await waitFor(() => {
-        fireEvent.press(screen.getByLabelText('Entrada Interstellar'));
+        expect(screen.getByLabelText('Entrada Interstellar')).toBeTruthy();
       });
 
-      expect(screen.getByLabelText('Entrada Interstellar')).toBeTruthy();
-    });
+      fireEvent.press(screen.getByLabelText('Entrada Interstellar'));
 
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/logDetails',
+        params: { logId: '1', type: 'movie' },
+      });
+    });
   });
 
-  // ── FlatList rendering ──────────────────────────────────────────────────────
+  // ── List Rendering ──────────────────────────────────────────────────────────
 
   describe('list rendering', () => {
-
     it('renders at least one month section', async () => {
-
       render(<DiaryScreen />);
-
       await waitFor(() => {
-        expect(
-          screen.getByRole('header', { name: /mayo/i })
-        ).toBeTruthy();
+        expect(screen.getByRole('header', { name: /mayo/i })).toBeTruthy();
       });
-
     });
 
     it('renders multiple entries', async () => {
-
       render(<DiaryScreen />);
-
       await waitFor(() => {
         const entries = screen.getAllByRole('button');
         expect(entries.length).toBeGreaterThan(0);
       });
-
     });
+  });
 
+  // ── Empty State ─────────────────────────────────────────────────────────────
+
+  describe('empty state', () => {
+    it('shows empty message when no entries returned', async () => {
+      const { getDiaryEntries } = require('@/services/diary.service');
+      (getDiaryEntries as jest.Mock).mockResolvedValueOnce({ data: [] });
+
+      render(<DiaryScreen />);
+      await waitFor(() => {
+        expect(screen.getByText('No hay entradas aún')).toBeTruthy();
+      });
+    });
   });
 
 });
