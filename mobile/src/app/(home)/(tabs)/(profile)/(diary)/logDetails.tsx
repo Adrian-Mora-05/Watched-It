@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@react-native-ama/react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useSession } from "@/hooks/ctx";
 import { getUserLogById, UserLog } from "@/services/user.service";
@@ -23,18 +23,19 @@ export default function LogDetailsScreen() {
   const { session, isLoading } = useSession();
   const [loading, setLoading] = useState(true);
   const [log, setLog] = useState<UserLog | null>(null);
-  const loadLog = useCallback(async () => {
-    if (!session) return;
+  useFocusEffect(
+    useCallback(() => {
+      if (!isLoading && session) {
+        loadLog();
+      }
+    }, [isLoading, session, logId, type])
+  );
 
+  const loadLog = async () => {
+    if (!session) return;
     try {
       setLoading(true);
-
-      const data = await getUserLogById(
-        Number(logId),
-        String(type),
-        session
-      );
-
+      const data = await getUserLogById(Number(logId), String(type), session);
       setLog(data);
     } catch (error) {
       console.log("Error loading log:", error);
@@ -42,13 +43,7 @@ export default function LogDetailsScreen() {
     } finally {
       setLoading(false);
     }
-  }, [session, logId, type]);
-
-  useEffect(() => {
-    if (!isLoading && session) {
-      loadLog();
-    }
-  }, [isLoading, session, loadLog]);
+  };
 
   if (loading || isLoading) {
     return (

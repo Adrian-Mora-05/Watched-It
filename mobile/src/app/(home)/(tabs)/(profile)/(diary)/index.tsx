@@ -1,10 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 import DiaryEntryCard from "@/components/ui/DiaryEntryCard";
 import { useSession } from "@/hooks/ctx";
 import { getDiaryEntries } from "@/services/diary.service";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
 type DiaryEntry = {
   id: number;
@@ -30,9 +30,13 @@ export default function DiaryScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
-  useEffect(() => {
-    loadDiary(0);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setHasMore(true);
+      setSkip(0);
+      loadDiary(0);
+    }, [session])
+  );
 
   const loadDiary = async (nextSkip: number) => {
   if (loadingMore || !hasMore) return;

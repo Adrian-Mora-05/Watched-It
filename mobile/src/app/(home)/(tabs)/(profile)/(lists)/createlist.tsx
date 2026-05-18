@@ -1,4 +1,14 @@
-import { View, TouchableOpacity, TextInput, ActivityIndicator, Pressable, Alert,} from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@react-native-ama/react-native";
 import { useState } from "react";
@@ -10,6 +20,7 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useLayout } from "@/hooks/useLayout";
 
+
 export default function CreateListScreen() {
   const { session } = useSession();
   const { headerHeight } = useLayout();
@@ -17,7 +28,6 @@ export default function CreateListScreen() {
   const [type, setType] = useState<"pelicula" | "serie">("pelicula");
   const [loading, setLoading] = useState(false);
   const [createdListName, setCreatedListName] = useState<string | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const [selectedTitles, setSelectedTitles] = useState<ReadEachCatalogContent[]>([]);
 
   if (!session) {
@@ -33,21 +43,13 @@ export default function CreateListScreen() {
       Alert.alert("Error", "El nombre no puede estar vacío");
       return;
     }
-
     if (name.toLowerCase().trim() === "por_ver") {
       Alert.alert("Error", 'El nombre "por_ver" está reservado');
       return;
     }
-
     try {
       setLoading(true);
-      await createList(
-        {
-          nombre_lista: name.trim(),
-          tipo: type,
-        },
-        session
-      );
+      await createList({ nombre_lista: name.trim(), tipo: type }, session);
       setCreatedListName(name.trim());
     } catch (error) {
       console.log(error);
@@ -57,246 +59,186 @@ export default function CreateListScreen() {
     }
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-dark px-5">
-      <View style={{ paddingTop: headerHeight * 0.3 }}>
+  if (createdListName) {
+    return (
+      <SafeAreaView className="flex-1 bg-dark">
+        <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: headerHeight * 0.3 }}>
 
-        {/* BACK */}
-        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 20 }}>
-          <Ionicons name="arrow-back" size={26} color="#AA500F" />
-        </TouchableOpacity>
+          {/* HEADER */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 20,
+            }}
+          >
+            <View>
+              <Text style={{ color: '#9CA3AF', fontSize: 15, marginBottom: headerHeight*0.15, }}>
+                Agregando titulos a
+              </Text>
+              <Text style={{ color: 'white', fontSize: 25, fontWeight: '700' }}>
+                {createdListName}
+              </Text>
+            </View>
 
-        <Text className="text-white font-bold" style={{ fontSize: 24, marginBottom: 24 }}>
-          Crear lista
-        </Text>
-
-        {/* CARD */}
-        <View
-          style={{
-            backgroundColor: '#3B2207',
-            borderRadius: 20,
-            padding: 20,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.08)',
-            gap: 16,
-          }}
-        >
-          {/* NOMBRE */}
-          <View>
-            <Text className="text-gray-300" style={{ marginBottom: 8 }}>
-              Nombre
-            </Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Ej: Futuristas"
-              placeholderTextColor="#888"
-              editable={!createdListName}
-              selectionColor="#AA500F"
+            <TouchableOpacity
+              onPress={() => router.back()}
               style={{
-                backgroundColor: 'rgba(255,255,255,0.07)',
-                color: createdListName ? '#888' : 'white',
-                paddingHorizontal: 16,
-                paddingVertical: 12,
+                backgroundColor: '#AA500F',
+                paddingHorizontal: 20,
+                paddingVertical: 10,
                 borderRadius: 12,
-                fontSize: 15,
               }}
+            >
+              <Text style={{ color: 'white', fontWeight: '700' }}>Listo</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* BUSCADOR */}
+          <View style={{ flex: 1 }}>
+            <SearchModalLists
+              listName={createdListName}
+              listType={type}
+              selectedTitles={selectedTitles}
+              setSelectedTitles={setSelectedTitles}
             />
           </View>
 
-          {/* TIPO */}
-          <View>
-            <Text className="text-gray-300" style={{ marginBottom: 8 }}>
-              Tipo
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView className="flex-1 bg-dark">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: headerHeight * 0.3 }}>
+           {/* BACK + TÍTULO */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                marginBottom: 32,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ position: 'absolute', left: 0 }}
+              >
+                <Ionicons name="arrow-back" size={26} color="#AA500F" />
+              </TouchableOpacity>
+
+              <Text style={{ color: 'white', fontWeight: '700' }} className="text-large">
+                Nueva lista
+              </Text>
+            </View>
+
+            {/* SUBTÍTULO */}
+            <Text style={{ color: '#9CA3AF', fontSize: 14, marginBottom: 32 }}>
+              Dale un nombre y elige el tipo de contenido que tendrá
+            </Text>
+
+              {/* NOMBRE */}
+              <Text style={{ color: '#D1D5DB', fontSize: 13, marginBottom: 8, fontWeight: '700' }}>
+                Nombre
+              </Text>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="Ej: Futuristas"
+                placeholderTextColor="#555"
+                selectionColor="#AA500F"
+                returnKeyType="done"
+                onSubmitEditing={Keyboard.dismiss}
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  color: 'white',
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  borderRadius: 12,
+                  fontSize: 16,
+                  marginBottom: 24,
+                  borderWidth: 1,
+                  borderColor: name ? '#AA500F' : 'transparent',
+                }}
+              />
+
+            {/* TIPO */}
+            <Text style={{ color: '#D1D5DB', fontSize: 13, marginBottom: 8, fontWeight: '700'  }}>
+              Tipo de contenido
             </Text>
             <View
               style={{
                 flexDirection: 'row',
-                backgroundColor: 'rgba(255,255,255,0.07)',
+                backgroundColor: 'rgba(255,255,255,0.06)',
                 borderRadius: 12,
                 padding: 4,
-                opacity: createdListName ? 0.5 : 1,
+                marginBottom: 40,
               }}
             >
-              <TouchableOpacity
-                onPress={() => !createdListName && setType("pelicula")}
-                style={{
-                  flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor: type === "pelicula" ? "#AA500F" : "transparent",
-                  alignItems: 'center',
-                }}
-              >
-                <Text className="text-white font-bold">Películas</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => !createdListName && setType("serie")}
-                style={{
-                  flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 10,
-                  backgroundColor: type === "serie" ? "#AA500F" : "transparent",
-                  alignItems: 'center',
-                }}
-              >
-                <Text className="text-white font-bold">Series</Text>
-              </TouchableOpacity>
+              {(['pelicula', 'serie'] as const).map((t) => (
+                <TouchableOpacity
+                  key={t}
+                  onPress={() => setType(t)}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 12,
+                    borderRadius: 10,
+                    backgroundColor: type === t ? '#AA500F' : 'transparent',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <Ionicons
+                    name={t === 'pelicula' ? 'film-outline' : 'tv-outline'}
+                    size={16}
+                    color={type === t ? 'white' : '#9CA3AF'}
+                  />
+                  <Text
+                    style={{
+                      color: type === t ? 'white' : '#9CA3AF',
+                      fontWeight: '600',
+                      fontSize: 14,
+                    }}
+                  >
+                    {t === 'pelicula' ? 'Películas' : 'Series'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-          </View>
 
-          {/* ACCION */}
-          {!createdListName ? (
+            {/* CREAR */}
             <TouchableOpacity
               onPress={handleCreateList}
-              disabled={loading}
+              disabled={loading || !name.trim()}
               style={{
                 backgroundColor: '#AA500F',
-                paddingVertical: 14,
-                borderRadius: 12,
+                paddingVertical: 16,
+                borderRadius: 14,
                 alignItems: 'center',
-                opacity: loading ? 0.7 : 1,
+                opacity: loading || !name.trim() ? 0.5 : 1,
               }}
             >
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-white font-bold">Crear lista</Text>
+                <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>
+                  Crear lista
+                </Text>
               )}
             </TouchableOpacity>
-          ) : (
-            <View style={{ gap: 10 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                }}
-              >
-                <Ionicons name="checkmark-circle" size={18} color="#AA500F" />
-                <Text style={{ color: '#AA500F', fontWeight: '700' }}>
-                  Lista creada exitosamente
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                onPress={() => setModalVisible(true)}
-                style={{
-                  backgroundColor: '#AA500F',
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 8,
-                }}
-              >
-                <Ionicons name="add-circle-outline" size={18} color="white" />
-                <Text className="text-white font-bold">Agregar contenido</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.08)',
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                }}
-              >
-                <Text className="text-white font-bold">Listo</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* BOTTOM SHEET MODAL */}
-      {modalVisible && createdListName && (
-        <View style={{ position: 'absolute', inset: 0, justifyContent: 'flex-end' }}>
-          <Pressable
-            style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }}
-            onPress={() => setModalVisible(false)}
-          />
-
-          <View
-            style={{
-              backgroundColor: '#1a1a1a',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              height: '85%',
-              padding: 20,
-              paddingBottom: 10,
-            }}
-          >
-            {/* HANDLE */}
-            <View
-              style={{
-                width: 40,
-                height: 4,
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                borderRadius: 4,
-                alignSelf: 'center',
-                marginBottom: 16,
-              }}
-            />
-
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 16,
-              }}
-            >
-              <Text className="text-white font-bold" style={{ fontSize: 18 }}>
-                Agregar contenido
-              </Text>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.1)',
-                  borderRadius: 20,
-                  padding: 4,
-                }}
-              >
-                <Ionicons name="close" size={22} color="white" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <SearchModalLists
-                listName={createdListName}
-                listType={type}
-                selectedTitles={selectedTitles}
-                setSelectedTitles={setSelectedTitles}
-              />
-            </View>
-
-            <View
-              style={{
-                paddingTop: 12,
-                borderTopWidth: 1,
-                borderTopColor: 'rgba(255,255,255,0.08)',
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={{
-                  backgroundColor: '#AA500F',
-                  paddingVertical: 14,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                }}
-              >
-                <Text className="text-white font-bold">Listo</Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </View>
-      )}
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }

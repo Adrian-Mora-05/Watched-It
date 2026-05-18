@@ -4,8 +4,8 @@ import { Image } from 'expo-image';
 import { getMyLists, baseUrl,} from '@/services/list.service';
 import { useSession } from '@/hooks/ctx';
 import { useLayout } from '@/hooks/useLayout';
-import { useState, useEffect } from 'react';
-import { router } from 'expo-router';
+import { useState, useEffect, useCallback } from 'react';
+import { router, useFocusEffect } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 type ListItem = {
@@ -105,9 +105,13 @@ export default function UserListsScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchLists(true);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      setSkip(0);
+      setHasMore(true);
+      fetchLists(true);
+    }, [session])
+  );
 
   const renderList = ({
     item,
