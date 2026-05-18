@@ -24,12 +24,15 @@ export default function ReturnButton({ label, onPress, showLabel = true }: Butto
         justifyContent: 'center',
       }}
     >
+      <View className='flex-row items-center'>
         <Ionicons name="arrow-back" size={24} color="white" />
         {showLabel && (
           <Text className="text-normal text-white ml-2">
             Volver
           </Text>
+          
         )}
+        </View>
     </Pressable>
     </View>
   );

@@ -8,6 +8,7 @@ import { useSession } from '@/hooks/ctx';
 import { getRatingStats, UserRatingStats } from '@/services/user.service';
 import { router } from 'expo-router';
 
+
 export default function MyProfileScreen() {
   const { movies, shows } = useFavorites();
   const { session } = useSession();
@@ -38,11 +39,11 @@ export default function MyProfileScreen() {
 
   return (
     <ScrollView className="flex-1 bg-dark">
-      <View className='py-6'>
+      <View className="py-3">
         <Text className="text-white text-medium font-semibold">
             Mis películas favoritas
         </Text>
-        <View className="py-6 flex-row justify-around">
+        <View className="flex-row justify-around py-3">
           {peliculasMostradas.map((pelicula, index) => (
             <TitleGrid
               key={pelicula?.id ?? index}
@@ -60,15 +61,20 @@ export default function MyProfileScreen() {
           <Text className="text-white text-medium font-semibold">
                 Mis series favoritas
             </Text>
-            <View className="py-6 flex-row justify-around">
-              {showsMostrados.map((show, index) => (
-                <TitleGrid
-                  key={show?.id || index}
-                  item={show}  
-                  onPress={() => {}}
-                />
-            ))}
-          </View>
+        <View className=" flex-row justify-around py-3" >
+          {showsMostrados.map((show, index) => (
+            <TitleGrid
+              key={show?.id ?? index}
+              item={show ? {
+                title: show.title,
+                image_link: show.image_link,
+                contenido_id: show.id,
+                tipo: 'show'
+              } : undefined}
+              onPress={() => show && router.push(`/show/${show.id}`)}
+            />
+          ))}
+        </View>
       <View className="py-6">
         <Text className="text-white text-medium font-semibold mb-4">
           Mis calificaciones

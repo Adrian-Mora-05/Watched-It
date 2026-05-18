@@ -152,7 +152,7 @@ export default function showReviewScreen() {
       {/* Header */}
       <View
         className="items-end justify-between flex-row"
-        style={{ padding: gap, gap, width: screenWidth, height: headerHeight }}
+        style={{ padding: gap, gap, width: screenWidth, height: headerHeight, marginHorizontal:gap }}
         accessible={false}
       >
         <ReturnButton label="Volver" onPress={() => router.back()} />

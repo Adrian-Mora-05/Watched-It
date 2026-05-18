@@ -10,7 +10,7 @@ type Props = {
     title: string;
     image_link?: string;
     contenido_id?: number;
-    tipo?: 'pelicula' | 'serie';
+    tipo?: 'pelicula' | 'serie'| 'show';
   };
   onPress: () => void;
 };

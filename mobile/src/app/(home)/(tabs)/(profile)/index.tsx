@@ -18,7 +18,7 @@ export default function ProfileScreen() {
   const { user, isLoadingUser} = useSession();
   const { headerPaddingBottom, headerHeight,screenWidth } = useLayout();
   const gap = screenWidth * 0.03;
-
+  const avatarSize = screenWidth * 0.12;
 
   if (isLoadingUser) {
     return (
@@ -34,7 +34,7 @@ export default function ProfileScreen() {
     { key: "lists", label: "Listas" },
     { key: "watchlist", label: "Por ver" },
   ];
-
+  
   return ( 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
@@ -43,12 +43,10 @@ export default function ProfileScreen() {
         >
         <View className="flex-1 bg-dark">
           <View
-          className="bg-chocolate flex-row items-center"
-          style={{
-            height: headerHeight,
-            paddingHorizontal: gap,
-            paddingTop: 10,
-          }}
+        className="items-center justify-end bg-chocolate flex-row"
+        style={{ height: headerHeight, width: screenWidth, paddingTop: headerPaddingBottom, paddingHorizontal: gap }}
+        accessible={true}
+        accessibilityRole="header"
         >
             
             <SettingButton onPress={() => router.push("/settings")} />
@@ -72,13 +70,9 @@ export default function ProfileScreen() {
                   ? { uri: user.profilePicture }
                   : require('../../../../../assets/images/default-profile-pic.png')
               }
-              style={{
-                width: Math.min(screenWidth * 0.16, 72),
-                height: Math.min(screenWidth * 0.16, 72),
-                borderRadius: 999,
-              }}
+              style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
               contentFit="cover"
-              cachePolicy="none"
+              cachePolicy="disk"
             />
         
           </View>

@@ -17,7 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
     
-    const {headerHeight, screenWidth, screenHeight} = useLayout();
+    const { headerHeight, screenWidth, paddingHorizontal, paddingVertical,screenHeight,headerPaddingBottom } = useLayout();
+  const gap = screenWidth * 0.03;
     const { user, signOut, session, refreshUser } = useSession();
 
     const { movies, shows, refetch } = useFavorites();
@@ -110,44 +111,46 @@ export default function SettingsScreen() {
 
     return (
         <View className="py-0 flex-1 bg-chocolate">
-        <SafeAreaView className="bg-flour relative justify-between" 
-            style={{ height: headerHeight*1.5, width: screenWidth}} 
-            accessibilityRole="header"
-            accessibilityLabel="Encabezado de ajustes"
-        >
-            <View className="flex-row w-full">
-                <View className="flex-row items-center w-1/6">
-                    <ReturnButton label="Volver" showLabel={false} onPress={() => router.back()}/>
-                </View>
-                <View className="justify-end w-4/6" >
-                    <Text
-                        accessibilityRole="header"
-                        className="text-dark text-large font-bold text-center ">
-                        Ajustes
-                    </Text>
-                </View>
-            </View>
-            <View className="flex-row justify-between" style={{height: screenHeight * 0.06, marginTop: screenHeight * 0.015}}>
-                <ActionButton
+            <View className="bg-flour">
+          <View
+            className=" items-center justify-end"
+            style={{ height: headerHeight, width: screenWidth }}
+          >
+            <View
+              className="flex-row w-full items-center"
+              style={{ paddingBottom: headerPaddingBottom, paddingHorizontal: gap }}
+            >
+
+              {/* Title */}
+            <ActionButton
                     variant='save'
                     label="Guardar"
                     onPress={handleSave}
                 />
-                <ActionButton
+              <View className="flex-1 items-center">
+                <Text
+                  accessibilityRole="header"
+                  accessibilityLanguage="es"
+                  autofocus
+                  className="text-black text-large font-bold text-center"
+                >
+                  Ajustes
+                </Text>
+              </View>
+                            <ActionButton
                     variant='cancel'
                     label="Cancelar"
                     onPress={handleCancel}
                 />
             </View>
-        </SafeAreaView>
-
+          </View>
+            </View>
             <ScrollView
             showsVerticalScrollIndicator={false}
-            className='py-6 px-5'
+            className='px-5 p-2'
             accessibilityLabel="Contenido de ajustes">
-            
-                <View className='py-6'>
-                    <Text className='text-white text-medium font-semibold'
+
+                    <Text className='text-white text-medium font-semibold' style={{ marginTop: gap}}
                         accessibilityRole="text"
                         accessibilityLabel={`Sesión iniciada con ${user?.name ?? "Usuario"} y correo ${user?.email ?? "correo desconocido"}`}>
                         {'Sesión iniciada con: ' +
@@ -155,9 +158,13 @@ export default function SettingsScreen() {
                             ' (' +
                             (user?.email ?? "email desconocido") +
                             ')'}
+                            
                     </Text>
-                </View>
-                <View className='py-6'>
+                    <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
                     <Pressable
                         accessibilityRole="button"
                         accessibilityLabel="Cambiar contraseña"
@@ -168,9 +175,12 @@ export default function SettingsScreen() {
                             Cambiar contraseña
                         </Text>
                     </Pressable>
-                </View>
-
-                <View className='py-6'
+                                        <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
+                <View 
                     accessible={true}
                     accessibilityLabel="Sección de películas favoritas"
                 >
@@ -192,7 +202,12 @@ export default function SettingsScreen() {
                         ))}
                     </View>
                 </View>
-            <ScrollView className="mt-4 max-h-60">
+                    <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
+            <ScrollView className="max-h-60">
                 <SearchModal
                     visible={showMovieModal}
                     onClose={() => setShowMovieModal(false)}
@@ -209,7 +224,7 @@ export default function SettingsScreen() {
                     }); }}
                 />
             </ScrollView>
-                <View className='py-6'
+                <View 
                     accessible={true}
                     accessibilityLabel="Sección de series favoritas"
                 >
@@ -250,14 +265,23 @@ export default function SettingsScreen() {
                         />
                     </View>
                 </View> 
-                <View className="flex-row items-center gap-2"
+                <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
+                <View className="flex-row items-center "
                     accessibilityLabel="Sección de foto de perfil">
                     <ProfilePhotoSection
                     initialPhoto={photoUri ?? user?.profilePicture}
                     onChange={(uri) => setPhotoUri(uri)}
                     />
                 </View>
-                <View className='py-6'>
+                    <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
                     <Pressable onPress={() => signOut()}
                         accessibilityRole="button"
                         accessibilityLabel="Cerrar sesión"
@@ -267,19 +291,21 @@ export default function SettingsScreen() {
                             Cerrar Sesión
                         </Text>
                     </Pressable>
-                </View>
-
-                <View className='py-6'>
+                    <View
+                    style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
+                    accessible={false}
+                    importantForAccessibility="no"
+                    />
                     <Pressable onPress={() => console.log("Eliminar cuenta")}
                         accessibilityRole="button"
                         accessibilityLabel="Eliminar cuenta"
                         accessibilityHint="Elimina la cuenta de usuario"
                     >
-                        <Text className='text-white text-medium font-semibold'>
+                        <Text className='text-white text-medium font-semibold mb-5'>
                             Eliminar Cuenta
                         </Text>
                     </Pressable>
-                </View>
+
             </ScrollView>
         </View>
     );

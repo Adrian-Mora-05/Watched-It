@@ -30,7 +30,6 @@ export default function ProfilePhotoSection({
 };
 
   const handlePhoto = (uri: string) => {
-    console.log("NUEVA FOTO:", uri);
     setPhotoUri(uri); 
     setShowCamera(false);
     onChange?.(uri);
@@ -41,14 +40,14 @@ export default function ProfilePhotoSection({
 }, [initialPhoto]);
 
   return (
-    <View className="py-6 items-center flex-row gap-8 justify-evenly ">
+    <View className="items-center flex-row gap-8 justify-evenly ">
 
       {/* Botón texto */}
       <Pressable
         onPress={() => setShowCamera(true)}
         accessibilityLabel="Cambiar foto de perfil"
       >
-        <Text className="text-white text-medium font-semibold mb-3">
+        <Text className="text-white text-medium font-semibold">
           Cambiar foto de perfil
         </Text>
       </Pressable>

@@ -212,7 +212,7 @@ const fetchResults = async () => {
             paddingBottom: headerPaddingBottom
           }}
         >
-          Watched-It
+          Buscador
         </Text>
 
       </View>
