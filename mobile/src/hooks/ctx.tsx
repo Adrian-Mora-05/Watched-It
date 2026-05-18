@@ -7,7 +7,6 @@ import {
   useRef,
   useCallback
 } from 'react';
-
 import { useStorageState } from './useStorageState';
 import { login, refreshSession } from '@/services/auth.service';
 import { getMe, UserProfile } from '@/services/user.service';
@@ -21,6 +20,7 @@ const AuthContext = createContext<{
   isLoading: boolean;
   user: UserProfile | null;
   isLoadingUser: boolean;
+  isReady: boolean;
   refreshUser: () => Promise<void>;
 }>({
   signIn: () => Promise.resolve(),
@@ -29,6 +29,7 @@ const AuthContext = createContext<{
   isLoading: false,
   user: null,
   isLoadingUser: false,
+  isReady: false,
   refreshUser: () => Promise.resolve(),
 });
 
@@ -50,7 +51,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
   const [[isLoading, sessionJson], setSessionJson] = useStorageState('session');
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
-
+  const [isReady, setIsReady] = useState(false);
   const restoredRef = useRef(false);
 
   const session = sessionJson
@@ -72,12 +73,12 @@ export function SessionProvider({ children }: PropsWithChildren) {
       setUser(null);
     } finally {
       setIsLoadingUser(false);
+      setIsReady(true);
     }
   }, []);
 
   const refreshUser = useCallback(async () => {
     if (!sessionJson) return;
-
     try {
       const parsed = JSON.parse(sessionJson);
       await fetchUser(parsed.access_token);
@@ -88,7 +89,11 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!sessionJson) return;
+
+    if (!sessionJson) {
+      setIsReady(true);
+      return;
+    }
 
     try {
       const parsed = JSON.parse(sessionJson);
@@ -99,24 +104,24 @@ export function SessionProvider({ children }: PropsWithChildren) {
           fetchUser(parsed.access_token);
           return;
         }
-
         restoredRef.current = true;
 
         if (isExpired) {
           try {
             const data = await refreshSession(parsed.refresh_token);
-
             if (data.session) {
               setSessionJson(JSON.stringify(slimSession(data.session)));
               fetchUser(data.session.access_token);
             } else {
               setSessionJson(null);
               setUser(null);
+              setIsReady(true);
               router.replace('/(auth)/sign-in');
             }
           } catch {
             setSessionJson(null);
             setUser(null);
+            setIsReady(true);
             router.replace('/(auth)/sign-in');
           }
         } else {
@@ -128,6 +133,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
     } catch {
       setSessionJson(null);
       setUser(null);
+      setIsReady(true);
       router.replace('/(auth)/sign-in');
     }
   }, [sessionJson, isLoading, fetchUser]);
@@ -139,17 +145,17 @@ export function SessionProvider({ children }: PropsWithChildren) {
           const data = await login(user);
           setSessionJson(JSON.stringify(slimSession(data.session)));
         },
-
         signOut: () => {
           setSessionJson(null);
           setUser(null);
+          setIsReady(false);
           router.replace('/(auth)/sign-in');
         },
-
         session,
         isLoading,
         user,
         isLoadingUser,
+        isReady,
         refreshUser,
       }}
     >
