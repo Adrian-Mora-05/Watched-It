@@ -1,10 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { View, FlatList, ActivityIndicator } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 import DiaryEntryCard from "@/components/ui/DiaryEntryCard";
 import { useSession } from "@/hooks/ctx";
 import { getDiaryEntries } from "@/services/diary.service";
 import { router } from "expo-router";
+import { useLayout } from "@/hooks/useLayout";
 
 type DiaryEntry = {
   id: number;
@@ -21,6 +22,9 @@ type DiaryEntry = {
 };
 
 export default function DiaryScreen() {
+  const { screenWidth } = useLayout();
+  const gap = screenWidth * 0.03;
+
   const { session } = useSession();
 
   const LIMIT = 15;
@@ -149,6 +153,7 @@ export default function DiaryScreen() {
                   {item.month}
                 </Text>
               </View>
+              
             </View>
           );
         }
@@ -156,7 +161,8 @@ export default function DiaryScreen() {
         const entry = item.item;
         const day = new Date(entry.fecha_creado).getDate();
 
-        return (
+        return (<View>
+          
           <DiaryEntryCard
             title={entry.content.titulo}
             image_link={entry.content.enlace_imagen}
@@ -172,7 +178,11 @@ export default function DiaryScreen() {
                 },
               });
             }}
-          />
+          /><View
+            style={{ height: 1, marginBottom:gap, backgroundColor: '#5D3E14' }}
+            accessible={false}
+            importantForAccessibility="no"
+        /></View>
         );
       }}
       onEndReached={() => {
@@ -189,5 +199,6 @@ export default function DiaryScreen() {
       accessibilityRole="list"
       accessibilityLabel="Lista del diario de películas y series"
     />
+    
   );
 }

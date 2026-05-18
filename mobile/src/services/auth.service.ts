@@ -2,11 +2,14 @@ import api from "./api";
 import { CreateUser, LoginUser } from "@shared/user.schema";
 import { ForgotPassword,ResetPassword } from "@shared/password.schema";
 import { uploadProfilePicture, addFavorites } from "./user.service";
+import { generateMovieRecommendations,generateShowsRecommendations } from "./recommendations.service";
 
 export const signup = async (userData: CreateUser, photoUri?: string, favMovies?: number[], favShows?: number[] ) => {
   const response = await api.post("/auth/signup", userData);
   const { session } = response.data;
 
+  generateMovieRecommendations(session.access_token);
+  generateShowsRecommendations(session.access_token);
   if (photoUri) {
     await uploadProfilePicture(photoUri, session.access_token);
   }

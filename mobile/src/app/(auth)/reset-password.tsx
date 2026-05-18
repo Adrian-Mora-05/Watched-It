@@ -1,12 +1,12 @@
-import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, AccessibilityInfo, } from "react-native";
+import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, AccessibilityInfo } from "react-native";
 import { Text } from "@react-native-ama/react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { replace } from "expo-router/build/global-state/routing";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useState, useRef } from "react";
 import { resetPassword } from "@/services/auth.service";
 import { ResetPasswordSchema } from "@shared/password.schema";
+import { useLayout } from "@/hooks/useLayout";
 
 type ScreenState = "idle" | "loading" | "success" | "error";
 
@@ -17,7 +17,8 @@ export default function ResetPasswordScreen() {
   const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
   const [screenState, setScreenState] = useState<ScreenState>("idle");
   const [apiError, setApiError] = useState<string>("");
-
+  const { headerHeight, screenWidth, paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
   const confirmPasswordRef = useRef<any>(null);
 
   if (!token) {
@@ -33,14 +34,15 @@ export default function ResetPasswordScreen() {
         <Text className="text-white text-medium text-center">
           Este enlace expiró o es inválido. Solicita un nuevo correo de restablecimiento.
         </Text>
-        <Button label="Volver a inicio de sesión" 
-  onPress={() => {
-    router.dismissAll();
-    
-    setTimeout(() => {
-      router.replace("/sign-in");
-    }, 100);
-  }} />
+        <Button
+          label="Volver a inicio de sesión"
+          onPress={() => {
+            router.dismissAll();
+            setTimeout(() => {
+              router.replace("/sign-in");
+            }, 100);
+          }}
+        />
       </View>
     );
   }
@@ -78,11 +80,11 @@ export default function ResetPasswordScreen() {
           "Contraseña actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña."
         );
       })
-      .catch((error: any) => {
+      .catch(() => {
         const message = "No pudimos actualizar tu contraseña. El enlace puede haber expirado. Por favor solicita un nuevo correo.";
         setApiError(message);
         setScreenState("error");
-        AccessibilityInfo.announceForAccessibility(`Error: ${message}`);
+        AccessibilityInfo.announceForAccessibility(`No pudimos actualizar tu contraseña. El enlace puede haber expirado. Por favor solicita un nuevo correo.`);
       });
   };
 
@@ -99,13 +101,15 @@ export default function ResetPasswordScreen() {
         <Text className="text-white text-medium text-center">
           Tu contraseña fue actualizada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
         </Text>
-        <Button label="Ir a inicio de sesión" onPress={() => {
-          router.dismissAll();
-          
-          setTimeout(() => {
-            router.replace("/sign-in");
-          }, 100);
-        }} />
+        <Button
+          label="Ir a inicio de sesión"
+          onPress={() => {
+            router.dismissAll();
+            setTimeout(() => {
+              router.replace("/sign-in");
+            }, 100);
+          }}
+        />
       </View>
     );
   }
@@ -117,97 +121,96 @@ export default function ResetPasswordScreen() {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="flex-1 bg-dark">
-          <View className="content-start bg-dark justify-around mt-28 gap-8">
-            <View className="mb-10">
+
+          <View style={{ paddingHorizontal, paddingVertical }}>
             <Text
               className="text-white text-large font-bold my-10 text-center"
+              style={{ marginTop: headerHeight }}
               accessibilityRole="header"
             >
               Nueva contraseña
             </Text>
-            </View>
+          </View>
+
+          <Text className="text-white text-medium text-left ml-5 mb-5" accessibilityRole="text">
+            Ingresa y confirma tu nueva contraseña. La contraseña debe tener al menos 6 caracteres.
+          </Text>
+
+          {screenState === "error" && apiError ? (
             <Text
-              className="text-white text-medium text-left ml-5 mb-5"
-              accessibilityRole="text"
+              className="text-red-400 text-sm text-center mx-5 mb-3"
+              accessibilityRole="alert"
+              accessibilityLiveRegion="assertive"
+              accessibilityLabel={`Error: ${apiError}`}
             >
-              Ingresa y confirma tu nueva contraseña. La contraseña debe tener al menos 6 caracteres.
+              {apiError}
             </Text>
+          ) : null}
 
-            {screenState === "error" && apiError ? (
-              <Text
-                className="text-red-400 text-sm text-center mx-5 mb-3"
-                accessibilityRole="alert"
-                accessibilityLiveRegion="assertive"
-                accessibilityLabel={`Error: ${apiError}`}
-              >
-                {apiError}
-              </Text>
-            ) : null}
+          <View className="mb-10 mx-5 gap-9">
+            <Input
+              width="100%"
+              label="Nueva contraseña"
+              placeholder="••••••••"
+              value={newPassword}
+              onChangeText={(text: string) => {
+                setNewPassword(text);
+                setErrors((prev) => ({ ...prev, newPassword: undefined }));
+                if (screenState === "error") { setScreenState("idle"); setApiError(""); }
+              }}
+              secureTextEntry
+              autoCapitalize="none"
+              hasValidation={false}
+              error={errors.newPassword}
+              returnKeyType="next"
+              onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+              accessibilityLabel="Nueva contraseña"
+              accessibilityHint="Ingresa tu nueva contraseña, mínimo 6 caracteres"
+            />
+            <Input
+              ref={confirmPasswordRef}
+              width="100%"
+              label="Confirmar contraseña"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChangeText={(text: string) => {
+                setConfirmPassword(text);
+                setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                if (screenState === "error") { setScreenState("idle"); setApiError(""); }
+              }}
+              secureTextEntry
+              autoCapitalize="none"
+              hasValidation={false}
+              error={errors.confirmPassword}
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              accessibilityLabel="Confirmar contraseña"
+              accessibilityHint="Repite tu nueva contraseña para confirmarla"
+            />
 
-            <View className="mb-10 mx-5 gap-9">
-              <Input
-                width="100%"
-                label="Nueva contraseña"
-                placeholder="••••••••"
-                value={newPassword}
-                onChangeText={(text: string) => {
-                  setNewPassword(text);
-                  setErrors((prev) => ({ ...prev, newPassword: undefined }));
-                  if (screenState === "error") { setScreenState("idle"); setApiError(""); }
-                }}
-                secureTextEntry
-                autoCapitalize="none"
-                hasValidation={false}
-                error={errors.newPassword}
-                returnKeyType="next"
-                onSubmitEditing={() => confirmPasswordRef.current?.focus()}
-                accessibilityLabel="Nueva contraseña"
-                accessibilityHint="Ingresa tu nueva contraseña, mínimo 6 caracteres"
+            <View className="mt-5 gap-10 flex-row justify-between">
+              <Button
+                label={screenState === "loading" ? "Guardando..." : "Guardar nueva contraseña"}
+                onPress={handleSubmit}
+                disabled={screenState === "loading"}
+                loading={screenState === "loading"}
+
               />
-              <Input
-                ref={confirmPasswordRef}
-                width="100%"
-                label="Confirmar contraseña"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChangeText={(text: string) => {
-                  setConfirmPassword(text);
-                  setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
-                  if (screenState === "error") { setScreenState("idle"); setApiError(""); }
+              <Button
+                label="Cancelar"
+                onPress={() => {
+                  router.dismissAll();
+                  setTimeout(() => {
+                    router.replace("/sign-in");
+                  }, 100);
                 }}
-                secureTextEntry
-                autoCapitalize="none"
-                hasValidation={false}
-                error={errors.confirmPassword}
-                returnKeyType="done"
-                onSubmitEditing={handleSubmit}
-                accessibilityLabel="Confirmar contraseña"
-                accessibilityHint="Repite tu nueva contraseña para confirmarla"
+                bgColor="#808080"
+                disabled={screenState === "loading"}
+                loading={screenState === "loading"}
               />
-
-              <View className="mt-5 gap-10 flex-row justify-between">
-                <Button
-                  label={screenState === "loading" ? "Guardando..." : "Guardar nueva contraseña"}
-                  onPress={handleSubmit}
-                  disabled={screenState === "loading"}
-                  loading={screenState === "loading"}
-                />
-                                <Button
-                  label="Cancelar"
-                  onPress={() => {
-                    router.dismissAll();
-                    
-                    setTimeout(() => {
-                      router.replace("/sign-in");
-                    }, 100);
-                  }}
-                  bgColor= "#808080"
-                  disabled={screenState === "loading"}
-                  loading={screenState === "loading"}
-                />
-              </View>
             </View>
           </View>
+
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

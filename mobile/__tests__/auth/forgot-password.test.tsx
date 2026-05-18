@@ -12,10 +12,55 @@ jest.mock('@/services/auth.service', () => ({
   sendEmail: jest.fn(),
 }));
 
+jest.mock('@/hooks/useLayout', () => ({
+  useLayout: () => ({
+    screenWidth: 390,
+    headerHeight: 80,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  }),
+}));
+
+jest.mock('@react-native-ama/react-native', () => {
+  const { Text } = require('react-native');
+  return {
+    Text: ({ children, ...props }: any) => <Text {...props}>{children}</Text>,
+  };
+});
+
+jest.mock('@/components/ui/Input', () => {
+  const { TextInput, View, Text } = require('react-native');
+  return ({ label, error, ...props }: any) => (
+    <View>
+      <TextInput
+        accessibilityLabel={label}
+        accessibilityLiveRegion="assertive"
+        {...props}
+      />
+      {error && <Text accessibilityLiveRegion="assertive">{error}</Text>}
+    </View>
+  );
+});
+
+jest.mock('@/components/ui/Button', () => {
+  const { TouchableOpacity, Text } = require('react-native');
+  return ({ label, onPress, loading, disabled }: any) => (
+    <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ busy: !!loading, disabled: !!disabled }}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text>{label}</Text>
+    </TouchableOpacity>
+  );
+});
+
 jest.mock('@/components/ui/ReturnButton', () => {
   const { TouchableOpacity, Text } = require('react-native');
   return ({ label, onPress }: { label: string; onPress: () => void }) => (
-    <TouchableOpacity accessibilityRole="button" onPress={onPress}>
+    <TouchableOpacity accessibilityRole="button" accessibilityLabel={label} onPress={onPress}>
       <Text>{label}</Text>
     </TouchableOpacity>
   );
@@ -91,7 +136,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
     it('shows error when submitting empty form', async () => {
       render(<ForgotPasswordScreen />);
       submitForm();
-
       const error = await screen.findByText(/Nombre no puede ser vacío/);
       expect(error).toBeTruthy();
     });
@@ -100,7 +144,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       const announce = jest.spyOn(AccessibilityInfo, 'announceForAccessibility');
       render(<ForgotPasswordScreen />);
       submitForm();
-
       await waitFor(() => {
         expect(announce).toHaveBeenCalledWith(
           expect.stringContaining('Formulario con errores')
@@ -113,7 +156,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         const error = screen.getByText(/No pudimos enviar el correo/);
         expect(error.props.accessibilityLiveRegion).toBe('assertive');
@@ -126,7 +168,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         expect(announce).toHaveBeenCalledWith(
           expect.stringContaining('No pudimos enviar el correo')
@@ -143,7 +184,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         const button = screen.getByRole('button', { name: 'Enviando...' });
         expect(button.props.accessibilityState?.busy).toBe(true);
@@ -155,7 +195,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         const button = screen.getByRole('button', { name: 'Enviando...' });
         expect(button.props.accessibilityState?.disabled).toBe(true);
@@ -168,7 +207,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         expect(announce).toHaveBeenCalledWith(
           expect.stringContaining('Enviando correo de restablecimiento')
@@ -185,7 +223,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         expect(screen.getByRole('header', { name: 'Revisa tu correo' })).toBeTruthy();
       });
@@ -196,7 +233,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername('miusuario');
       submitForm();
-
       await waitFor(() => {
         expect(screen.getByText('miusuario')).toBeTruthy();
       });
@@ -207,7 +243,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'Volver a inicio de sesión' })).toBeTruthy();
       });
@@ -219,7 +254,6 @@ describe('ForgotPasswordScreen - Accessibility', () => {
       render(<ForgotPasswordScreen />);
       fillUsername();
       submitForm();
-
       await waitFor(() => {
         expect(announce).toHaveBeenCalledWith(
           expect.stringContaining('Correo de restablecimiento enviado')
@@ -229,30 +263,27 @@ describe('ForgotPasswordScreen - Accessibility', () => {
   });
 
   // ── Navigation ────────────────────────────────────────────────────────────────
-    describe('navigation', () => {
+
+  describe('navigation', () => {
     it('goes back when pressing return button on idle screen', () => {
-        render(<ForgotPasswordScreen />);
-        fireEvent.press(screen.getByRole('button', { name: 'Volver a inicio de sesión' }));
-        expect(router.back).toHaveBeenCalled();
+      render(<ForgotPasswordScreen />);
+      fireEvent.press(screen.getByRole('button', { name: 'Volver a inicio de sesión' }));
+      expect(router.back).toHaveBeenCalled();
     });
 
-    it('goes back when pressing either return button on success screen', async () => {
-        sendEmail.mockResolvedValueOnce({});
-        render(<ForgotPasswordScreen />);
-        fillUsername();
-        submitForm();
+    it('goes back when pressing return button on success screen', async () => {
+      sendEmail.mockResolvedValueOnce({});
+      render(<ForgotPasswordScreen />);
+      fillUsername();
+      submitForm();
 
-        await waitFor(() => {
+      await waitFor(() => {
         expect(screen.getByRole('header', { name: 'Revisa tu correo' })).toBeTruthy();
-        });
+      });
 
-        const buttons = screen.getAllByRole('button', { name: 'Volver a inicio de sesión' });
-        expect(buttons).toHaveLength(1);
-
-        fireEvent.press(buttons[0]);
-        expect(router.back).toHaveBeenCalledTimes(1);
-
+      fireEvent.press(screen.getByRole('button', { name: 'Volver a inicio de sesión' }));
+      expect(router.back).toHaveBeenCalledTimes(1);
     });
-    });
+  });
 
 });

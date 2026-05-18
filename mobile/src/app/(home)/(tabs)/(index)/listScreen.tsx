@@ -5,7 +5,7 @@ import { getLists, baseUrl } from '@/services/list.service';
 import { useSession } from '@/hooks/ctx';
 import { useLayout } from '@/hooks/useLayout';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { router } from 'expo-router';
 
 type ListItem = {
@@ -23,17 +23,18 @@ type GroupedList = {
 };
 
 const groupLists = (data: ListItem[]): GroupedList[] => {
-  const map: Record<number, GroupedList> = {};
+  const map: Record<string, GroupedList> = {};
   data.forEach(item => {
-    if (!map[item.id]) {
-      map[item.id] = {
+    const key = `${item.id}-${item.nombre_lista}`;
+    if (!map[key]) {
+      map[key] = {
         id: item.id,
         nombre_lista: item.nombre_lista,
         nombre_usuario: item.nombre_usuario,
         images: [],
       };
     }
-    map[item.id].images.push(item.enlace_imagen);
+    map[key].images.push(item.enlace_imagen);
   });
   return Object.values(map);
 };
@@ -45,7 +46,7 @@ export default function ListScreen() {
   const gap = screenWidth * 0.02;
   const imgWidth = screenWidth * 0.25;
   const imgHeight = imgWidth * 1.5;
-
+  const isFetching = useRef(false);
   const [lists, setLists] = useState<GroupedList[]>([]);
   const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -53,19 +54,42 @@ export default function ListScreen() {
   const limit = 30;
 
   const fetchLists = async (reset = false) => {
-    if (loading || !hasMore) return;
+    if (isFetching.current || (!reset && !hasMore)) return;
+    isFetching.current = true;
     setLoading(true);
     try {
       const currentSkip = reset ? 0 : skip;
       const data = await getLists(currentSkip, limit, session!);
       const grouped = groupLists(data);
-      setLists(prev => reset ? grouped : [...prev, ...grouped]);
+
+  setLists(prev => {
+    const existing = reset ? [] : prev;
+    const merged = [...existing];
+
+    grouped.forEach(newItem => {
+      const existingIndex = merged.findIndex(l => l.id === newItem.id);
+      if (existingIndex !== -1) {
+        // List already exists — merge images
+        const combined = [...merged[existingIndex].images, ...newItem.images];
+        merged[existingIndex] = {
+          ...merged[existingIndex],
+          images: [...new Set(combined)], // dedupe images too
+        };
+      } else {
+        merged.push(newItem);
+      }
+    });
+
+    return merged;
+  });
       setSkip(currentSkip + limit);
+      if (reset) setHasMore(true);
       if (data.length < limit) setHasMore(false);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
+      isFetching.current = false;
     }
   };
 
@@ -145,18 +169,17 @@ export default function ListScreen() {
     <View className="flex-1 bg-dark" accessible={false}>
       <FlatList
         data={lists}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item, index) => `${item.id}-${item.nombre_lista}-${index}`}
         renderItem={renderList}
         onEndReached={() => fetchLists()}
         onEndReachedThreshold={0.5}
         accessibilityLabel="Lista de listas de películas y series" 
         ItemSeparatorComponent={() => (
           <View
-            className="h-0.5 bg-chocolate"
-            style={{ marginHorizontal: paddingHorizontal }}
-            accessible={false} 
+            style={{ height: 1, marginBottom:gap, backgroundColor: '#5D3E14' }}
+            accessible={false}
             importantForAccessibility="no"
-          />
+        />
         )}
         ListFooterComponent={
           loading

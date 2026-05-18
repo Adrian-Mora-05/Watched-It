@@ -1,16 +1,6 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from "react";
-import {
-  View,
-  Keyboard,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput as RNTextInput,
-  AccessibilityInfo,
-  Modal,
-  ScrollView,
-} from "react-native";
+import { View, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, TextInput as RNTextInput, AccessibilityInfo, Modal, ScrollView,} from "react-native";
 
 import { Text, TouchableOpacity } from "@react-native-ama/react-native";
 import { Form } from "@react-native-ama/forms";
@@ -23,6 +13,8 @@ import ReturnButton from "@/components/ui/ReturnButton";
 import ImageButton from '@/components/ui/imageButton';
 import { CameraModule } from '@/components/camera/CameraProvider';
 import Feather from '@expo/vector-icons/Feather';
+import { useSession } from '@/hooks/ctx';
+import { useLayout } from '@/hooks/useLayout';
 
 
 type SignUpErrors = Partial<Record<keyof z.infer<typeof createUser>, string>>;
@@ -37,7 +29,10 @@ export default function SignUp() {
   const [toastMessage, setToastMessage] = useState<string | undefined>();
   const [showCamera, setShowCamera] = useState(false);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-
+  const { headerHeight, screenWidth,  paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
+  const imgWidth = screenWidth * 0.28;
+  const imgHeight = imgWidth * 1.5;
   const passwordRef = useRef<RNTextInput>(null);
 
   const handlePhoto = (uri: string) => {
@@ -79,7 +74,7 @@ export default function SignUp() {
   };
 
   return (
-    <View className="flex-1 bg-dark">
+    <View className="flex-1 bg-dark" style={{  paddingHorizontal, paddingVertical }}>
       <TouchableWithoutFeedback
         onPress={Keyboard.dismiss}
         accessible={false}
@@ -94,7 +89,7 @@ export default function SignUp() {
             onDismiss={() => setToastMessage(undefined)}
           />
 
-          <View className="w-full">
+          <View className="w-full items-start justify-end" style={{height: headerHeight}}>
             <ReturnButton
               label="Volver"
               onPress={() => router.back()}
@@ -106,7 +101,7 @@ export default function SignUp() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View className="flex-1 px-5 pb-10">
+
 
               {/* Header */}
               <View className="items-center pt-6 pb-8">
@@ -120,7 +115,7 @@ export default function SignUp() {
               </View>
 
               {/* Form */}
-              <View className="flex-1">
+              <View className="flex-1" style={{ gap }}>
                 <Form onSubmit={() => false}>
 
                   <Input
@@ -202,11 +197,11 @@ export default function SignUp() {
                           accessibilityRole="button"
                           accessibilityLabel="Eliminar foto de perfil"
                           className="absolute -top-2 -right-2"
-                        >
+                          style={{minWidth: 44, minHeight: 44, }} >
                           <View className="bg-red rounded-full">
                             <Feather
                               name="x-circle"
-                              size={32}
+                              size={gap * 4}
                               color="white"
                             />
                           </View>
@@ -251,7 +246,6 @@ export default function SignUp() {
 
                 </Form>
               </View>
-            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

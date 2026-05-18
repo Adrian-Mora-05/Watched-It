@@ -117,7 +117,7 @@ export default function SignIn() {
                   setLoading(true);
                   try {
                     await signIn({ email, password });
-                    router.replace('/');
+                    router.replace('/(index)');
                   } catch (e) {
                     setToastMessage("Usuario o contraseña incorrectos.");
                   } finally {

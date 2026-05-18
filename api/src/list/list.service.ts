@@ -38,17 +38,9 @@ export class ListService {
       );
     }
 
-    // quitar repetidos
-    const uniqueLists = Array.from(
-      new Map(
-        (data || []).map(item => [
-          item.id,
-          item
-        ])
-      ).values()
-    );
 
-    return uniqueLists;
+
+    return data;
   }
 
   async getListById(id: number) {

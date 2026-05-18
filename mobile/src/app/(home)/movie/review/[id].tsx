@@ -116,7 +116,7 @@ export default function MovieReviewScreen() {
               key={i}
               name="star"
               size={starSize}
-              color={i < item.calificacion ? 'orange' : 'gray'}
+              color={i < item.calificacion ? '#AA500F' : 'gray'}
               accessible={false}
             />
           ))}
@@ -155,7 +155,7 @@ export default function MovieReviewScreen() {
         style={{ padding: gap, gap, width: screenWidth, height: headerHeight }}
         accessible={false}
       >
-        <ReturnButton label="Volver" onPress={() => router.push(`/movie/${movie_id}`)} />
+        <ReturnButton label="Volver" onPress={() => router.back()} />
       </View>
 
       <Text

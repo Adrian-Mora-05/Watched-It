@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import { useState } from "react";
 import { ForgotPasswordSchema } from "@shared/password.schema";
 import { sendEmail } from "@/services/auth.service";
+import { useLayout } from "@/hooks/useLayout";
 
 type ScreenState = "idle" | "loading" | "success" | "error";
 
@@ -15,7 +16,10 @@ export default function ForgotPasswordScreen() {
   const [errors, setErrors] = useState<{ username?: string }>({});
   const [screenState, setScreenState] = useState<ScreenState>("idle");
   const [apiError, setApiError] = useState<string>("");
-
+  const { headerHeight, screenWidth,  paddingHorizontal, paddingVertical } = useLayout();
+  const gap = screenWidth * 0.03;
+  const imgWidth = screenWidth * 0.28;
+  const imgHeight = imgWidth * 1.5;
   const validateForm = (): boolean => {
     const result = ForgotPasswordSchema.safeParse({ username });
 
@@ -54,19 +58,21 @@ export default function ForgotPasswordScreen() {
         const message = "No pudimos enviar el correo. Intenta de nuevo más tarde.";
         setApiError(message);
         setScreenState("error");
-        AccessibilityInfo.announceForAccessibility(`Error: ${message}`);
+        AccessibilityInfo.announceForAccessibility(message);
       });
   };
 
   if (screenState === "success") {
     return (
-      <View className="bg-dark flex-1">
-        <ReturnButton
-          label="Volver a inicio de sesión"
-          onPress={() => router.back()}
-        />
+      <View className="bg-dark flex-1" style={{paddingHorizontal, height: headerHeight }}>
+          <View className="w-full items-start justify-end" style={{height: headerHeight}}>
+          <ReturnButton
+            label="Volver a inicio de sesión"
+            onPress={() => router.back()}
+          />
+        </View>
         <View
-          className="bg-dark flex-1 items-center justify-center mx-5 gap-10 pb-40"
+          className="bg-dark flex-1 items-center " style={{ paddingVertical, gap}}
           accessible={true}
           accessibilityLabel={`Revisa tu correo. Si existe una cuenta asociada al usuario ${username}, recibirás un correo con instrucciones para restablecer tu contraseña. Recuerda revisar también tu carpeta de spam.`}
         >
@@ -94,22 +100,25 @@ export default function ForgotPasswordScreen() {
       className="flex-1 bg-dark"
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1 bg-dark">
+        <View className="flex-1 bg-dark items-start" style={{paddingHorizontal, height: headerHeight }}>
+          <View className="w-full items-start justify-end" style={{height: headerHeight}}>
           <ReturnButton
             label="Volver a inicio de sesión"
             onPress={() => router.back()}
           />
-
-          <View className="content-start bg-dark justify-around mt-10">
+        </View>
+          <View className="content-start bg-dark justify-around" style={{ paddingVertical}}>
             <Text
               className="text-white text-large font-bold text-center"
               accessibilityRole="header"
+              style={{marginBottom: gap*2}}
             >
               Cambia tu contraseña
             </Text>
             <Text
-              className="text-white text-medium text-left mx-5 mt-32 pt-14 mb-8"
+              className="text-white text-medium text-left "
               accessibilityRole="text"
+              style={{marginBottom: gap*2}}
             >
               Ingresa tu nombre de usuario para recibir un correo con instrucciones para restablecer tu contraseña.
             </Text>
@@ -148,7 +157,7 @@ export default function ForgotPasswordScreen() {
                 accessibilityLabel="Nombre de usuario"
                 accessibilityHint="Ingresa el nombre de usuario asociado a tu cuenta"
               />
-              <View className="mx-16">
+              <View style={{margin: gap}}>
                 <Button
                   label={
                     screenState === "loading"

@@ -142,47 +142,35 @@ async getFavoriteMoviesByUser(token: string) {
   
 }
 
-async getMovieById(id: number,id_user:string, name:string) {
-
-    const { data: movie, error } = await supabase
-        .from('pelicula')
-        .select(` id, titulo, anio, pais, duracion, genero, restriccion_edad, sinopsis, enlace_imagen`)
-        .eq('id', id)
-
-    if (error) {
-        throw new BadRequestException(error.message);
-    }
-
-    const { data: calificaciones } = await supabase
-        .from('calificaciones_pelicula_view')
-        .select('*')
-        .eq('id_pelicula', id);
-
-    const { count } = await supabase
+async getMovieById(id: number, id_user: string, name: string) {
+  const [{ data: movie, error }, [{ count }, resenas]] = await Promise.all([
+    supabase
+      .from('pelicula')
+      .select(`
+        id, titulo, anio, pais, duracion, genero, restriccion_edad, sinopsis, enlace_imagen,
+        calificaciones_pelicula_view (*)
+      `)
+      .eq('id', id)
+      .single(),
+    Promise.all([
+      supabase
         .from('watchlist_view')
-        .select('*', { count: 'exact', head: true })  
+        .select('*', { count: 'exact', head: true })
         .eq('id_usuario', id_user)
         .eq('tipo', 'pelicula')
-        .eq('contenido_id', id)
-    const isInWatchlist = count! > 0
+        .eq('contenido_id', id),
+      this.getMovieReviews(id, { skip: 0, limit: 3, id_usuario: id_user })
+    ])
+  ]);
 
-    const { data: allResenas } = await supabase
-    .rpc('get_reviews', {
-        p_id_usuario: id_user,
-        p_skip: 0,
-        p_limit: 1000000
-    })
+  if (error) throw new BadRequestException(error.message);
 
-    const resenas = allResenas
-        ?.filter(r => r.tipo === 'pelicula' && r.titulo === movie[0].titulo)
-        .slice(0, 3) ?? []
-
-    return {
-        ...movie, isInWatchlist,
-        calificaciones, resenas
-    };
+  return {
+    ...movie,
+    isInWatchlist: count! > 0,
+    resenas
+  };
 }
-
     async getMovieReviews(id_pelicula: number,  { skip, limit,id_usuario }: GetMovieReviews) {
         const { data, error } = await supabase
             .from('get_all_movie_reviews_view')

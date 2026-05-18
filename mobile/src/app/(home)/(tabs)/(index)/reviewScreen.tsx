@@ -39,7 +39,7 @@ const ReviewItem = memo(({ item, onLike, screenWidth, gap, starSize, paddingHori
       style={{ gap }}
     >
       <View className="flex-row items-center flex-wrap" style={{ gap }}>
-        <Text className="text-white text-normal" accessible={false}>{item.titulo}</Text>
+        <Text className="text-white text-medium font-bold" accessible={false}>{item.titulo}</Text>
         <Text className="text-white text-normal" accessible={false}>{item.año}</Text>
       </View>
       <Text className="text-bone text-normal" accessible={false}>{item.nombre}</Text>
@@ -80,7 +80,7 @@ const ReviewItem = memo(({ item, onLike, screenWidth, gap, starSize, paddingHori
             key={i}
             name="star"
             size={starSize}
-            color={i < item.calificacion ? 'orange' : 'gray'}
+            color={i < item.calificacion ? '#AA500F' : 'gray'}
             accessible={false}
           />
         ))}
@@ -110,9 +110,9 @@ const ReviewItem = memo(({ item, onLike, screenWidth, gap, starSize, paddingHori
     </View>
 
     <View
-      className="flex-row items-center h-0.5 bg-chocolate"
-      accessible={false}
-      importantForAccessibility="no"
+        style={{ height: 1, marginBottom:gap, backgroundColor: '#5D3E14' }}
+        accessible={false}
+        importantForAccessibility="no"
     />
   </View>
 ));
@@ -198,16 +198,16 @@ export default function ReviewScreen() {
     }
   }, [session]);
 
-  const renderReview = useCallback(({ item }: { item: Review }) => (
-    <ReviewItem
-      item={item}
-      onLike={handleLike}
-      screenWidth={screenWidth}
-      gap={gap}
-      starSize={starSize}
-      paddingHorizontal={paddingHorizontal}
-    />
-  ), [handleLike]);
+const renderReview = useCallback(({ item }: { item: Review }) => (
+  <ReviewItem
+    item={item}
+    onLike={handleLike}
+    screenWidth={screenWidth}
+    gap={gap}
+    starSize={starSize}
+    paddingHorizontal={paddingHorizontal}
+  />
+), [handleLike, screenWidth, gap, starSize, paddingHorizontal]); 
 
   return (
     <View className="flex-1" accessible={false}>
@@ -220,15 +220,9 @@ export default function ReviewScreen() {
         initialNumToRender={15}
         maxToRenderPerBatch={15}
         windowSize={5}
-        ListHeaderComponent={
-          <Text
-            className="text-white text-intermediate"
-            style={{ paddingHorizontal }}
-            accessibilityRole="header"
-          >
-            Populares de la semana
-          </Text>
-        }
+        removeClippedSubviews={true}  
+        updateCellsBatchingPeriod={50} 
+
         ListFooterComponent={
           loading
             ? <ActivityIndicator

@@ -246,7 +246,7 @@ describe('ChooseShowsFavsScreen - Accessibility', () => {
 
       await waitFor(() => {
         expect(signup).toHaveBeenCalled();
-        expect(router.replace).toHaveBeenCalledWith('/(home)');
+        expect(router.replace).toHaveBeenCalledWith('/(index)');
       });
     });
   });
