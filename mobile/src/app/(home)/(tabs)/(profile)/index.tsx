@@ -42,27 +42,44 @@ export default function ProfileScreen() {
         className="flex-1 bg-dark"
         >
         <View className="flex-1 bg-dark">
-          <View className="bg-chocolate  flex-row justify-evenly items-center pt-10" style={{ height: headerHeight, gap, padding:gap  }}>
+          <View
+          className="bg-chocolate flex-row items-center"
+          style={{
+            height: headerHeight,
+            paddingHorizontal: gap,
+            paddingTop: 10,
+          }}
+        >
             
             <SettingButton onPress={() => router.push("/settings")} />
             
             <Text
-              className="text-white text-large font-bold"
-              style={{ flex: 1, flexWrap: 'wrap', textAlign: 'center' }}
-              numberOfLines={2}  // limits to 2 lines, remove if you want unlimited
-            >
+            className="text-white text-large font-bold"
+            style={{
+              flex: 1,
+              textAlign: 'center',
+              marginHorizontal: 12,
+            }}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
               {user?.name || "Usuario"}
             </Text>
 
             <Image
-                source={
-                    user?.profilePicture
-                      ? { uri: user.profilePicture }
-                      : require('../../../../../assets/images/default-profile-pic.png')
-                  }
-                style={{ width: 85, height: 85, borderRadius: 45 }}
-                cachePolicy="none"
-              />
+              source={
+                user?.profilePicture
+                  ? { uri: user.profilePicture }
+                  : require('../../../../../assets/images/default-profile-pic.png')
+              }
+              style={{
+                width: Math.min(screenWidth * 0.16, 72),
+                height: Math.min(screenWidth * 0.16, 72),
+                borderRadius: 999,
+              }}
+              contentFit="cover"
+              cachePolicy="none"
+            />
         
           </View>
           <View className="px-4 mt-6 ">

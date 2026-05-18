@@ -7,17 +7,20 @@ type Props = {
 };
 
 export default function SettingsButton({ onPress }: Props) {
-  const insets = useSafeAreaInsets();
 
   return (
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel="Ir a configuraciones"
-        className="p-3 items-center justify-center min-h-[44px] min-w-[44px]"
-      >
-        <Ionicons name="settings-outline" size={30} color="white" />
-        
-      </Pressable>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel="Ir a configuraciones"
+      className="items-center justify-center"
+      style={{
+        width: 48,
+        height: 48,
+      }}
+      hitSlop={8}
+    >
+      <Ionicons name="settings-outline" size={26} color="white" />
+    </Pressable>
   );
 }

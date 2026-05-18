@@ -36,19 +36,24 @@ export default function Button({
       onPress={onPress}
       disabled={loading || disabled}
       accessibilityRole="button"
-      accessibilityLiveRegion="polite"
+      accessibilityLiveRegion={loading ? "polite" : "none"}
       accessibilityLabel={accessibilityLabel ?? label} // ✅ falls back to label if not provided
       accessibilityHint={accessibilityHint}            // ✅ passed through
       accessibilityState={{ busy: loading, disabled: loading || disabled }}
       className="rounded-xl items-center justify-center"
       style={{
         backgroundColor: disabled ? '#431407' : bgColor,
-        width,
-        height,
-        minHeight: 48, 
-        minWidth: 48,  
-        paddingHorizontal: width ? undefined : screenWidth * 0.04,
-        paddingVertical: height ? undefined : screenHeight * 0.020,
+
+        width: width ?? Math.max(screenWidth * 0.32, 120),
+        height: height ?? 52,
+
+        minWidth: 120,
+        minHeight: 52,
+
+        paddingHorizontal: 16,
+
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       {loading

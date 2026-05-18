@@ -96,22 +96,35 @@ export default function OkayToast({ message, visible, onDismiss }: OkayToastProp
                 {message}
               </Text>
             </View>
-            <Pressable
+
+          <Pressable
               accessibilityRole="button"
               accessibilityLabel="Cerrar notificación de éxito"
               accessibilityHint="Cierra este mensaje de confirmación"
               onPress={onDismiss}
-              hitSlop={{ top: 18, bottom: 18, left: 15, right: 15 }}
-              className="p-5"
-            >
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={{
+                  minWidth: 48,
+                  minHeight: 48,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+              }}
+          >
               <Text
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-                className="text-white text-normal font-bold"
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                  className="text-white text-normal font-bold"
+                  style={{ 
+                      lineHeight: 48, 
+                      textAlign: 'center', 
+                      width: 48,
+                      textAlignVertical: 'center',
+                  }}
               >
-                ✕
+                  ✕
               </Text>
-            </Pressable>
+          </Pressable>
           </View>
         </Animated.View>
       </Pressable>

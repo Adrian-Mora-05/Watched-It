@@ -94,20 +94,27 @@ export default function ErrorToast({ message, visible, onDismiss }: ErrorToastPr
             </View>
 
             <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Cerrar notificación de error"
-              accessibilityHint="Cierra este mensaje de error"
-              onPress={onDismiss}
-              hitSlop={{ top: 18, bottom: 18, left: 15, right: 15 }}
-              className="p-5"
+                accessibilityRole="button"
+                accessibilityLabel="Cerrar notificación de error"
+                accessibilityHint="Cierra este mensaje de error"
+                onPress={onDismiss}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                style={{
+                    minWidth: 48,
+                    minHeight: 48,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0, // Cambiar el padding fijo
+                }}
             >
-              <Text
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-                className="text-white text-normal font-bold"
-              >
-                ✕
-              </Text>
+                <Text
+                    accessibilityElementsHidden
+                    importantForAccessibility="no-hide-descendants"
+                    className="text-white text-normal font-bold"
+                    style={{ lineHeight: 48, textAlign: 'center', width: 48 }}
+                >
+                    ✕
+                </Text>
             </Pressable>
           </View>
         </Animated.View>

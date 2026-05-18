@@ -13,19 +13,22 @@ export default function ReturnButton({ label, onPress, showLabel = true }: Butto
   return (
     <View>
     <Pressable
-        accessibilityLanguage="es"
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLiveRegion="polite"
-        accessibilityLabel={label}
-        className="rounded-xl items-center flex-row gap-2"
-        style={{ minWidth: 48, minHeight: 48, padding: 10, alignItems: 'center', justifyContent: 'center' }}
+      accessibilityLanguage="es"
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={{
+        width: 48,
+        height: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
         <Ionicons name="arrow-back" size={24} color="white" />
         {showLabel && (
-            <Text className="text-normal text-white">
-                Volver
-            </Text>
+          <Text className="text-normal text-white ml-2">
+            Volver
+          </Text>
         )}
     </Pressable>
     </View>
