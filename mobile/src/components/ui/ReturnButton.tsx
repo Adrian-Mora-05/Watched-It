@@ -19,7 +19,7 @@ export default function ReturnButton({ label, onPress, showLabel = true }: Butto
         accessibilityLiveRegion="polite"
         accessibilityLabel={label}
         className="rounded-xl items-center flex-row gap-2"
-        style={{ minWidth: 44, minHeight: 44, padding: 10, alignItems: 'center', justifyContent: 'center' }}
+        style={{ minWidth: 48, minHeight: 48, padding: 10, alignItems: 'center', justifyContent: 'center' }}
     >
         <Ionicons name="arrow-back" size={24} color="white" />
         {showLabel && (

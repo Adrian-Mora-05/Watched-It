@@ -1,4 +1,4 @@
-# 📱 Watched It — Data
+# 📱 Watched-It — Data
 
 A Python scraper that collects movie data from IMDB, generates fake user data, and loads everything into a Supabase database.
 

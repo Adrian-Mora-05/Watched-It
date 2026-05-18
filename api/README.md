@@ -1,6 +1,6 @@
-# 🎬 Watched It — API
+# 🎬 Watched-It — API
 
-The backend for Watched It, built with NestJS. This document covers the project structure, setup, architecture decisions, and available endpoints.
+The backend for Watched-It, built with NestJS. This document covers the project structure, setup, architecture decisions, and available endpoints.
 
 ---
 

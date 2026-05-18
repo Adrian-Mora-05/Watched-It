@@ -247,7 +247,7 @@ export default function SearchScreen() {
         style={{
           height: headerHeight,
           width: screenWidth
-        }}
+        }} 
       >
 
         <Text
@@ -256,7 +256,7 @@ export default function SearchScreen() {
             paddingBottom: headerPaddingBottom
           }}
         >
-          Watched It
+          Watched-It
         </Text>
 
       </View>
@@ -613,7 +613,7 @@ export default function SearchScreen() {
 
               <TouchableOpacity
                 key={`${item.id}-${index}`}
-                className="py-4 border-b border-gray-500"
+                className="py-4 border-b border-chocolate"
                 onPress={() => {
 
                 if (tab === "lists") {

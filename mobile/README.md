@@ -1,6 +1,6 @@
-# 📱 Watched It — Mobile
+# 📱 Watched-It — Mobile
 
-The mobile app for Watched It, built with Expo (React Native). This document covers everything specific to the mobile frontend, including project structure, setup, and our accessibility testing standards.
+The mobile app for Watched-It, built with Expo (React Native). This document covers everything specific to the mobile frontend, including project structure, setup, and our accessibility testing standards.
 
 ---
 
@@ -109,7 +109,7 @@ Use them in components via NativeWind class names:
 
 Use them in components via NativeWind class names:
 ```tsx
-<Text className="text-huge text-white">Watched It</Text>        // hero
+<Text className="text-huge text-white">Watched-It</Text>        // hero
 <Text className="text-large text-white">My List</Text>          // screen heading
 <Text className="text-normal text-bone">Added 3 days ago</Text> // body
 <Text className="text-petite text-bone">Tap to expand</Text>    // caption

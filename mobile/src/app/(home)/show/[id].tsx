@@ -138,7 +138,7 @@ export default function ShowScreen() {
                 </View>
                 <View className="flex-row">
                   <Text className="text-white text-normal font-bold">Calificación: </Text>
-                  <Text className="text-white text-normal">{show?.restriccion_edad ? '+18' : 'Apta para todo público'}</Text>
+                  <Text className="text-white text-normal">{show?.restriccion_edad ? '+18' : 'Para todo público'}</Text>
                 </View>
               </View>
             </View>

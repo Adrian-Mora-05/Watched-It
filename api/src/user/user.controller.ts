@@ -20,6 +20,24 @@ export class UserController {
     return this.userService.getUserProfile(req.user.id);
   }
 
+  @Get(':id/public')
+  async getPublicUser(
+    @Req() req,
+    @Param('id') id: string
+  ) {
+    return this.userService.getPublicUserProfile(
+      req.user.id,
+      id
+    );
+  }
+
+  @Get(':id/rating-stats')
+  async getPublicUserRatingStats(
+    @Param('id') id: string
+  ) {
+    return this.userService.getPublicUserRatingStats(id);
+  }
+  
   @Patch('profile-picture')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
@@ -123,4 +141,16 @@ export class UserController {
   async getRatingStats(@Req() req) {
     return this.userService.getRatingStats(req.user.id);
   }
+
+  @Post('/friend-request/:id')
+  sendFriendRequest(
+    @Req() req,
+    @Param('id') id: string
+  ) {
+    return this.userService.sendFriendRequest(
+      req.user.id,
+      id
+    );
+  }
+
 }

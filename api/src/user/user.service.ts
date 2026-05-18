@@ -320,6 +320,93 @@ async searchUsers(param: ReadUserParam) {
   return { data };
 }
 
+  async getPublicUserProfile(
+    loggedUserId: string,
+    userId: string
+  ) {
+
+    const { data: userData, error: userError } =
+      await supabase
+        .from('usuario')
+        .select(`
+          id,
+          nombre,
+          enlace_foto_perfil
+        `)
+        .eq('id', userId)
+        .single();
+
+    if (userError) {
+      throw new BadRequestException(userError.message);
+    }
+
+    const { data: favoriteMovies } = await supabase
+      .from('peliculas_favoritas_x_usuario')
+      .select(`
+        pelicula (
+          id,
+          titulo,
+          anio,
+          enlace_imagen
+        )
+      `)
+      .eq('id_usuario', userId);
+
+    const { data: favoriteShows } = await supabase
+      .from('series_favoritas_x_usuario')
+      .select(`
+        serie (
+          id,
+          titulo,
+          anio_inicio,
+          enlace_imagen
+        )
+      `)
+      .eq('id_usuario', userId);
+
+    let profilePictureUrl: string | null = null;
+
+    if (userData.enlace_foto_perfil) {
+
+      const { data } = supabase.storage
+        .from('profile_pics')
+        .getPublicUrl(userData.enlace_foto_perfil);
+
+      profilePictureUrl = data.publicUrl;
+    }
+
+    const { data: friendship } = await supabase
+      .from('amigo')
+      .select('*')
+      .or(
+        `and(id_usuario1.eq.${loggedUserId},id_usuario2.eq.${userId}),and(id_usuario1.eq.${userId},id_usuario2.eq.${loggedUserId})`
+      )
+      .maybeSingle();
+
+    const isFriend =
+      friendship?.solicitud_aceptada ?? false;
+
+    const friendRequestPending =
+      friendship !== null &&
+      !friendship?.solicitud_aceptada;
+
+    return {
+      id: userData.id,
+      name: userData.nombre,
+      profilePicture: profilePictureUrl,
+
+      favoriteMovies:
+        favoriteMovies?.map((x: any) => x.pelicula) ?? [],
+
+      favoriteShows:
+        favoriteShows?.map((x: any) => x.serie) ?? [],
+
+      isFriend,
+      friendRequestPending,
+    };
+  }
+
+
 async getRatingStats(userId: string) {
   const { data, error } = await supabase
     .from('calificaciones_usuario_view')
@@ -342,5 +429,68 @@ async getRatingStats(userId: string) {
 }
 
 
+async getPublicUserRatingStats(userId: string) {
+
+  const { data, error } = await supabase
+    .from('calificaciones_usuario_view')
+    .select('*')
+    .eq('id_usuario', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new BadRequestException(error.message);
+  }
+
+  return data ?? {
+    total_calificaciones: 0,
+    cant_1: 0,
+    cant_2: 0,
+    cant_3: 0,
+    cant_4: 0,
+    cant_5: 0,
+  };
+}
+
+async sendFriendRequest(
+  senderId: string,
+  receiverId: string
+) {
+
+  if (senderId === receiverId) {
+    throw new BadRequestException(
+      'Cannot add yourself'
+    );
+  }
+
+  const { data: existing } = await supabaseAdmin
+    .from('amigo')
+    .select('*')
+    .or(
+      `and(id_usuario1.eq.${senderId},id_usuario2.eq.${receiverId}),and(id_usuario1.eq.${receiverId},id_usuario2.eq.${senderId})`
+    )
+    .maybeSingle();
+
+  if (existing) {
+    throw new BadRequestException(
+      'Friend request already exists'
+    );
+  }
+
+  const { error } = await supabaseAdmin
+    .from('amigo')
+    .insert({
+      id_usuario1: senderId,
+      id_usuario2: receiverId,
+      solicitud_aceptada: false,
+    });
+
+  if (error) {
+    throw new BadRequestException(error.message);
+  }
+
+  return {
+    message: 'Friend request sent',
+  };
+}
 
 }

@@ -186,3 +186,51 @@ export const getRatingStats = async (token: string): Promise<UserRatingStats> =>
   });
   return response.data;
 };
+
+export type PublicUserProfile = {
+  id: string;
+  name: string;
+  profilePicture: string | null;
+
+  favoriteMovies: any[];
+  favoriteShows: any[];
+
+  isFriend: boolean;
+  friendRequestPending: boolean;
+};
+
+export const getPublicUserProfile = async (
+  id: string
+): Promise<PublicUserProfile> => {
+
+  const response =
+    await api.get(`/user/${id}/public`);
+
+  return response.data;
+};
+
+export const getPublicUserRatingStats = async (
+  id: string
+): Promise<UserRatingStats> => {
+
+  const response =
+    await api.get(`/user/${id}/rating-stats`);
+
+  return response.data;
+};
+
+export const sendFriendRequest = async (
+  userId: string,
+  token: string
+) => {
+
+  await api.post(
+    `/user/friend-request/${userId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};

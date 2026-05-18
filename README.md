@@ -1,4 +1,4 @@
-# 🎬 Watched It
+# 🎬 Watched-It
 > A social mobile app for tracking movies & shows, getting personalized recommendations, and chatting with friends about what to watch next.
 
 ---

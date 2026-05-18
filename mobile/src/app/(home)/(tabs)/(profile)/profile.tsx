@@ -44,7 +44,7 @@ export default function MyProfileScreen() {
     <ScrollView className="flex-1 bg-dark">
       <View className='py-6'>
         <Text className="text-white text-medium font-semibold">
-            Mis Películas Favoritas
+            Mis películas favoritas
         </Text>
         <View className="py-6 flex-row justify-around">
           {peliculasMostradas.map((pelicula, index) => (
@@ -57,7 +57,7 @@ export default function MyProfileScreen() {
       </View>
       </View>
           <Text className="text-white text-medium font-semibold">
-                Mis Series Favoritas
+                Mis series favoritas
             </Text>
             <View className="py-6 flex-row justify-around">
               {showsMostrados.map((show, index) => (
@@ -70,7 +70,7 @@ export default function MyProfileScreen() {
           </View>
       <View className="py-6">
         <Text className="text-white text-medium font-semibold mb-4">
-          Mis Calificaciones
+          Mis calificaciones
         </Text>
         {isLoadingStats || !ratingStats ? (
           <ActivityIndicator color="#D9D9D9" />

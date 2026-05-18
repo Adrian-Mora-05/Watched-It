@@ -55,7 +55,7 @@ export default function SignIn() {
         />
         <View className="content-start items-center h-1/3 bg-dark justify-around mt-10">
           <Text  accessibilityLanguage="en-US" className="text-bone text-huge pt-20">
-            Watched It
+            Watched-It
           </Text>
           <Text accessibilityRole="header" className="text-white text-large mt-5 font-bold " accessibilityLanguage="es">
             Iniciar sesión

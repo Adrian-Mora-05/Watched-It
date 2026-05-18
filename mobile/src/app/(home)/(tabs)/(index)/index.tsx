@@ -46,7 +46,7 @@ export default function Index() {
           className="text-white text-large font-bold"
           style={{ paddingBottom: headerPaddingBottom }}
         >
-          Watched It
+          Watched-It
         </Text>
       </View>
 
