@@ -1,12 +1,11 @@
-import { View, TextInput, FlatList, TouchableOpacity, Text, ActivityIndicator, Image, } from 'react-native';
+import { View, TextInput, FlatList, TouchableOpacity, Text, ActivityIndicator, Image } from 'react-native';
 import { ReadEachCatalogContent } from '@shared/catalog.schema';
 import { getMovies } from '@/services/movie.service';
 import { getShows } from '@/services/show.service';
+import { addToList, removeFromList } from '@/services/list.service';
 import { useState } from 'react';
 import { baseUrl } from '@/services/movie.service';
-import { useWindowDimensions } from 'react-native';
 import { useSession } from '@/hooks/ctx';
-import api from '@/services/api';
 
 type Props = {
   listName: string;
@@ -24,7 +23,7 @@ export default function SearchModalLists({
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ReadEachCatalogContent[]>([]);
   const [loading, setLoading] = useState(false);
-  const { height } = useWindowDimensions();
+  const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
   const { session } = useSession();
 
   const handleSearch = async (text: string) => {
@@ -35,10 +34,9 @@ export default function SearchModalLists({
     }
     try {
       setLoading(true);
-      const res =
-        listType === 'pelicula'
-          ? await getMovies({ title: text })
-          : await getShows({ title: text });
+      const res = listType === 'pelicula'
+        ? await getMovies({ title: text })
+        : await getShows({ title: text });
       setResults(res.data);
     } catch (error) {
       console.log(error);
@@ -48,30 +46,34 @@ export default function SearchModalLists({
   };
 
   const toggleSelect = async (item: ReadEachCatalogContent) => {
+    if (loadingIds.has(item.id)) return;
+
     const exists = selectedTitles.some((x) => x.id === item.id);
+    const body = { tipo: listType, nombre_lista: listName };
+
     try {
+      setLoadingIds((prev) => new Set(prev).add(item.id));
+
       if (exists) {
-        await api.delete(`/list/${item.id}`, {
-          headers: { Authorization: `Bearer ${session}` },
-          data: { tipo: listType, nombre_lista: listName },
-        });
+        await removeFromList(session!, item.id, body);
         setSelectedTitles((prev) => prev.filter((x) => x.id !== item.id));
       } else {
-        await api.post(
-          `/list/${item.id}`,
-          { tipo: listType, nombre_lista: listName },
-          { headers: { Authorization: `Bearer ${session}` } }
-        );
+        await addToList(session!, item.id, body);
         setSelectedTitles((prev) => [...prev, item]);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(item.id);
+        return next;
+      });
     }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      {/* INPUT */}
       <TextInput
         value={query}
         onChangeText={handleSearch}
@@ -86,18 +88,19 @@ export default function SearchModalLists({
         }}
       />
 
-      {/* RESULTS */}
       {loading ? (
         <ActivityIndicator color="white" />
       ) : (
         <FlatList
           data={results}
           keyExtractor={(item) => `${item.type_catalog}-${item.id}`}
-          style={{ flex: 1 }}                  // ← ocupa el espacio disponible
-          contentContainerStyle={{ paddingBottom: 20 }}  // ← sin altura dinámica
-          keyboardShouldPersistTaps="handled"  // ← evita que el tap cierre el teclado antes de seleccionar
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => {
             const isSelected = selectedTitles.some((x) => x.id === item.id);
+            const isLoading = loadingIds.has(item.id);
+
             return (
               <View
                 style={{
@@ -122,16 +125,23 @@ export default function SearchModalLists({
                 </Text>
                 <TouchableOpacity
                   onPress={() => toggleSelect(item)}
+                  disabled={isLoading}
                   style={{
                     backgroundColor: isSelected ? '#AA500F' : '#231709',
                     paddingHorizontal: 12,
                     paddingVertical: 6,
                     borderRadius: 6,
+                    minWidth: 36,
+                    alignItems: 'center',
                   }}
                 >
-                  <Text style={{ color: 'white', fontSize: 18 }}>
-                    {isSelected ? '✓' : '+'}
-                  </Text>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color="white" />
+                  ) : (
+                    <Text style={{ color: 'white', fontSize: 18 }}>
+                      {isSelected ? '✓' : '+'}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </View>
             );

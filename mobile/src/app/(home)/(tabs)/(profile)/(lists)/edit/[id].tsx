@@ -8,7 +8,6 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@react-native-ama/react-native';
 import { useEffect, useState } from 'react';
@@ -16,7 +15,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useSession } from '@/hooks/ctx';
-import { getListById, baseUrl, deleteList, renameList } from '@/services/list.service';
+import { getListById, baseUrl, deleteList, renameList, removeFromList } from '@/services/list.service';
 import SearchModalLists from '@/hooks/searchModalLists';
 import { ReadEachCatalogContent } from '@shared/catalog.schema';
 import { useLayout } from '@/hooks/useLayout';
@@ -58,6 +57,9 @@ export default function EditListScreen() {
 
   const listType = list?.tipo === 'serie' ? 'serie' : 'pelicula';
 
+  useEffect(() => {
+  if (!session || !id) return;
+
   const fetchList = async () => {
     try {
       setLoading(true);
@@ -65,6 +67,17 @@ export default function EditListScreen() {
       const grouped = groupListContent(data);
       setList(grouped);
       setTitle(grouped?.nombre_lista ?? '');
+
+      if (grouped?.content) {
+        setSelectedTitles(
+          grouped.content.map((item: any) => ({
+            id: item.contenido_id,
+            image_link: item.image_link,
+            type_catalog: item.type,
+            title: '',
+          }))
+        );
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -72,9 +85,8 @@ export default function EditListScreen() {
     }
   };
 
-  useEffect(() => {
-    if (session && id) fetchList();
-  }, [session, id]);
+  fetchList();
+}, [session, id]);
 
   const handleSaveTitle = async () => {
     if (!title.trim() || title === list?.nombre_lista) {
@@ -103,41 +115,35 @@ export default function EditListScreen() {
   };
 
   const handleRemove = (item: any) => {
-    Alert.alert(
-      'Quitar título',
-      '¿Quieres quitar este título de la lista?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Quitar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              setRemovingId(item.contenido_id);
-              await api.delete(`/list/${item.contenido_id}`, {
-                headers: { Authorization: `Bearer ${session}` },
-                data: {
-                  tipo: listType,
-                  nombre_lista: list.nombre_lista,
-                },
-              });
-              setList((prev: any) => ({
-                ...prev,
-                content: prev.content.filter(
-                  (x: any) => x.contenido_id !== item.contenido_id
-                ),
-              }));
-            } catch (error) {
-              console.log(error);
-              Alert.alert('Error', 'No se pudo quitar el título');
-            } finally {
-              setRemovingId(null);
-            }
-          },
+  Alert.alert(
+    'Quitar título',
+    '¿Quieres quitar este título de la lista?',
+    [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Quitar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            setRemovingId(item.id);
+            await removeFromList(session!, item.id, {
+              tipo: listType,
+              nombre_lista: list.nombre_lista,
+            });
+            setSelectedTitles((prev) =>
+              prev.filter((x) => x.id !== item.id)
+            );
+          } catch (error) {
+            console.log(error);
+            Alert.alert('Error', 'No se pudo quitar el título');
+          } finally {
+            setRemovingId(null);
+          }
         },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
 
   const handleDeleteList = () => {
     Alert.alert(
@@ -213,10 +219,10 @@ export default function EditListScreen() {
             <Text
               style={{
                 color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
+                fontWeight: "700",
                 letterSpacing: 0.5,
               }}
+              className="text-large"
             >
               Editar Lista
             </Text>
@@ -253,8 +259,8 @@ export default function EditListScreen() {
               />
             ) : (
               <Text
-                className="text-white font-bold"
-                style={{ fontSize: 20, flex: 1 }}
+                className="text-white text-normal"
+                style={{ flex: 1 }}
               >
                 {list?.nombre_lista}
               </Text>
@@ -320,15 +326,12 @@ export default function EditListScreen() {
           </View>
 
           {/* SUBTITULO */}
-          <Text
-            className="text-white font-bold"
-            style={{ fontSize: 16, marginBottom: 14 }}
-          >
-            Contenido ({list?.content?.length ?? 0})
+          <Text className="text-white font-bold" style={{ fontSize: 16, marginBottom: 14 }}>
+            Contenido ({selectedTitles.length})
           </Text>
 
           {/* GRID */}
-          {list?.content?.length === 0 ? (
+          {selectedTitles.length === 0 ? (
             <View style={{ alignItems: 'center', paddingVertical: 40, gap: 10 }}>
               <Ionicons name="film-outline" size={48} color="#AA500F" />
               <Text className="text-gray-400">
@@ -337,24 +340,20 @@ export default function EditListScreen() {
             </View>
           ) : (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {list?.content?.map((item: any, index: number) => (
+              {selectedTitles.map((item: any, index: number) => (
                 <View
-                  key={`${item.type}-${item.contenido_id}-${index}`}
+                  key={`${item.type_catalog}-${item.id}-${index}`}
                   style={{ width: itemWidth }}
                 >
                   <View style={{ position: 'relative' }}>
                     <Image
                       source={{ uri: baseUrl + item.image_link }}
-                      style={{
-                        width: '100%',
-                        aspectRatio: 2 / 3,
-                        borderRadius: 10,
-                      }}
+                      style={{ width: '100%', aspectRatio: 2 / 3, borderRadius: 10 }}
                       contentFit="cover"
                     />
                     <TouchableOpacity
                       onPress={() => handleRemove(item)}
-                      disabled={removingId === item.contenido_id}
+                      disabled={removingId === item.id}
                       style={{
                         position: 'absolute',
                         top: 6,
@@ -364,7 +363,7 @@ export default function EditListScreen() {
                         padding: 5,
                       }}
                     >
-                      {removingId === item.contenido_id ? (
+                      {removingId === item.id ? (
                         <ActivityIndicator size="small" color="#AA500F" />
                       ) : (
                         <Ionicons name="trash" size={16} color="#AA500F" />
@@ -393,7 +392,7 @@ export default function EditListScreen() {
             style={{
               flex: 1,
               marginTop: 80,
-              backgroundColor: '#1a1a1a',
+              backgroundColor: '#231709',
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               padding: 20,
