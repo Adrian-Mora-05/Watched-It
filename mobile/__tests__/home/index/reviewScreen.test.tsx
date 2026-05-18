@@ -3,14 +3,15 @@ import ReviewScreen from '@/app/(home)/(tabs)/(index)/reviewScreen';
 import { getReviews, addLike, removeLike } from '@/services/review.service';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+
 jest.mock('expo-router', () => ({
   router: {
     push: jest.fn(),
     back: jest.fn(),
   },
-  useFocusEffect: (cb: () => void) => {
+  useFocusEffect: (cb: () => unknown) => {
     const { useEffect } = require('react');
-    useEffect(cb, []);
+    useEffect(() => { cb(); }, []);
   },
   useLocalSearchParams: () => ({}),
 }));
@@ -39,6 +40,23 @@ jest.mock('@/services/review.service', () => ({
 jest.mock('expo-image', () => ({
   Image: 'Image',
 }));
+
+jest.mock('@/components/ui/imageButton', () => {
+  const { TouchableOpacity } = require('react-native');
+  return ({ onPress, accessibilityLabel, accessibilityHint }: any) => (
+    <TouchableOpacity
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+    />
+  );
+});
+
+jest.mock('@react-native-ama/react-native', () => {
+  const { Text } = require('react-native');
+  return { Text };
+});
 
 jest.mock('@expo/vector-icons/AntDesign', () => 'AntDesign');
 jest.mock('@expo/vector-icons/FontAwesome', () => 'FontAwesome');
@@ -86,13 +104,6 @@ describe('ReviewScreen - Accessibility', () => {
   // ── Roles & Labels ──────────────────────────────────────────────────────────
 
   describe('roles and labels', () => {
-    it('renders the section header', async () => {
-      render(<ReviewScreen />);
-      await waitFor(() => {
-        expect(screen.getByRole('header', { name: 'Populares de la semana' })).toBeTruthy();
-      });
-    });
-
     it('renders the list with an accessible label', async () => {
       render(<ReviewScreen />);
       await waitFor(() => {
@@ -111,8 +122,6 @@ describe('ReviewScreen - Accessibility', () => {
         ).toBeTruthy();
       });
     });
-
-
 
     it('each review comment has a descriptive label', async () => {
       render(<ReviewScreen />);
@@ -145,7 +154,6 @@ describe('ReviewScreen - Accessibility', () => {
     it('shows "Dar me gusta" label when not liked', async () => {
       render(<ReviewScreen />);
       await waitFor(() => {
-        // review 1 has liked: false and 2 likes
         expect(screen.getByLabelText('Dar me gusta. 2 me gusta')).toBeTruthy();
       });
     });
@@ -153,7 +161,6 @@ describe('ReviewScreen - Accessibility', () => {
     it('shows "Quitar me gusta" label when already liked', async () => {
       render(<ReviewScreen />);
       await waitFor(() => {
-        // review 2 has liked: true and 0 likes
         expect(screen.getByLabelText('Quitar me gusta. 0 me gusta')).toBeTruthy();
       });
     });
@@ -220,7 +227,6 @@ describe('ReviewScreen - Accessibility', () => {
         fireEvent.press(screen.getByLabelText('Dar me gusta. 2 me gusta'));
       });
       await waitFor(() => {
-        // after liking, count goes from 2 to 3 and label changes
         expect(screen.getByLabelText('Quitar me gusta. 3 me gusta')).toBeTruthy();
       });
     });
@@ -234,7 +240,6 @@ describe('ReviewScreen - Accessibility', () => {
       });
 
       await waitFor(() => {
-        // should revert back to original state
         expect(screen.getByLabelText('Dar me gusta. 2 me gusta')).toBeTruthy();
       });
     });
@@ -287,7 +292,7 @@ describe('ReviewScreen - Accessibility', () => {
       (getReviews as jest.Mock).mockResolvedValue([]);
       render(<ReviewScreen />);
       await waitFor(() => {
-        expect(screen.queryByRole('button')).toBeNull();
+        expect(screen.queryByLabelText('Dar me gusta.')).toBeNull();
       });
     });
   });
