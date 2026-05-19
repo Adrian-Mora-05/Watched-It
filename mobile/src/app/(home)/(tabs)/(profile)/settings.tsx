@@ -14,6 +14,7 @@ import ProfilePhotoSection from '@/hooks/updatePhoto';
 import { updateFavorites, uploadProfilePicture, removeProfilePicture } from '@/services/user.service';
 import { useLayout } from '@/hooks/useLayout';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { generateMovieRecommendations,generateShowsRecommendations } from '@/services/recommendations.service';
 
 export default function SettingsScreen() {
     
@@ -59,6 +60,8 @@ export default function SettingsScreen() {
             
         }
 
+        generateMovieRecommendations(session);
+        generateShowsRecommendations(session);
         await refetch();
         await refreshUser();
         console.log("Cambios guardados");

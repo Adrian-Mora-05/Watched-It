@@ -9,6 +9,9 @@ import { useSession } from '@/hooks/ctx';
 import { getAvatarUrl } from '@/services/friend.service';
 import { router } from 'expo-router';
 import OkayToast from '@/components/ui/OkayMessage';
+import { useFocusEffect } from "expo-router";
+
+
 
 type FriendRequest = {
     id: number;
@@ -170,25 +173,29 @@ export default function index() {
     const avatarSize = width * 0.12;
     const gap = width * 0.03;
 
-    useEffect(() => {
-        getFriendRequests(session!).then((data) => {
-            setRequests(data);
-            // Announce count to screen readers on load
-            AccessibilityInfo.announceForAccessibility(
-                data.length > 0
-                    ? `Tienes ${data.length} solicitud${data.length !== 1 ? 'es' : ''} de amistad pendiente${data.length !== 1 ? 's' : ''}`
-                    : 'No tienes solicitudes de amistad pendientes'
-            );
-        }).catch((e) => {
-            setErrorToastMessage('Error al cargar las solicitudes: ' + e.message);
-        });
+// Remove the old useEffect and replace with:
+useFocusEffect(
+  useCallback(() => {
+    if (!session) return;
 
-        getFriend(session!).then((data) => {
-            setFriends(data);
-        }).catch((e) => {
-            setErrorToastMessage('Error al cargar las conversaciones: ' + e.message);
-        });
-    }, []);
+    getFriendRequests(session).then((data) => {
+      setRequests(data);
+      AccessibilityInfo.announceForAccessibility(
+        data.length > 0
+          ? `Tienes ${data.length} solicitud${data.length !== 1 ? 'es' : ''} de amistad pendiente${data.length !== 1 ? 's' : ''}`
+          : 'No tienes solicitudes de amistad pendientes'
+      );
+    }).catch((e) => {
+      setErrorToastMessage('Error al cargar las solicitudes: ' + e.message);
+    });
+
+    getFriend(session).then((data) => {
+      setFriends(data);
+    }).catch((e) => {
+      setErrorToastMessage('Error al cargar las conversaciones: ' + e.message);
+    });
+  }, [session])
+);
 
     const handleAccept = useCallback((requestId: number) => {
         const request = requests.find(r => r.id === requestId);

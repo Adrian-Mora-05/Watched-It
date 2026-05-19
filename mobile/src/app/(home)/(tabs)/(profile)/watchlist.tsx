@@ -6,6 +6,9 @@ import { useLayout } from "@/hooks/useLayout";
 import { getPorVer, baseUrl } from "@/services/list.service";
 import ImageButton from "@/components/ui/imageButton";
 import { router } from "expo-router";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
+
 
 type WatchItem = {
   lista_id: number;
@@ -38,11 +41,14 @@ export default function WatchlistScreen() {
   const [loading, setLoading] = useState(true);
   const { session } = useSession();
 
-  useEffect(() => {
-    if (!session) return;
-    load(session);
-  }, [session]);
-
+  useFocusEffect(
+    useCallback(() => {
+      if (!session) return;
+      setData([]);
+      setLoading(true);
+      load(session);
+    }, [session])
+  );
   const load = async (token: string) => {
     try {
       setLoading(true);

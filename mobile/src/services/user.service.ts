@@ -75,12 +75,17 @@ export const updateFavorites = async (
 };
 
   export const logContent = async (logCatalogContent: LogCatalogContent, token: string) => {
+    try {
     await api.post('/user/rating', logCatalogContent, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
+    } catch (error) {
+      console.error('Error logging content:', error);
+      throw error;
+    }
   };
 
   export type UserLog = {
