@@ -264,7 +264,7 @@ export default function EditLogContent() {
                       <FontAwesome
                         name={rating >= star ? "star" : "star-o"}
                         size={starSize}
-                        color="orange"
+                        color="#AA500F"
                       />
                     </Pressable>
                   ))}
@@ -327,7 +327,7 @@ export default function EditLogContent() {
             accessibilityRole="button"
             style={{
               position: "absolute",
-              bottom: paddingVertical * 2,
+              bottom: paddingVertical * 0.75,
               right: paddingHorizontal,
               width: 52,
               height: 52,

@@ -18,7 +18,7 @@ export default function ProfileScreen() {
   const { user, isLoadingUser} = useSession();
   const { headerPaddingBottom, headerHeight,screenWidth } = useLayout();
   const gap = screenWidth * 0.03;
-  const avatarSize = screenWidth * 0.12;
+  const avatarSize = screenWidth * 0.2;
 
   if (isLoadingUser) {
     return (

@@ -7,9 +7,15 @@ type ButtonProps = {
   label: string;
   onPress: () => void;
   showLabel?: boolean;
+  iconColor?: string;
 };
 
-export default function ReturnButton({ label, onPress, showLabel = true }: ButtonProps) {
+export default function ReturnButton( {label,
+  onPress,
+  showLabel = true,
+  iconColor = "white",
+}: ButtonProps) {
+  
   return (
     <View>
     <Pressable
@@ -25,7 +31,7 @@ export default function ReturnButton({ label, onPress, showLabel = true }: Butto
       }}
     >
       <View className='flex-row items-center'>
-        <Ionicons name="arrow-back" size={24} color="white" />
+        <Ionicons name="arrow-back" size={24} color={iconColor} />
         {showLabel && (
           <Text className="text-normal text-white ml-2">
             Volver

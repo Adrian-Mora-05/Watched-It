@@ -120,30 +120,30 @@ export default function SettingsScreen() {
             style={{ height: headerHeight, width: screenWidth }}
           >
             <View
-              className="flex-row w-full items-center"
+              className="flex-row w-full items-center justify-between"
               style={{ paddingBottom: headerPaddingBottom, paddingHorizontal: gap }}
             >
-
-              {/* Title */}
-            <ActionButton
-                    variant='save'
-                    label="Guardar"
-                    onPress={handleSave}
+             <ReturnButton
+                    label="Volver"
+                    showLabel={false}
+                    iconColor="#5D3E14"
+                    onPress={() => router.back()}
                 />
-              <View className="flex-1 items-center">
+               
                 <Text
                   accessibilityRole="header"
                   accessibilityLanguage="es"
                   autofocus
-                  className="text-black text-large font-bold text-center"
+                  className="text-chocolate text-large font-bold text-center"
                 >
                   Ajustes
                 </Text>
-              </View>
-                            <ActionButton
-                    variant='cancel'
-                    label="Cancelar"
-                    onPress={handleCancel}
+
+            {/* Title */}
+            <ActionButton
+                    variant='save'
+                    label="Guardar"
+                    onPress={handleSave}
                 />
             </View>
           </View>
@@ -178,7 +178,7 @@ export default function SettingsScreen() {
                             Cambiar contraseña
                         </Text>
                     </Pressable>
-                                        <View
+                    <View
                     style={{ height: 1, backgroundColor: '#C4C4C4' ,marginVertical: gap*2}}
                     accessible={false}
                     importantForAccessibility="no"

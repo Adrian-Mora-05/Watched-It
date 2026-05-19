@@ -23,8 +23,8 @@ export default function ActionButton({
     },
     save: {
       icon: icon ?? "checkmark-outline",
-      color: "white",
-      background: "#0a9941",
+      color: "#025C10",
+      background: "#C4C4C4",
       hint: "Guardar los cambios",
     },
     cancel: {
@@ -47,9 +47,9 @@ export default function ActionButton({
       className="rounded-xl p-4 items-center flex-row gap-2 min-h-[44px]"
       style={{ backgroundColor: selected.background }}
     >
-      <Ionicons name={selected.icon} size={24} color={selected.color} />
+
       <Text
-        className="text-normal"
+        className="text-medium font-extrabold"
         style={{ color: selected.color }}
       >
         {label}
