@@ -5,7 +5,7 @@ export const getAvatarUrl = (path: string) =>
 
 export const getFriendRequests = async (token: string) => {
 
-  const response = await api.get('/friend/request/', {
+  const response = await api.get('/friend/requests', {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export const getFriend = async (token: string) => {
 
 export const acceptFriendRequest = async (token: string, requestId: number) => {
   try {
-    const response = await api.patch(`/friend/request/${requestId}`, {}, {
+    const response = await api.patch(`/friend/requests/${requestId}`, {}, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export const acceptFriendRequest = async (token: string, requestId: number) => {
 };
 
 export const denyFriendRequest = async (token: string, requestId: number) => {
-  const response = await api.delete(`/friend/request/${requestId}`, {
+  const response = await api.delete(`/friend/requests/${requestId}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -65,5 +65,21 @@ export const removeFriendship = async (
       }
     );
 
+  return response.data;
+};
+
+export const rejectFriendRequest = async (
+  token: string,
+  requestId: number
+) => {
+  const response = await api.delete(
+    `/friend/request/${requestId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   return response.data;
 };

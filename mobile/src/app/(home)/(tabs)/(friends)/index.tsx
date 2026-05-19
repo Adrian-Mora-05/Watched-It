@@ -50,43 +50,80 @@ const RequestRow = memo(({
             accessible={true}
             accessibilityRole="none"
             accessibilityLabel={`Solicitud de amistad de ${item.sender_name}`}
-            className="flex-row items-center"
-            style={{ gap }}
+            style={{
+                width: '100%',
+                paddingVertical: 8,
+            }}
         >
-            <Image
-                source={avatarUrl
-                    ? { uri: avatarUrl }
-                    : require('../../../../../assets/images/default-profile-pic.png')
-                }
-                style={{ width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }}
-                accessibilityLabel={`Foto de perfil de ${item.sender_name}`}
-                accessibilityRole="image"
-            />
-            <Text
-                className="text-white text-medium flex-1"
-                accessibilityLanguage="es"
-            >
-                {item.sender_name}
-            </Text>
-            <Button
-                label="Confirmar"
-                bgColor='#D9D9D9'
-                textColor='#231709'
-                width={widthButton}
-                onPress={() => onAccept(item.id)}
 
+            {/* FILA SUPERIOR */}
+            <View
+                className="flex-row items-center"
+                style={{ gap }}
+            >
+
+                <Image
+                    source={
+                        avatarUrl
+                            ? { uri: avatarUrl }
+                            : require('../../../../../assets/images/default-profile-pic.png')
+                    }
+                    style={{
+                        width: avatarSize,
+                        height: avatarSize,
+                        borderRadius: avatarSize / 2
+                    }}
+                    accessibilityLabel={`Foto de perfil de ${item.sender_name}`}
+                    accessibilityRole="image"
+                />
+
+                <Text
+                    className="text-white text-medium"
+                    accessibilityLanguage="es"
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                    style={{
+                        flex: 1,
+                    }}
+                >
+                    {item.sender_name}
+                </Text>
+
+            </View>
+
+            {/* BOTONES */}
+            <View
+                className="flex-row justify-center items-center"
+                style={{
+                    marginTop: 10,
+                    gap: 10,
+                }}
+            >
+
+            <Button
+                label="Aceptar"
+                bgColor="#D9D9D9"
+                textColor="#231709"
+                width={78}
+                height={42}
+                onPress={() => onAccept(item.id)}
                 accessibilityHint={`Acepta esta solicitud de amistad de ${item.sender_name}`}
                 accessibilityLanguage="es"
             />
+
             <Button
                 label="Eliminar"
-                bgColor='#D9D9D9'
-                textColor='#231709'
-                width={widthButton}
+                bgColor="#D9D9D9"
+                textColor="#231709"
+                width={78}
+                height={42}
                 onPress={() => onDeny(item.id)}
                 accessibilityHint={`Rechaza y elimina esta solicitud de amistad de ${item.sender_name}`}
                 accessibilityLanguage="es"
             />
+
+            </View>
+
         </View>
     );
 });
@@ -169,7 +206,7 @@ export default function index() {
     const { headerHeight, screenWidth, headerPaddingBottom, paddingHorizontal, paddingVertical } = useLayout();
     const { width } = useWindowDimensions();
 
-    const widthButton = width * 0.20;
+    const widthButton = 70;
     const avatarSize = width * 0.12;
     const gap = width * 0.03;
 

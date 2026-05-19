@@ -13,38 +13,27 @@ export class FriendController {
     return this.friendService.getAllFriends(token);
   }
 
-  @Get('/request/')
+  @Get('/requests')          // cambié 'request' a 'requests' para que no colisione
   async getAllFriendsRequests(@Req() req) {
     const token = req.headers.authorization?.replace('Bearer ', '');
     return this.friendService.getAllFriendsRequests(token);
   }
 
-  @Patch('/request/:requestId')
+  @Patch('/requests/:requestId')   // ídem
   async acceptFriendRequest(@Req() req, @Param('requestId') requestId: number) {
     const token = req.headers.authorization?.replace('Bearer ', '');
     return this.friendService.acceptFriendRequest(token, requestId);
   }
 
-  @Delete('/request/:requestId')
+  @Delete('/requests/:requestId')  // ídem — ANTES de /:userId
   async denyFriendRequest(@Req() req, @Param('requestId') requestId: number) {
     const token = req.headers.authorization?.replace('Bearer ', '');
     return this.friendService.denyFriendRequest(token, requestId);
   }
 
-  @Delete('/:userId')
-  async removeFriendship(
-    @Req() req,
-    @Param('userId') userId: string
-  ) {
-    const token =
-      req.headers.authorization?.replace(
-        'Bearer ',
-        ''
-      );
-
-    return this.friendService.removeFriendship(
-      token,
-      userId
-    );
+  @Delete('/:userId')              // siempre al final
+  async removeFriendship(@Req() req, @Param('userId') userId: string) {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    return this.friendService.removeFriendship(token, userId);
   }
 }

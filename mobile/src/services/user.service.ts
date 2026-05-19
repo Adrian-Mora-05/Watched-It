@@ -205,6 +205,8 @@ export type PublicUserProfile = {
     | 'request_sent'
     | 'request_received'
     | 'friends';
+
+  friendshipId: number | null; 
 };
 
 export const getPublicUserProfile = async (

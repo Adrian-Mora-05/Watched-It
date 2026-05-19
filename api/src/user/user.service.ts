@@ -428,6 +428,7 @@ async searchUsers(param: ReadUserParam) {
         favoriteShows?.map((x: any) => x.serie) ?? [],
 
       relationStatus,
+      friendshipId: friendship?.id ?? null, 
     };
   }
 

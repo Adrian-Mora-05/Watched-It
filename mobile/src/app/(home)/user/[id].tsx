@@ -42,7 +42,7 @@ import {
   getAvatarUrl,
   removeFriendship,
   acceptFriendRequest,
-  getFriendRequests
+  denyFriendRequest  
 } from '@/services/friend.service';
 
 const screenWidth = Dimensions.get("window").width;
@@ -55,7 +55,7 @@ export default function UserScreen() {
 
   const { id } = useLocalSearchParams();
 
-  const { session } = useSession();
+  const { session, user: loggedUser} = useSession();
 
   const [imageOpen, setImageOpen] = useState(false);
   const [user, setUser] =
@@ -69,6 +69,9 @@ export default function UserScreen() {
 
   const [sendingRequest, setSendingRequest] =
     useState(false);
+  
+  // Agrega esto después de los useState existentes
+  const isOwnProfile = loggedUser?.id === String(id);
 
   useEffect(() => {
 
@@ -218,6 +221,7 @@ export default function UserScreen() {
         <Text
           className="text-white text-3xl font-bold"
           numberOfLines={2}
+          style={{ flexShrink: 1 }}  // permite que ceda espacio a los botones
         >
           {user.name}
         </Text>
@@ -225,6 +229,9 @@ export default function UserScreen() {
       </View>
 
         {/* BOTÓN AMISTAD */}
+        
+        {!isOwnProfile && (
+  <>
         {user.relationStatus === 'none' && (
 
           <TouchableOpacity
@@ -297,22 +304,13 @@ export default function UserScreen() {
             }}
             onPress={async () => {
 
-              await removeFriendship(
-              session!,
-              String(id)
-            );
+              await removeFriendship(session!, String(id));
 
-              Toast.show({
-                type: 'success',
-                text1: 'Solicitud cancelada',
-                position: 'top',
-              });
+              Toast.show({ type: 'success', text1: 'Solicitud cancelada', position: 'top' });
 
-              setUser({
-                ...user,
-                relationStatus: 'none',
-              });
+              setUser({ ...user, relationStatus: 'none'});
 
+            
             }}
           >
 
@@ -338,23 +336,14 @@ export default function UserScreen() {
               width: 95,
             }}
             onPress={async () => {
-
-              await removeFriendship(
-              session!,
-              String(id)
-            );
-
-              Toast.show({
-                type: 'success',
-                text1: 'Amistad eliminada',
-                position: 'top',
-              });
-
-              setUser({
-                ...user,
-                relationStatus: 'none',
-              });
-
+              try {
+                await removeFriendship(session!, String(id));
+                Toast.show({ type: 'success', text1: 'Amistad eliminada', position: 'top' });
+                setUser({ ...user, relationStatus: 'none' });
+              } catch (e: any) {
+                console.log('Status:', e?.response?.status);
+                console.log('Data:', JSON.stringify(e?.response?.data)); // esto te dice qué error exacto manda el backend
+              }
             }}
           >
 
@@ -373,63 +362,59 @@ export default function UserScreen() {
         )}
 
         {user.relationStatus === 'request_received' && (
+          <View style={{ width: 95, alignItems: 'center', gap: 6 }}>
 
-          <TouchableOpacity
-            className="items-center justify-center"
-            style={{
-              width: 95,
-            }}
-            onPress={async () => {
+            {/* Fila de botones lado a lado */}
+            <View style={{ flexDirection: 'row', gap: 8 }}>
 
-            const requests =
-              await getFriendRequests(session!);
+              {/* Aceptar */}
+              <TouchableOpacity
+                style={{ alignItems: 'center' }}
+                onPress={async () => {
+                  try {
+                    if (!user.friendshipId) throw new Error('No friendship ID');
+                    await acceptFriendRequest(session!, user.friendshipId);
+                    Toast.show({ type: 'success', text1: 'Solicitud aceptada', position: 'top' });
+                    setUser({ ...user, relationStatus: 'friends', friendshipId: null });
+                  } catch (e) {
+                    console.log(e);
+                    Toast.show({ type: 'error', text1: 'Error al aceptar', position: 'top' });
+                  }
+                }}
+              >
+                <Feather name="user-check" size={22} color="white" />
+                <Text className="text-white text-center" style={{ fontSize: 10, marginTop: 4 }}>
+                  Aceptar
+                </Text>
+              </TouchableOpacity>
 
-            const request =
-              requests.find(
-                (r: any) =>
-                  r.sender_id === id
-              );
+              {/* Rechazar */}
+              <TouchableOpacity
+                style={{ alignItems: 'center' }}
+                onPress={async () => {
+                  try {
+                    if (!user.friendshipId) throw new Error('No friendship ID');
+                    await denyFriendRequest(session!, user.friendshipId);
+                    Toast.show({ type: 'success', text1: 'Solicitud rechazada', position: 'top' });
+                    setUser({ ...user, relationStatus: 'none', friendshipId: null });
+                  } catch (e) {
+                    console.log(e);
+                    Toast.show({ type: 'error', text1: 'Error al rechazar', position: 'top' });
+                  }
+                }}
+              >
+                <Feather name="x-circle" size={22} color="white" />
+                <Text className="text-white text-center" style={{ fontSize: 10, marginTop: 4 }}>
+                  Rechazar
+                </Text>
+              </TouchableOpacity>
 
-            if (!request) {
-
-              throw new Error(
-                'Solicitud no encontrada'
-              );
-            }
-
-            await acceptFriendRequest(
-              session!,
-              request.id
-            );
-
-              Toast.show({
-                type: 'success',
-                text1: 'Solicitud aceptada',
-                position: 'top',
-              });
-
-              setUser({
-                ...user,
-                relationStatus: 'friends',
-              });
-
-            }}
-          >
-
-            <Feather
-              name="user-check"
-              size={24}
-              color="white"
-            />
-
-            <Text className="text-white mt-2 text-center text-xs">
-              Aceptar{'\n'}solicitud
-            </Text>
-
-          </TouchableOpacity>
-
+            </View>
+          </View>
         )}
 
+  </>
+)}
       </View>
 
       {/* DIVISOR */}

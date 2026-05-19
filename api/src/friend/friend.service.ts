@@ -1,5 +1,5 @@
 import {  BadRequestException, Injectable } from "@nestjs/common";
-import { createUserClient } from "src/config/db";
+import { createUserClient, supabase, supabaseAdmin } from "src/config/db";
 
 @Injectable()
 export class FriendService {
@@ -88,24 +88,19 @@ export class FriendService {
 
     }
 
-    async removeFriendship(
-    token: string,
-    otherUserId: string
-    ) {
+    async removeFriendship(token: string, otherUserId: string) {
 
-    const supabase =
-        createUserClient(token);
-
-    const {
-        data: { user }
-    } = await supabase.auth.getUser();
-
+    // Usamos el cliente del usuario solo para identificarlo
+    const supabaseUser = createUserClient(token);
+    const { data: { user } } = await supabaseUser.auth.getUser();
     const myUserId = user?.id;
 
-    const {
-        data: friendship,
-        error: findError
-    } = await supabase
+    if (!myUserId) {
+        throw new BadRequestException('User not authenticated');
+    }
+
+    // Buscar la amistad con supabaseAdmin para evitar problemas de RLS
+    const { data: friendship, error: findError } = await supabaseAdmin
         .from('amigo')
         .select('*')
         .or(
@@ -113,86 +108,47 @@ export class FriendService {
         )
         .maybeSingle();
 
-    if (findError) {
-
-        throw new BadRequestException(
-        findError.message
-        );
-    }
-
-    if (!friendship) {
-
-        throw new BadRequestException(
-        'Relationship not found'
-        );
-    }
+    if (findError) throw new BadRequestException(findError.message);
+    if (!friendship) throw new BadRequestException('Relationship not found');
 
     // Buscar conversación asociada
-    const {
-        data: conversation
-    } = await supabase
+    const { data: conversation } = await supabaseAdmin
         .from('conversacion')
         .select('id')
         .eq('id_amigo', friendship.id)
         .maybeSingle();
 
-    // Si existe conversación:
     if (conversation) {
 
-        // Borrar mensajes
-        const {
-        error: messagesError
-        } = await supabase
+        // 1. Borrar mensajes primero
+        const { error: messagesError } = await supabaseAdmin
         .from('mensaje')
         .delete()
-        .eq(
-            'id_conversacion',
-            conversation.id
-        );
+        .eq('id_conversacion', conversation.id);
 
-        if (messagesError) {
+        if (messagesError) throw new BadRequestException(messagesError.message);
 
-        throw new BadRequestException(
-            messagesError.message
-        );
-        }
-
-        // Borrar conversación
-        const {
-        error: conversationError
-        } = await supabase
+        // 2. Borrar conversación
+        const { error: conversationError } = await supabaseAdmin
         .from('conversacion')
         .delete()
         .eq('id', conversation.id);
 
-        if (conversationError) {
-
-        throw new BadRequestException(
-            conversationError.message
-        );
-        }
+        if (conversationError) throw new BadRequestException(conversationError.message);
     }
 
-    // Finalmente borrar amistad
-    const {
-        error: friendshipError
-    } = await supabase
+    // 3. Finalmente borrar amistad
+    const { error: friendshipError } = await supabaseAdmin
         .from('amigo')
         .delete()
         .eq('id', friendship.id);
 
-    if (friendshipError) {
-
-        throw new BadRequestException(
-        friendshipError.message
-        );
-    }
+    if (friendshipError) throw new BadRequestException(friendshipError.message);
 
     return {
-        message:
-        friendship.solicitud_aceptada
-            ? 'Friend removed'
-            : 'Friend request cancelled',
+        message: friendship.solicitud_aceptada
+        ? 'Friend removed'
+        : 'Friend request cancelled',
     };
     }
 
