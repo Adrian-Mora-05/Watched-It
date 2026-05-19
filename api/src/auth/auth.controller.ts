@@ -1,4 +1,4 @@
-import { Controller, Post, Body, } from '@nestjs/common';
+import { Controller, Post, Body,Get,Query,Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { createZodDto } from 'nestjs-zod';
 import { createUser, loginUser } from '../../../shared/user.schema';
@@ -33,6 +33,23 @@ export class AuthController {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
+  @Get('reset-password')
+  redirect(@Query('token') token: string, @Res() res: any) {
+    return res.send(`
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <script>
+            window.location = 'watchedit://reset-password?token=${token}';
+            setTimeout(() => {
+              document.body.innerHTML = '<p>Si la app no abrió, abrila manualmente.</p>';
+            }, 2000);
+          </script>
+          <p>Redirigiendo a Watched-It...</p>
+        </body>
+      </html>
+    `);
+  }
   @Post('refresh')
   async refresh(@Body('refresh_token') refreshToken: string) {
     return this.authService.refresh(refreshToken);
